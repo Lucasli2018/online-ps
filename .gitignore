@@ -1,4 +1,5 @@
 .git
 .workbuddy
+.wrangler
 *.log
 .DS_Store
