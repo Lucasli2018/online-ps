@@ -46,7 +46,7 @@
   .layer-actions button{flex:1;min-width:50px;background:var(--panel-2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:6px 4px;cursor:pointer;font-size:12px;}
   .layer-actions button:hover{border-color:var(--coral);}
   #layersList{display:flex;flex-direction:column;gap:6px;}
-  .layer-item{display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 8px;cursor:pointer;transition:.12s;}
+  .layer-item{display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 8px;cursor:pointer;transition:.12s;flex-wrap:wrap;}
   .layer-item.active{border-color:var(--coral);box-shadow:0 0 0 1px var(--coral) inset;}
   .layer-item .eye{background:none;border:none;color:var(--text);cursor:pointer;font-size:15px;width:22px;}
   .layer-item .eye.off{color:#5a627a;}
@@ -54,6 +54,9 @@
   .layer-thumb{width:34px;height:34px;border-radius:5px;border:1px solid var(--line);background:#11141d;object-fit:cover;flex:0 0 auto;}
   .layer-name{flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .layer-item input.rename{flex:1;background:#11141d;border:1px solid var(--coral);color:#fff;border-radius:4px;font-size:13px;padding:2px 4px;}
+  .blend-sel{flex:1 1 100%;background:#11141d;color:#fff;border:1px solid var(--line);border-radius:5px;font-size:11px;padding:3px 4px;margin-top:4px;}
+  #pathsList{display:flex;flex-direction:column;gap:4px;margin-top:6px;}
+  .tool .badge{position:absolute;right:2px;top:2px;font-size:9px;background:var(--coral);color:#fff;border-radius:3px;padding:0 3px;line-height:13px;}
   .row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
   .row label{font-size:12px;color:var(--muted);width:64px;flex:0 0 auto;}
   .row input[type=range]{flex:1;accent-color:var(--coral);}
@@ -140,6 +143,7 @@
       <div class="tool" data-tool="selEllipse" title="椭圆选区">⬭<span class="tip">椭圆选区</span></div>
       <div class="tool" data-tool="wand" title="魔棒">✷<span class="tip">魔棒</span></div>
       <div class="tool" data-tool="guide" title="参考线">📏<span class="tip">参考线 (拖拽/吸附)</span></div>
+      <div class="tool" data-tool="path" title="路径">✒<span class="tip">路径 (P)</span></div>
     </aside>
 
     <main class="stage-wrap" id="stageWrap">
@@ -197,7 +201,13 @@
         <div class="row">
           <label>魔棒容差</label><input type="range" id="wandTol" min="0" max="150" value="32" /><span class="val" id="wandTolVal">32</span>
         </div>
-        <div class="hint">选区限制绘制/曲线范围；蚂蚁线为选区边界。</div>
+        <div class="layer-actions">
+          <button id="contentFill">内容识别填充</button>
+        </div>
+        <div class="row">
+          <label>填充范围</label><input type="range" id="fillRange" min="4" max="40" value="18" /><span class="val" id="fillRangeVal">18</span>
+        </div>
+        <div class="hint">选区限制绘制/曲线范围；蚂蚁线为选区边界。内容识别填充为近似算法（扩散+纹理采样）。</div>
       </div>
 
       <div class="panel">
@@ -259,6 +269,21 @@
       </div>
 
       <div class="panel">
+        <h3>路径</h3>
+        <div class="layer-actions">
+          <button id="selToPath">选区→路径</button>
+          <button id="pathToSel">路径→选区</button>
+        </div>
+        <div class="layer-actions">
+          <button id="strokePath">描边</button>
+          <button id="fillPath">填充</button>
+          <button id="delPath">删除</button>
+        </div>
+        <div class="hint">选「路径」工具点击选中路径，拖动锚点编辑；双击路径切换闭合。描边/填充会把路径烤进当前图层。</div>
+        <div id="pathsList"></div>
+      </div>
+
+      <div class="panel">
         <h3>历史</h3>
         <div id="historyList"></div>
         <div class="hint">点击任意步骤可跳转到该状态。</div>
@@ -297,6 +322,9 @@
   let selection=null, showGuides=true, editingMask=false;
   let guides={h:[],v:[]}, draggingGuide=null, wandTol=32;
   let paintBase=null, paintTmp=null, paintTmpCtx=null;
+  let paths=[], activePath=-1, pathDrag=null;
+  let fillRange=18;
+  const BLEND_MODES=[{v:'source-over',label:'正常'},{v:'multiply',label:'正片叠底'},{v:'screen',label:'滤色'},{v:'overlay',label:'叠加'},{v:'darken',label:'变暗'},{v:'lighten',label:'变亮'},{v:'color-dodge',label:'颜色减淡'},{v:'color-burn',label:'颜色加深'},{v:'hard-light',label:'强光'},{v:'soft-light',label:'柔光'},{v:'difference',label:'差值'},{v:'exclusion',label:'排除'},{v:'hue',label:'色相'},{v:'saturation',label:'饱和度'},{v:'color',label:'颜色'},{v:'luminosity',label:'明度'}];
   let curves={rgb:[[0,0],[255,255]],r:[[0,0],[255,255]],g:[[0,0],[255,255]],b:[[0,0],[255,255]]};
   let curveChannel='rgb';
   let layerSeq=1;
@@ -310,7 +338,7 @@
   function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
 
   // ---------- 图层 ----------
-  function createLayer(name,w,h,img){ const c=document.createElement('canvas'); c.width=w; c.height=h; const cx=c.getContext('2d'); if(img) cx.drawImage(img,0,0); return {id:layerSeq++,name:name||('图层 '+layerSeq),canvas:c,ctx:cx,visible:true,opacity:1,type:'raster',mask:null}; }
+  function createLayer(name,w,h,img){ const c=document.createElement('canvas'); c.width=w; c.height=h; const cx=c.getContext('2d'); if(img) cx.drawImage(img,0,0); return {id:layerSeq++,name:name||('图层 '+layerSeq),canvas:c,ctx:cx,visible:true,opacity:1,type:'raster',mode:'source-over',mask:null}; }
   function addLayer(opts){ const L=createLayer(opts&&opts.name,width,height,opts&&opts.img); if(opts&&opts.type) L.type=opts.type; layers.push(L); activeIdx=layers.length-1; pushHistory('新建图层'); renderAll(); }
   function setActive(i){ if(i<0||i>=layers.length) return; cancelAdjust(); cancelCurve(); if(transform) cancelTransform(); activeIdx=i; renderLayersPanel(); updateToolInfo(); }
 
@@ -320,11 +348,14 @@
   function fitView(){ const pad=40, aw=stageWrap.clientWidth-pad, ah=stageWrap.clientHeight-pad; viewScale=Math.min(aw/width,ah/height,4); if(!isFinite(viewScale)||viewScale<=0) viewScale=1; applyViewScale(); }
   function render(){
     sctx.clearRect(0,0,width,height);
-    for(const L of layers){ if(!L.visible) continue; sctx.globalAlpha=1;
-      if(L.mask){ const t=newCanvas(), tc=t.getContext('2d'); tc.drawImage(L.canvas,0,0); tc.globalCompositeOperation='destination-in'; tc.drawImage(L.mask,0,0); sctx.globalAlpha=L.opacity; sctx.drawImage(t,0,0); }
-      else { sctx.globalAlpha=L.opacity; sctx.drawImage(L.canvas,0,0); }
+    let first=true;
+    for(const L of layers){ if(!L.visible) continue;
+      sctx.globalAlpha=L.opacity; sctx.globalCompositeOperation=(first||!L.mode||L.mode==='source-over')?'source-over':L.mode;
+      if(L.mask){ const t=newCanvas(), tc=t.getContext('2d'); tc.drawImage(L.canvas,0,0); tc.globalCompositeOperation='destination-in'; tc.drawImage(L.mask,0,0); sctx.drawImage(t,0,0); }
+      else { sctx.drawImage(L.canvas,0,0); }
+      first=false;
     }
-    sctx.globalAlpha=1; drawOverlayChrome();
+    sctx.globalCompositeOperation='source-over'; sctx.globalAlpha=1; drawOverlayChrome();
   }
   function renderAll(){ render(); renderLayersPanel(); updateDocInfo(); updateToolInfo(); }
 
@@ -341,17 +372,22 @@
       name.ondblclick=(ev)=>{ ev.stopPropagation(); const inp=document.createElement('input'); inp.className='rename'; inp.value=L.name; item.replaceChild(inp,name); inp.focus(); inp.select(); const commit=()=>{ L.name=inp.value||L.name; renderLayersPanel(); }; inp.onblur=commit; inp.onkeydown=(e)=>{ if(e.key==='Enter') inp.blur(); }; };
       item.appendChild(eye); item.appendChild(thumb); item.appendChild(name);
       if(L.mask){ const b=document.createElement('span'); b.className='maskbadge'; b.textContent='蒙版'; item.appendChild(b); }
+      const sel=document.createElement('select'); sel.className='blend-sel'; sel.title='混合模式';
+      BLEND_MODES.forEach(m=>{ const o=document.createElement('option'); o.value=m.v; o.textContent=m.label; if((L.mode||'source-over')===m.v) o.selected=true; sel.appendChild(o); });
+      sel.onclick=(ev)=>ev.stopPropagation();
+      sel.onchange=(ev)=>{ ev.stopPropagation(); L.mode=sel.value; render(); };
+      item.appendChild(sel);
       list.appendChild(item);
     }
     document.getElementById('editMask').classList.toggle('on', editingMask);
   }
   function updateDocInfo(){ document.getElementById('docInfo').textContent='画布 '+width+' × '+height; }
-  function updateToolInfo(){ const names={select:'移动',brush:'画笔',eraser:'橡皮擦',rect:'矩形',ellipse:'椭圆',line:'直线',arrow:'箭头',gradient:'渐变',text:'文字',crop:'裁剪',transform:'自由变换',eyedropper:'取色',selRect:'矩形选区',selEllipse:'椭圆选区',wand:'魔棒',guide:'参考线'}; document.getElementById('toolInfo').textContent='工具：'+(names[tool]||''); }
+  function updateToolInfo(){ const names={select:'移动',brush:'画笔',eraser:'橡皮擦',rect:'矩形',ellipse:'椭圆',line:'直线',arrow:'箭头',gradient:'渐变',text:'文字',crop:'裁剪',transform:'自由变换',eyedropper:'取色',selRect:'矩形选区',selEllipse:'椭圆选区',wand:'魔棒',guide:'参考线',path:'路径'}; document.getElementById('toolInfo').textContent='工具：'+(names[tool]||''); }
 
   // ---------- 历史 ----------
-  function currentSnap(){ return {width:width,height:height,layers:layers.map(L=>({name:L.name,visible:L.visible,opacity:L.opacity,type:L.type,canvas:cloneCanvas(L.canvas),mask:L.mask?cloneCanvas(L.mask):null}))}; }
+  function currentSnap(){ return {width:width,height:height,layers:layers.map(L=>({name:L.name,visible:L.visible,opacity:L.opacity,type:L.type,mode:L.mode,canvas:cloneCanvas(L.canvas),mask:L.mask?cloneCanvas(L.mask):null})),paths:paths.map(p=>({id:p.id,type:p.type,points:p.points.slice(),closed:p.closed,stroke:p.stroke,fill:p.fill,strokeW:p.strokeW}))}; }
   function pushHistory(label){ if(histCursor<states.length-1) states=states.slice(0,histCursor+1); const s=currentSnap(); s.label=label||'编辑'; states.push(s); if(states.length>HISTORY_MAX+1) states.shift(); histCursor=states.length-1; updateHistoryUI(); }
-  function restoreSnap(s){ width=s.width; height=s.height; resizeStage(); layers=s.layers.map(o=>{ const c=cloneCanvas(o.canvas); return {id:layerSeq++,name:o.name,visible:o.visible,opacity:o.opacity,type:o.type,canvas:c,ctx:c.getContext('2d'),mask:o.mask?cloneCanvas(o.mask):null}; }); if(activeIdx>=layers.length) activeIdx=layers.length-1; editingMask=false; renderAll(); }
+  function restoreSnap(s){ width=s.width; height=s.height; resizeStage(); layers=s.layers.map(o=>{ const c=cloneCanvas(o.canvas); return {id:layerSeq++,name:o.name,visible:o.visible,opacity:o.opacity,type:o.type,mode:o.mode||'source-over',canvas:c,ctx:c.getContext('2d'),mask:o.mask?cloneCanvas(o.mask):null}; }); paths=(s.paths||[]).map(p=>({id:p.id,type:p.type,points:p.points.slice(),closed:p.closed,stroke:p.stroke,fill:p.fill,strokeW:p.strokeW})); activePath=-1; if(activeIdx>=layers.length) activeIdx=layers.length-1; editingMask=false; renderAll(); renderPathsPanel(); }
   function undo(){ if(histCursor>0){ histCursor--; restoreSnap(states[histCursor]); updateHistoryUI(); setStatus('已撤销'); } else toast('没有可撤销的操作'); }
   function redo(){ if(histCursor<states.length-1){ histCursor++; restoreSnap(states[histCursor]); updateHistoryUI(); setStatus('已重做'); } else toast('没有可重做的操作'); }
   function jumpTo(i){ if(i<0||i>=states.length) return; histCursor=i; restoreSnap(states[i]); updateHistoryUI(); }
@@ -360,7 +396,7 @@
   function renderHistoryPanel(){ const el=document.getElementById('historyList'); if(!el) return; el.innerHTML=''; states.forEach((s,i)=>{ const d=document.createElement('div'); d.className='hist-item'+(i===histCursor?' active':''); d.textContent=(i+1)+'. '+(s.label||'编辑'); d.onclick=()=>jumpTo(i); el.appendChild(d); }); }
 
   // ---------- 工具切换 ----------
-  function setTool(t){ cancelAdjust(); cancelCurve(); if(transform&&t!=='transform') cancelTransform(); if(t!=='guide'&&draggingGuide) draggingGuide=null; tool=t; document.querySelectorAll('.tool').forEach(el=>el.classList.toggle('active',el.dataset.tool===t)); stage.style.cursor=(t==='text')?'text':(t==='eyedropper'?'crosshair':(t==='transform'?'move':(t==='guide'?'crosshair':'default'))); updateToolInfo(); if(t==='transform'&&!transform) enterTransform(); }
+  function setTool(t){ cancelAdjust(); cancelCurve(); if(transform&&t!=='transform') cancelTransform(); if(t!=='guide'&&draggingGuide) draggingGuide=null; tool=t; document.querySelectorAll('.tool').forEach(el=>el.classList.toggle('active',el.dataset.tool===t)); stage.style.cursor=(t==='text')?'text':(t==='eyedropper'?'crosshair':(t==='transform'?'move':(t==='guide'||t==='path')?'crosshair':'default')); updateToolInfo(); if(t==='transform'&&!transform) enterTransform(); }
 
   // ---------- 绘制 ----------
   function strokeSegment(ctx,from,to){ ctx.globalAlpha=brushOpacity; ctx.lineWidth=brushSize; ctx.lineCap='round'; ctx.lineJoin='round'; if(tool==='eraser'){ ctx.globalCompositeOperation='destination-out'; ctx.strokeStyle='rgba(0,0,0,1)'; } else { ctx.globalCompositeOperation='source-over'; ctx.strokeStyle=color; } ctx.beginPath(); ctx.moveTo(from.x,from.y); ctx.lineTo(to.x,to.y); ctx.stroke(); ctx.globalCompositeOperation='source-over'; ctx.globalAlpha=1; }
@@ -422,7 +458,7 @@
   // ---------- 参考线 ----------
   function snapPos(pos){ let x=pos.x,y=pos.y,thr=6/viewScale; for(const gx of guides.v){ if(Math.abs(pos.x-gx)<thr) x=gx; } for(const gy of guides.h){ if(Math.abs(pos.y-gy)<thr) y=gy; } return {x,y}; }
   function onDownGuide(pos){ for(let i=0;i<guides.h.length;i++){ if(Math.abs(pos.y-guides.h[i])<6/viewScale){ draggingGuide={axis:'h',i:i}; return; } } for(let i=0;i<guides.v.length;i++){ if(Math.abs(pos.x-guides.v[i])<6/viewScale){ draggingGuide={axis:'v',i:i}; return; } } if(e_shift){ if(pos.x>=0&&pos.x<=width) guides.v.push(pos.x); else return; draggingGuide={axis:'v',i:guides.v.length-1}; } else { if(pos.y>=0&&pos.y<=height) guides.h.push(pos.y); else return; draggingGuide={axis:'h',i:guides.h.length-1}; } drawOverlayChrome(); }
-  function drawOverlayChrome(){ octx.save(); if(showGuides){ octx.strokeStyle='rgba(90,170,255,.85)'; octx.lineWidth=1/viewScale; guides.h.forEach(y=>{ octx.beginPath(); octx.moveTo(0,y+0.5); octx.lineTo(width,y+0.5); octx.stroke(); }); guides.v.forEach(x=>{ octx.beginPath(); octx.moveTo(x+0.5,0); octx.lineTo(x+0.5,height); octx.stroke(); }); } if(selection&&selection.bounds){ const b=selection.bounds; octx.strokeStyle='#fff'; octx.lineWidth=1/viewScale; octx.setLineDash([5/viewScale,4/viewScale]); octx.lineDashOffset=0; octx.strokeRect(b.x+0.5,b.y+0.5,b.w,b.h); octx.strokeStyle='#000'; octx.lineDashOffset=2.5/viewScale; octx.strokeRect(b.x+0.5,b.y+0.5,b.w,b.h); octx.setLineDash([]); } octx.restore(); }
+  function drawOverlayChrome(){ octx.save(); if(showGuides){ octx.strokeStyle='rgba(90,170,255,.85)'; octx.lineWidth=1/viewScale; guides.h.forEach(y=>{ octx.beginPath(); octx.moveTo(0,y+0.5); octx.lineTo(width,y+0.5); octx.stroke(); }); guides.v.forEach(x=>{ octx.beginPath(); octx.moveTo(x+0.5,0); octx.lineTo(x+0.5,height); octx.stroke(); }); } if(selection&&selection.bounds){ const b=selection.bounds; octx.strokeStyle='#fff'; octx.lineWidth=1/viewScale; octx.setLineDash([5/viewScale,4/viewScale]); octx.lineDashOffset=0; octx.strokeRect(b.x+0.5,b.y+0.5,b.w,b.h); octx.strokeStyle='#000'; octx.lineDashOffset=2.5/viewScale; octx.strokeRect(b.x+0.5,b.y+0.5,b.w,b.h); octx.setLineDash([]); } drawPaths(); octx.restore(); }
 
   // ---------- 曲线 ----------
   const curveEditor=document.getElementById('curveEditor'), ced=curveEditor.getContext('2d');
@@ -442,6 +478,26 @@
   function applyLUT(canvas){ const lutR=lerpLUT(curves.r),lutG=lerpLUT(curves.g),lutB=lerpLUT(curves.b),img=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height),d=img.data; for(let i=0;i<d.length;i+=4){ d[i]=lutR[d[i]]; d[i+1]=lutG[d[i+1]]; d[i+2]=lutB[d[i+2]]; } canvas.getContext('2d').putImageData(img,0,0); }
   function applyCurve(){ const L=activeLayer(); if(!L) return; if(!curveBase){ toast('未做曲线调整'); return; } const src=curveBase; const tmp=cloneCanvas(src); applyLUT(tmp); let result=tmp; if(selection){ const px=intersectMask(tmp,selection.mask); const out=newCanvas(),oc=out.getContext('2d'); oc.drawImage(src,0,0); oc.drawImage(px,0,0); result=out; } L.canvas=result; L.ctx=result.getContext('2d'); curveBase=null; render(); pushHistory('曲线'); toast('已应用曲线'); }
 
+  // ---------- 路径 ----------
+  function pathPolyline(p){ const out=[]; if(p.type==='rect'){ const x0=p.points[0],y0=p.points[1],x1=p.points[2],y1=p.points[3]; out.push({x:x0,y:y0},{x:x1,y:y0},{x:x1,y:y1},{x:x0,y:y1}); } else if(p.type==='ellipse'){ const cx=(p.points[0]+p.points[2])/2, cy=(p.points[1]+p.points[3])/2, rx=Math.abs(p.points[2]-p.points[0])/2, ry=Math.abs(p.points[3]-p.points[1])/2; for(let i=0;i<36;i++){ const a=i/36*Math.PI*2; out.push({x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)}); } } else { for(let i=0;i<p.points.length;i+=2) out.push({x:p.points[i],y:p.points[i+1]}); } return out; }
+  function distToSeg(px,py,a,b){ const dx=b.x-a.x,dy=b.y-a.y, l2=dx*dx+dy*dy; if(l2===0) return Math.hypot(px-a.x,py-a.y); let t=((px-a.x)*dx+(py-a.y)*dy)/l2; t=clamp(t,0,1); return Math.hypot(px-(a.x+t*dx),py-(a.y+t*dy)); }
+  function distToPath(p,pos){ const pl=pathPolyline(p); let m=1e9; for(let i=0;i<pl.length;i++){ const a=pl[i], b=pl[(i+1)%pl.length]; if(!p.closed && i===pl.length-1) break; m=Math.min(m,distToSeg(pos.x,pos.y,a,b)); } return m; }
+  function hitPath(pos){ const thr=6/viewScale; for(let idx=paths.length-1;idx>=0;idx--){ const p=paths[idx]; for(let i=0;i<p.points.length;i+=2){ if(Math.hypot(p.points[i]-pos.x,p.points[i+1]-pos.y)<=thr*1.5) return {idx:idx,anchor:i}; } if(distToPath(p,pos)<=thr) return {idx:idx,anchor:-1}; } return null; }
+  function drawPaths(){ if(!paths.length) return; octx.save(); paths.forEach((p,idx)=>{ octx.strokeStyle=idx===activePath?'#ff6b4a':'rgba(255,107,74,.6)'; octx.lineWidth=1.5/viewScale; octx.beginPath(); if(p.type==='rect'){ octx.rect(p.points[0],p.points[1],p.points[2]-p.points[0],p.points[3]-p.points[1]); } else if(p.type==='ellipse'){ octx.ellipse((p.points[0]+p.points[2])/2,(p.points[1]+p.points[3])/2,Math.abs(p.points[2]-p.points[0])/2,Math.abs(p.points[3]-p.points[1])/2,0,0,Math.PI*2); } else { octx.moveTo(p.points[0],p.points[1]); for(let i=2;i<p.points.length;i+=2) octx.lineTo(p.points[i],p.points[i+1]); } if(p.closed) octx.closePath(); octx.stroke(); if(idx===activePath){ octx.fillStyle='#fff'; octx.strokeStyle='#ff6b4a'; for(let i=0;i<p.points.length;i+=2){ octx.beginPath(); octx.arc(p.points[i],p.points[i+1],4/viewScale,0,Math.PI*2); octx.fill(); octx.stroke(); } } }); octx.restore(); }
+  function renderPathsPanel(){ const el=document.getElementById('pathsList'); if(!el) return; el.innerHTML=''; paths.forEach((p,i)=>{ const d=document.createElement('div'); d.className='hist-item'+(i===activePath?' active':''); d.textContent=(i+1)+'. '+(p.type==='ellipse'?'椭圆':p.type==='rect'?'矩形':'路径')+(p.closed?'（闭合）':''); d.onclick=()=>{ activePath=i; renderPathsPanel(); drawOverlayChrome(); }; el.appendChild(d); }); }
+  function tracePathOn(ctx,p){ ctx.beginPath(); if(p.type==='rect'){ ctx.rect(p.points[0],p.points[1],p.points[2]-p.points[0],p.points[3]-p.points[1]); } else if(p.type==='ellipse'){ ctx.ellipse((p.points[0]+p.points[2])/2,(p.points[1]+p.points[3])/2,Math.abs(p.points[2]-p.points[0])/2,Math.abs(p.points[3]-p.points[1])/2,0,0,Math.PI*2); } else { ctx.moveTo(p.points[0],p.points[1]); for(let i=2;i<p.points.length;i+=2) ctx.lineTo(p.points[i],p.points[i+1]); } }
+  function selToPath(){ if(!selection){ toast('请先创建选区'); return; } const contour=traceContour(selection.mask); if(contour.length<3){ toast('选区轮廓提取失败'); return; } const simp=dpSimplify(contour,2.2); const pts=[]; simp.forEach(q=>pts.push(Math.round(q.x),Math.round(q.y))); paths.push({id:layerSeq++,type:'poly',points:pts,closed:true,stroke:color,fill:null,strokeW:brushSize}); activePath=paths.length-1; render(); renderPathsPanel(); pushHistory('选区→路径'); toast('已转为可编辑路径（'+simp.length+' 点）'); }
+  function pathToSel(){ if(activePath<0||!paths[activePath]){ toast('请先选中一条路径'); return; } const p=paths[activePath]; const m=newCanvas(), mc=m.getContext('2d'); mc.fillStyle='#fff'; tracePathOn(mc,p); if(p.closed) mc.closePath(); mc.fill(); setSelection(p.type==='path'?'poly':'path',m); toast('已转为选区'); }
+  function strokePath(){ if(activePath<0||!paths[activePath]){ toast('请选中一条路径'); return; } const p=paths[activePath], L=activeLayer(); L.ctx.save(); L.ctx.strokeStyle=p.stroke||color; L.ctx.lineWidth=p.strokeW||brushSize; L.ctx.lineCap='round'; L.ctx.lineJoin='round'; L.ctx.globalAlpha=brushOpacity; tracePathOn(L.ctx,p); if(p.closed) L.ctx.closePath(); L.ctx.stroke(); L.ctx.restore(); pushHistory('描边路径'); render(); }
+  function fillPath(){ if(activePath<0||!paths[activePath]){ toast('请选中一条路径'); return; } const p=paths[activePath], L=activeLayer(); L.ctx.save(); L.ctx.fillStyle=p.fill||color; L.ctx.globalAlpha=brushOpacity; tracePathOn(L.ctx,p); if(p.closed) L.ctx.closePath(); L.ctx.fill(); L.ctx.restore(); pushHistory('填充路径'); render(); }
+  function delPath(){ if(activePath<0||!paths[activePath]){ toast('请选中一条路径'); return; } paths.splice(activePath,1); activePath=paths.length?paths.length-1:-1; render(); renderPathsPanel(); pushHistory('删除路径'); }
+
+  // ---------- 内容识别填充（近似：扩散 + 纹理采样） ----------
+  function traceContour(mask){ const d=mask.getContext('2d').getImageData(0,0,width,height).data; const inside=(x,y)=> x>=0&&y>=0&&x<width&&y<height && d[(y*width+x)*4+3]>0; let sx=-1,sy=-1; for(let y=0;y<height&&sx<0;y++)for(let x=0;x<width;x++){ if(inside(x,y)){ sx=x; sy=y; break; } } if(sx<0) return []; const N8=[[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]]; let b={x:sx,y:sy}, contour=[{x:sx,y:sy}]; let back={x:sx,y:sy-1}; let dir=N8.findIndex(n=>n[0]===back.x-b.x&&n[1]===back.y-b.y); let count=0; while(count<width*height*8){ count++; let found=null,fi=-1; for(let k=1;k<=8;k++){ const ni=(dir+k)%8; const nx=b.x+N8[ni][0], ny=b.y+N8[ni][1]; if(inside(nx,ny)){ found={x:nx,y:ny}; fi=ni; break; } } if(!found) break; back=b; b=found; dir=N8.findIndex(n=>n[0]===back.x-b.x&&n[1]===back.y-b.y); if(b.x===sx&&b.y===sy) break; contour.push({x:b.x,y:b.y}); } return contour; }
+  function perpDist(p,a,b){ const dx=b.x-a.x,dy=b.y-a.y,l2=dx*dx+dy*dy; if(l2===0) return Math.hypot(p.x-a.x,p.y-a.y); let t=((p.x-a.x)*dx+(p.y-a.y)*dy)/l2; t=clamp(t,0,1); return Math.hypot(p.x-(a.x+t*dx),p.y-(a.y+t*dy)); }
+  function dpSimplify(pts,eps){ if(pts.length<3) return pts; const a=pts[0], b=pts[pts.length-1]; let dmax=0,idx=0; for(let i=1;i<pts.length-1;i++){ const d=perpDist(pts[i],a,b); if(d>dmax){ dmax=d; idx=i; } } if(dmax>eps){ const L=dpSimplify(pts.slice(0,idx+1),eps), R=dpSimplify(pts.slice(idx),eps); return L.slice(0,-1).concat(R); } return [a,b]; }
+  function contentFill(){ if(!selection){ toast('请先创建选区'); return; } const L=activeLayer(); if(!L) return; const target=(editingMask&&L.mask)?L.mask:L.canvas; const w=target.width,h=target.height, ctx=target.getContext('2d'); const img=ctx.getImageData(0,0,w,h), d=img.data; const mask=selection.mask.getContext('2d').getImageData(0,0,w,h).data; const isS=(x,y)=> x>=0&&y>=0&&x<w&&y<h && mask[(y*w+x)*4+3]===0; const targets=[]; for(let i=0;i<w*h;i++) if(mask[i*4+3]>0) targets.push(i); if(!targets.length){ toast('选区为空'); return; } setStatus('内容识别填充中…'); let buf=new Float32Array(w*h*3), buf2=new Float32Array(w*h*3); for(let i=0;i<w*h;i++){ buf[i*3]=d[i*4]; buf[i*3+1]=d[i*4+1]; buf[i*3+2]=d[i*4+2]; } const ITER=14; for(let it=0;it<ITER;it++){ buf2.set(buf); let any=false; for(const ti of targets){ const x=ti%w, y=(ti/w)|0; let sr=0,sg=0,sb=0,c=0; if(isS(x-1,y)){ const n=(y*w+x-1); sr+=buf[n*3]; sg+=buf[n*3+1]; sb+=buf[n*3+2]; c++; } if(isS(x+1,y)){ const n=(y*w+x+1); sr+=buf[n*3]; sg+=buf[n*3+1]; sb+=buf[n*3+2]; c++; } if(isS(x,y-1)){ const n=((y-1)*w+x); sr+=buf[n*3]; sg+=buf[n*3+1]; sb+=buf[n*3+2]; c++; } if(isS(x,y+1)){ const n=((y+1)*w+x); sr+=buf[n*3]; sg+=buf[n*3+1]; sb+=buf[n*3+2]; c++; } if(c>0){ buf2[ti*3]=sr/c; buf2[ti*3+1]=sg/c; buf2[ti*3+2]=sb/c; any=true; } } const t=buf; buf=buf2; buf2=t; if(!any) break; } const TEX=0.45, maxR=Math.max(4,fillRange); for(const ti of targets){ const x=ti%w, y=(ti/w)|0; let sx=-1,sy=-1; outer: for(let r=1;r<=maxR;r++){ for(let dy=-r;dy<=r;dy++){ for(let dx=-r;dx<=r;dx++){ if(Math.abs(dx)!==r&&Math.abs(dy)!==r) continue; const nx=x+dx,ny=y+dy; if(isS(nx,ny)){ sx=nx; sy=ny; break outer; } } } } if(sx<0){ sx=clamp(x,0,w-1); sy=clamp(y,0,h-1); } const jr=(Math.random()*2-1)*2|0, jc=(Math.random()*2-1)*2|0; const jx=clamp(sx+jr,0,w-1), jy=clamp(sy+jc,0,h-1), si=(jy*w+jx); d[ti*4]=clamp(Math.round(buf[ti*3]*(1-TEX)+d[si*4]*TEX),0,255); d[ti*4+1]=clamp(Math.round(buf[ti*3+1]*(1-TEX)+d[si*4+1]*TEX),0,255); d[ti*4+2]=clamp(Math.round(buf[ti*3+2]*(1-TEX)+d[si*4+2]*TEX),0,255); d[ti*4+3]=255; } ctx.putImageData(img,0,0); if(editingMask&&L.mask){ L.mask=target; } else { L.canvas=target; L.ctx=ctx; } render(); pushHistory('内容识别填充'); toast('内容识别填充完成'); setStatus('就绪'); }
+
   // ---------- 鼠标事件 ----------
   let e_shift=false;
   function onDown(e){ e_shift=e.shiftKey; if(textInput) return; if(layers.length===0) return; const pos=toCanvas(e);
@@ -449,6 +505,7 @@
     if(tool==='guide'){ onDownGuide(pos); return; }
     if(tool==='selRect'||tool==='selEllipse'){ onDownSel(pos); return; }
     if(tool==='wand'){ onDownWand(pos); return; }
+    if(tool==='path'){ const hit=hitPath(pos); if(hit&&hit.anchor>=0){ activePath=hit.idx; pathDrag={idx:hit.idx,anchor:hit.anchor}; isDown=true; } else if(hit){ activePath=hit.idx; } else { activePath=-1; } renderPathsPanel(); drawOverlayChrome(); return; }
     if(tool==='gradient'){ isDown=true; startPos=pos; return; }
     isDown=true; startPos=pos; lastPos=pos;
     if(tool==='brush'||tool==='eraser'){ if(selection||hasMaskEdit()){ beginPaint(tool==='eraser'); strokeOnTmp(startPos,startPos); drawPreview(); } else { beginSnap(); strokeSegment(activeLayer().ctx,pos,pos); render(); } }
@@ -462,6 +519,7 @@
     if(tool==='transform'&&transform){ if(isDown) onMoveTransform(pos); return; }
     if(tool==='guide'&&draggingGuide){ if(draggingGuide.axis==='h') guides.h[draggingGuide.i]=clamp(pos.y,0,height); else guides.v[draggingGuide.i]=clamp(pos.x,0,width); octx.clearRect(0,0,width,height); drawOverlayChrome(); return; }
     if((tool==='selRect'||tool==='selEllipse')&&isDown){ onMoveSel(pos); return; }
+    if(tool==='path'&&pathDrag){ const p=paths[pathDrag.idx]; if(p){ p.points[pathDrag.anchor]=pos.x; p.points[pathDrag.anchor+1]=pos.y; drawOverlayChrome(); } return; }
     if(tool==='gradient'){ if(isDown){ octx.clearRect(0,0,width,height); paintGradient(octx,startPos,pos); drawOverlayChrome(); } return; }
     if(!isDown) return;
     if(tool==='brush'||tool==='eraser'){ if(paintTmp){ strokeOnTmp(lastPos,pos); lastPos=pos; drawPreview(); } else { strokeSegment(activeLayer().ctx,lastPos,pos); lastPos=pos; render(); } }
@@ -473,6 +531,7 @@
     if(tool==='transform'&&transform){ if(isDown){ isDown=false; transform.mode=null; } return; }
     if(tool==='guide'&&draggingGuide){ draggingGuide=null; return; }
     if((tool==='selRect'||tool==='selEllipse')&&isDown){ isDown=false; onUpSel(); return; }
+    if(tool==='path'){ if(pathDrag){ pathDrag=null; pushHistory('编辑路径'); renderPathsPanel(); } return; }
     if(tool==='gradient'){ if(isDown){ isDown=false; const L=activeLayer(); if(selection||hasMaskEdit()){ beginPaint(false); const sc=color,sb=bgColor; if(hasMaskEdit()){ color='#fff'; bgColor='#000'; } paintTmpCtx.globalAlpha=brushOpacity; paintGradient(paintTmpCtx,startPos,pos); if(hasMaskEdit()){ color=sc; bgColor=sb; } commitPaint('渐变'); } else { paintGradient(L.ctx,startPos,pos); pushHistory('渐变'); } octx.clearRect(0,0,width,height); drawOverlayChrome(); renderLayersPanel(); } return; }
     if(!isDown) return; isDown=false; const p=toCanvas(e);
     if(tool==='brush'||tool==='eraser'){ if(paintTmp){ commitPaint(editingMask?'编辑蒙版':(tool==='eraser'?'擦除':'绘制')); renderLayersPanel(); } else { pushHistory(tool==='eraser'?'擦除':'绘制'); renderLayersPanel(); } }
@@ -485,10 +544,10 @@
   function setBgColor(hex){ bgColor=hex; document.getElementById('bgPicker').value=hex; }
 
   // ---------- 文件 / 导出 ----------
-  function newDocument(w,h){ width=w||800; height=h||600; layers=[]; activeIdx=0; layerSeq=1; states=[]; histCursor=-1; transform=null; selection=null; guides={h:[],v:[]}; editingMask=false; addLayer({name:'背景图层'}); fitView(); updateHistoryUI(); }
-  function loadImageFile(file){ const img=new Image(); img.onload=()=>{ width=img.width; height=img.height; layers=[]; activeIdx=0; layerSeq=1; states=[]; histCursor=-1; transform=null; selection=null; guides={h:[],v:[]}; img.onload=null; addLayer({name:'图片',img:img}); fitView(); updateHistoryUI(); toast('已打开图片 '+width+'×'+height); }; img.onerror=()=>toast('图片加载失败'); img.src=URL.createObjectURL(file); }
-  function saveProject(){ const data={app:'online-ps',version:3,width:width,height:height,layers:layers.map(L=>({name:L.name,visible:L.visible,opacity:L.opacity,type:L.type,data:L.canvas.toDataURL(),mask:L.mask?L.mask.toDataURL():null}))}; downloadBlob(new Blob([JSON.stringify(data)],{type:'application/json'}),'project.onlineps.json'); toast('工程已保存'); }
-  function loadProjectFile(file){ const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); width=data.width; height=data.height; layers=[]; layerSeq=1; states=[]; histCursor=-1; transform=null; selection=null; guides={h:[],v:[]}; data.layers.forEach(o=>{ const im=new Image(); im.onload=()=>{ const L=createLayer(o.name,width,height,im); L.visible=o.visible!==false; L.opacity=o.opacity==null?1:o.opacity; L.type=o.type||'raster'; if(o.mask){ const m=new Image(); m.onload=()=>{ const mc=newCanvas(); mc.getContext('2d').drawImage(m,0,0); L.mask=mc; }; m.src=o.mask; } layers.push(L); activeIdx=layers.length-1; if(layers.length===data.layers.length){ fitView(); renderAll(); pushHistory('打开工程'); } }; im.src=o.data; }); toast('工程已载入'); }catch(err){ toast('工程文件解析失败'); } }; reader.readAsText(file); }
+  function newDocument(w,h){ width=w||800; height=h||600; layers=[]; activeIdx=0; layerSeq=1; states=[]; histCursor=-1; transform=null; selection=null; guides={h:[],v:[]}; editingMask=false; paths=[]; activePath=-1; addLayer({name:'背景图层'}); fitView(); updateHistoryUI(); }
+  function loadImageFile(file){ const img=new Image(); img.onload=()=>{ width=img.width; height=img.height; layers=[]; activeIdx=0; layerSeq=1; states=[]; histCursor=-1; transform=null; selection=null; guides={h:[],v:[]}; paths=[]; activePath=-1; img.onload=null; addLayer({name:'图片',img:img}); fitView(); updateHistoryUI(); toast('已打开图片 '+width+'×'+height); }; img.onerror=()=>toast('图片加载失败'); img.src=URL.createObjectURL(file); }
+  function saveProject(){ const data={app:'online-ps',version:4,width:width,height:height,layers:layers.map(L=>({name:L.name,visible:L.visible,opacity:L.opacity,type:L.type,mode:L.mode,data:L.canvas.toDataURL(),mask:L.mask?L.mask.toDataURL():null})),paths:paths.map(p=>({id:p.id,type:p.type,points:p.points,closed:p.closed,stroke:p.stroke,fill:p.fill,strokeW:p.strokeW}))}; downloadBlob(new Blob([JSON.stringify(data)],{type:'application/json'}),'project.onlineps.json'); toast('工程已保存'); }
+  function loadProjectFile(file){ const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); width=data.width; height=data.height; layers=[]; layerSeq=1; states=[]; histCursor=-1; transform=null; selection=null; guides={h:[],v:[]}; paths=[]; activePath=-1; data.layers.forEach(o=>{ const im=new Image(); im.onload=()=>{ const L=createLayer(o.name,width,height,im); L.visible=o.visible!==false; L.opacity=o.opacity==null?1:o.opacity; L.type=o.type||'raster'; L.mode=o.mode||'source-over'; if(o.mask){ const m=new Image(); m.onload=()=>{ const mc=newCanvas(); mc.getContext('2d').drawImage(m,0,0); L.mask=mc; }; m.src=o.mask; } layers.push(L); activeIdx=layers.length-1; if(layers.length===data.layers.length){ paths=(data.paths||[]).map(p=>({id:p.id,type:p.type,points:p.points.slice(),closed:p.closed,stroke:p.stroke,fill:p.fill,strokeW:p.strokeW})); fitView(); renderAll(); renderPathsPanel(); pushHistory('打开工程'); } }; im.src=o.data; }); toast('工程已载入'); }catch(err){ toast('工程文件解析失败'); } }; reader.readAsText(file); }
   function exportImage(type,ext){ const tmp=newCanvas(), cx=tmp.getContext('2d'); if(type==='image/jpeg'){ cx.fillStyle='#ffffff'; cx.fillRect(0,0,width,height); } for(const L of layers){ if(!L.visible) continue; cx.globalAlpha=L.opacity; cx.drawImage(L.canvas,0,0); } cx.globalAlpha=1; tmp.toBlob(blob=>{ downloadBlob(blob,'image.'+ext); toast('已导出 '+ext.toUpperCase()); },type,0.92); }
   function downloadBlob(blob,name){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
   function rotateDoc(){ if(!layers.length) return; layers.forEach(L=>{ const c=newCanvas(); c.width=height; c.height=width; const cx=c.getContext('2d'); cx.translate(height/2,width/2); cx.rotate(Math.PI/2); cx.drawImage(L.canvas,-width/2,-height/2); L.canvas=c; L.ctx=c.getContext('2d'); if(L.mask){ const m=newCanvas(); m.width=height; m.height=width; const mc=m.getContext('2d'); mc.translate(height/2,width/2); mc.rotate(Math.PI/2); mc.drawImage(L.mask,-width/2,-height/2); L.mask=m; } }); const nw=height,nh=width; width=nw; height=nh; resizeStage(); renderAll(); pushHistory('旋转画布'); }
@@ -571,7 +630,15 @@
     document.getElementById('undoBtn').onclick=undo;
     document.getElementById('redoBtn').onclick=redo;
     bindMasksSelection(); bindCurves();
+    document.getElementById('selToPath').onclick=selToPath;
+    document.getElementById('pathToSel').onclick=pathToSel;
+    document.getElementById('strokePath').onclick=strokePath;
+    document.getElementById('fillPath').onclick=fillPath;
+    document.getElementById('delPath').onclick=delPath;
+    document.getElementById('contentFill').onclick=contentFill;
+    document.getElementById('fillRange').oninput=(e)=>{ fillRange=+e.target.value; document.getElementById('fillRangeVal').textContent=fillRange; };
     stage.addEventListener('dblclick',(e)=>{
+      if(tool==='path'){ const pos=toCanvas(e); const hit=hitPath(pos); if(hit){ paths[hit.idx].closed=!paths[hit.idx].closed; drawOverlayChrome(); toast('已'+(paths[hit.idx].closed?'闭合':'开放')+'路径'); } return; }
       if(tool==='crop'&&cropRect){ applyCrop(); return; }
       if(tool==='transform'&&transform){ commitTransform(); return; }
       if(tool==='guide'){ const pos=toCanvas(e); for(let i=0;i<guides.h.length;i++){ if(Math.abs(pos.y-guides.h[i])<6/viewScale){ guides.h.splice(i,1); octx.clearRect(0,0,width,height); drawOverlayChrome(); return; } } for(let i=0;i<guides.v.length;i++){ if(Math.abs(pos.x-guides.v[i])<6/viewScale){ guides.v.splice(i,1); octx.clearRect(0,0,width,height); drawOverlayChrome(); return; } } }
@@ -587,7 +654,7 @@
       if(mod&&ev.shiftKey&&ev.key.toLowerCase()==='i'){ ev.preventDefault(); document.getElementById('selInv').click(); return; }
       if(ev.key==='Enter'){ if(tool==='transform'&&transform) commitTransform(); else if(tool==='crop'&&cropRect) applyCrop(); return; }
       if(ev.key==='Escape'){ if(transform) cancelTransform(); if(cropRect){ cropRect=null; octx.clearRect(0,0,width,height); drawOverlayChrome(); } return; }
-      const map={v:'select',b:'brush',e:'eraser',r:'rect',o:'ellipse',l:'line',a:'arrow',g:'gradient',t:'text',c:'crop',i:'eyedropper'};
+      const map={v:'select',b:'brush',e:'eraser',r:'rect',o:'ellipse',l:'line',a:'arrow',g:'gradient',t:'text',c:'crop',i:'eyedropper',p:'path'};
       if(map[ev.key.toLowerCase()]) setTool(map[ev.key.toLowerCase()]);
       if(ev.key.toLowerCase()==='x'){ const t=color; setColor(bgColor); setBgColor(t); }
       if(ev.key==='Delete'&&tool==='crop'){ cropRect=null; octx.clearRect(0,0,width,height); drawOverlayChrome(); }
