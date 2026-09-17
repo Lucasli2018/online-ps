@@ -105,7 +105,7 @@
 - 图层 = 各自的离屏 `<canvas>`，合成时按透明度叠绘到主画布
 - 历史快照 = 克隆各图层 canvas（同步、无异步解码坑）
 - 视图缩放：主画布用 CSS `transform: scale()` 显示，外层布局尺寸同步为缩放后尺寸（`transform-origin:0 0` + `margin:auto`），大图适配不裁切、放大后可正常滚动；鼠标坐标经 `getBoundingClientRect` 反算，任意缩放下映射精确
-- 站点图标：内联 SVG（base64 data-URI）——深色圆角底 + 珊瑚描边，三条错落图层条呼应**图层系统**，加粗 **Ps** 字样；单文件零外链
+- 站点图标：独立文件 `favicon.svg`——深色圆角底 + 珊瑚描边，三条错落图层条呼应**图层系统**，加粗 **Ps** 字样；由 `index.html` 以 `<link rel="icon">` 引用
 - 自由变换通过 `translate + rotate + drawImage` 实现
 - 移动端未专门适配，建议使用桌面浏览器
 
@@ -127,9 +127,10 @@ npx wrangler@latest pages deploy . --project-name online-ps --branch master
 
 ```
 online-ps/
-├── index.html   # 全部代码（HTML/CSS/JS 内联）
+├── index.html    # 全部代码（HTML/CSS/JS 内联）
+├── favicon.svg   # 站点图标（图层条 + Ps）
 ├── README.md
-└── .gitignore   # 忽略 .git / .workbuddy / .wrangler 等
+└── .gitignore    # 忽略 .git / .workbuddy / .wrangler 等
 ```
 
 ## 实现说明补充
