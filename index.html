@@ -6,92 +6,51 @@
 <title>在线 PS · 图片编辑器</title>
 <style>
   :root{
-    --coral:#ff6b4a;
-    --coral-dark:#e25536;
-    --coral-soft:#fff1ec;
-    --bg:#1f2330;
-    --panel:#272c3b;
-    --panel-2:#2f3548;
-    --line:#3a4156;
-    --text:#e8ebf2;
-    --muted:#9aa3b8;
-    --ok:#41c07a;
+    --coral:#ff6b4a; --coral-dark:#e25536; --coral-soft:#fff1ec;
+    --bg:#1f2330; --panel:#272c3b; --panel-2:#2f3548; --line:#3a4156;
+    --text:#e8ebf2; --muted:#9aa3b8; --ok:#41c07a; --guide:#5aaaff;
   }
   *{box-sizing:border-box;}
   html,body{height:100%;margin:0;}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-    background:var(--bg); color:var(--text); overflow:hidden;
-  }
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
   #app{display:flex;flex-direction:column;height:100vh;}
-  .topbar{
-    display:flex;align-items:center;gap:14px;padding:8px 14px;
-    background:var(--panel);border-bottom:1px solid var(--line);flex:0 0 auto;flex-wrap:wrap;
-  }
+  .topbar{display:flex;align-items:center;gap:14px;padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--line);flex:0 0 auto;flex-wrap:wrap;}
   .brand{font-weight:700;color:var(--coral);font-size:16px;letter-spacing:.5px;display:flex;align-items:center;gap:6px;}
   .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--coral);box-shadow:0 0 8px var(--coral);}
   .menus{display:flex;gap:6px;flex-wrap:wrap;}
-  .mbtn{
-    background:var(--panel-2);color:var(--text);border:1px solid var(--line);
-    padding:6px 10px;border-radius:7px;cursor:pointer;font-size:13px;transition:.15s;
-  }
+  .mbtn{background:var(--panel-2);color:var(--text);border:1px solid var(--line);padding:6px 10px;border-radius:7px;cursor:pointer;font-size:13px;transition:.15s;}
   .mbtn:hover{border-color:var(--coral);color:#fff;}
   .mbtn.primary{background:var(--coral);border-color:var(--coral);color:#fff;font-weight:600;}
   .mbtn.primary:hover{background:var(--coral-dark);}
   .mbtn.warn{border-color:var(--coral);color:var(--coral);}
+  .mbtn.on{border-color:var(--coral);background:var(--coral);color:#fff;}
   .spacer{flex:1;}
   .workspace{display:flex;flex:1;min-height:0;}
-  .tools{
-    width:62px;background:var(--panel);border-right:1px solid var(--line);
-    display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;overflow-y:auto;flex:0 0 auto;
-  }
-  .tool{
-    width:44px;height:44px;border-radius:9px;border:1px solid transparent;background:var(--panel-2);
-    color:var(--text);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;
-    transition:.15s;position:relative;
-  }
+  .tools{width:62px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;overflow-y:auto;flex:0 0 auto;}
+  .tool{width:44px;height:44px;border-radius:9px;border:1px solid transparent;background:var(--panel-2);color:var(--text);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.15s;position:relative;}
   .tool:hover{background:#353c52;}
   .tool.active{background:var(--coral);border-color:var(--coral);color:#fff;box-shadow:0 0 10px rgba(255,107,74,.5);}
-  .tool .tip{
-    position:absolute;left:52px;top:50%;transform:translateY(-50%);white-space:nowrap;
-    background:#11141d;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px;opacity:0;
-    pointer-events:none;transition:.12s;z-index:50;border:1px solid var(--line);
-  }
+  .tool .tip{position:absolute;left:52px;top:50%;transform:translateY(-50%);white-space:nowrap;background:#11141d;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px;opacity:0;pointer-events:none;transition:.12s;z-index:50;border:1px solid var(--line);}
   .tool:hover .tip{opacity:1;}
   .tool-sep{height:1px;width:36px;background:var(--line);margin:4px 0;}
-  .stage-wrap{
-    flex:1;min-width:0;position:relative;overflow:auto;
-    background:
-      linear-gradient(45deg,#2a2f3e 25%,transparent 25%),
-      linear-gradient(-45deg,#2a2f3e 25%,transparent 25%),
-      linear-gradient(45deg,transparent 75%,#2a2f3e 75%),
-      linear-gradient(-45deg,transparent 75%,#2a2f3e 75%);
-    background-size:22px 22px;background-position:0 0,0 11px,11px -11px,-11px 0;
-    background-color:#232734;display:flex;align-items:center;justify-content:center;
-  }
+  .stage-wrap{flex:1;min-width:0;position:relative;overflow:auto;
+    background:linear-gradient(45deg,#2a2f3e 25%,transparent 25%),linear-gradient(-45deg,#2a2f3e 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#2a2f3e 75%),linear-gradient(-45deg,transparent 75%,#2a2f3e 75%);
+    background-size:22px 22px;background-position:0 0,0 11px,11px -11px,-11px 0;background-color:#232734;display:flex;align-items:center;justify-content:center;}
   .stage-inner{position:relative;box-shadow:0 8px 40px rgba(0,0,0,.5);transform-origin:center center;}
   #stage,#overlay{position:absolute;left:0;top:0;display:block;}
   #overlay{pointer-events:none;}
-  .side{
-    width:312px;background:var(--panel);border-left:1px solid var(--line);
-    display:flex;flex-direction:column;overflow-y:auto;flex:0 0 auto;
-  }
+  .side{width:320px;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;overflow-y:auto;flex:0 0 auto;}
   .panel{border-bottom:1px solid var(--line);padding:12px 14px;}
   .panel h3{margin:0 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
-  .layer-actions{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
-  .layer-actions button{
-    flex:1;min-width:54px;background:var(--panel-2);border:1px solid var(--line);color:var(--text);
-    border-radius:6px;padding:6px 4px;cursor:pointer;font-size:12px;
-  }
+  .layer-actions{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+  .layer-actions button{flex:1;min-width:50px;background:var(--panel-2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:6px 4px;cursor:pointer;font-size:12px;}
   .layer-actions button:hover{border-color:var(--coral);}
   #layersList{display:flex;flex-direction:column;gap:6px;}
-  .layer-item{
-    display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--line);
-    border-radius:8px;padding:7px 8px;cursor:pointer;transition:.12s;
-  }
+  .layer-item{display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 8px;cursor:pointer;transition:.12s;}
   .layer-item.active{border-color:var(--coral);box-shadow:0 0 0 1px var(--coral) inset;}
   .layer-item .eye{background:none;border:none;color:var(--text);cursor:pointer;font-size:15px;width:22px;}
   .layer-item .eye.off{color:#5a627a;}
+  .layer-item .maskbadge{font-size:11px;background:var(--coral);color:#fff;border-radius:4px;padding:1px 5px;}
   .layer-thumb{width:34px;height:34px;border-radius:5px;border:1px solid var(--line);background:#11141d;object-fit:cover;flex:0 0 auto;}
   .layer-name{flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .layer-item input.rename{flex:1;background:#11141d;border:1px solid var(--coral);color:#fff;border-radius:4px;font-size:13px;padding:2px 4px;}
@@ -100,7 +59,6 @@
   .row input[type=range]{flex:1;accent-color:var(--coral);}
   .row .val{font-size:12px;width:42px;text-align:right;color:var(--text);}
   .color-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-  .color-row input[type=color]{width:36px;height:28px;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer;padding:0;}
   .swatches{position:relative;width:42px;height:42px;margin-right:4px;}
   .swatches input{position:absolute;width:30px;height:30px;border:2px solid var(--panel);border-radius:50%;cursor:pointer;padding:0;}
   .swatches .fg{left:0;top:0;z-index:2;}
@@ -116,30 +74,21 @@
   .presets button:hover{border-color:var(--coral);}
   .chk{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13px;}
   .chk input{accent-color:var(--coral);width:16px;height:16px;}
-  .statusbar{
-    flex:0 0 auto;height:30px;background:var(--panel);border-top:1px solid var(--line);
-    display:flex;align-items:center;gap:16px;padding:0 14px;font-size:12px;color:var(--muted);
-  }
+  .statusbar{flex:0 0 auto;height:30px;background:var(--panel);border-top:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 14px;font-size:12px;color:var(--muted);}
   .statusbar .zoom{display:flex;align-items:center;gap:6px;}
   .statusbar .zoom button{background:var(--panel-2);border:1px solid var(--line);color:var(--text);border-radius:5px;width:24px;height:22px;cursor:pointer;}
   .statusbar .zoom button:hover{border-color:var(--coral);}
   .hidden{display:none!important;}
-  #textInput{
-    position:absolute;z-index:30;border:1px dashed var(--coral);background:rgba(255,255,255,.06);
-    color:#fff;font-family:sans-serif;outline:none;padding:2px 4px;min-width:40px;
-  }
+  #textInput{position:absolute;z-index:30;border:1px dashed var(--coral);background:rgba(255,255,255,.06);color:#fff;font-family:sans-serif;outline:none;padding:2px 4px;min-width:40px;}
   input[type=file]{display:none;}
   .hint{font-size:11px;color:var(--muted);line-height:1.5;margin-top:6px;}
-  .toast{
-    position:fixed;bottom:46px;left:50%;transform:translateX(-50%);background:#11141d;border:1px solid var(--coral);
-    color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:200;box-shadow:0 6px 24px rgba(0,0,0,.5);
-    opacity:0;transition:.25s;pointer-events:none;
-  }
+  .toast{position:fixed;bottom:46px;left:50%;transform:translateX(-50%);background:#11141d;border:1px solid var(--coral);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:200;box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;transition:.25s;pointer-events:none;}
   .toast.show{opacity:1;}
-  #historyList{display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;}
+  #historyList{display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;}
   .hist-item{font-size:12px;padding:6px 8px;border-radius:6px;background:var(--panel-2);border:1px solid var(--line);cursor:pointer;}
   .hist-item:hover{border-color:var(--coral);}
   .hist-item.active{border-color:var(--coral);color:#fff;background:#3a2a25;}
+  #curveEditor{width:100%;height:200px;background:#11141d;border:1px solid var(--line);border-radius:6px;cursor:crosshair;touch-action:none;}
 </style>
 </head>
 <body>
@@ -186,6 +135,11 @@
       <div class="tool" data-tool="crop" title="裁剪">✂<span class="tip">裁剪 (C)</span></div>
       <div class="tool" data-tool="transform" title="自由变换">⤢<span class="tip">自由变换 (Ctrl+T)</span></div>
       <div class="tool" data-tool="eyedropper" title="取色">💧<span class="tip">取色 (I)</span></div>
+      <div class="tool-sep"></div>
+      <div class="tool" data-tool="selRect" title="矩形选区">⬚<span class="tip">矩形选区</span></div>
+      <div class="tool" data-tool="selEllipse" title="椭圆选区">⬭<span class="tip">椭圆选区</span></div>
+      <div class="tool" data-tool="wand" title="魔棒">✷<span class="tip">魔棒</span></div>
+      <div class="tool" data-tool="guide" title="参考线">📏<span class="tip">参考线 (拖拽/吸附)</span></div>
     </aside>
 
     <main class="stage-wrap" id="stageWrap">
@@ -208,6 +162,10 @@
           <button id="flipLayerH">图层↔翻转</button>
           <button id="flipLayerV">图层↕翻转</button>
         </div>
+        <div class="layer-actions">
+          <button id="addMask">添加蒙版</button>
+          <button id="editMask">编辑蒙版</button>
+        </div>
         <div id="layersList"></div>
       </div>
 
@@ -222,44 +180,37 @@
           <span id="curColorHex" style="font-size:12px;margin-left:auto;">前景 #FF6B4A</span>
         </div>
         <div class="row">
-          <label>笔刷大小</label>
-          <input type="range" id="brushSize" min="1" max="120" value="12" />
-          <span class="val" id="brushSizeVal">12</span>
+          <label>笔刷大小</label><input type="range" id="brushSize" min="1" max="120" value="12" /><span class="val" id="brushSizeVal">12</span>
         </div>
         <div class="row">
-          <label>不透明度</label>
-          <input type="range" id="brushOpacity" min="1" max="100" value="100" />
-          <span class="val" id="brushOpacityVal">100</span>
+          <label>不透明度</label><input type="range" id="brushOpacity" min="1" max="100" value="100" /><span class="val" id="brushOpacityVal">100</span>
         </div>
       </div>
 
       <div class="panel">
+        <h3>选区</h3>
+        <div class="layer-actions">
+          <button id="selAll">全选</button>
+          <button id="selNone">取消</button>
+          <button id="selInv">反选</button>
+        </div>
+        <div class="row">
+          <label>魔棒容差</label><input type="range" id="wandTol" min="0" max="150" value="32" /><span class="val" id="wandTolVal">32</span>
+        </div>
+        <div class="hint">选区限制绘制/曲线范围；蚂蚁线为选区边界。</div>
+      </div>
+
+      <div class="panel">
         <h3>调整</h3>
-        <div class="row">
-          <label>亮度</label><input type="range" id="adjBrightness" min="-100" max="100" value="0" /><span class="val" id="adjBrightnessVal">0</span>
-        </div>
-        <div class="row">
-          <label>对比度</label><input type="range" id="adjContrast" min="-100" max="100" value="0" /><span class="val" id="adjContrastVal">0</span>
-        </div>
-        <div class="row">
-          <label>饱和度</label><input type="range" id="adjSaturation" min="-100" max="100" value="0" /><span class="val" id="adjSaturationVal">0</span>
-        </div>
-        <div class="row">
-          <label>色相</label><input type="range" id="adjHue" min="-180" max="180" value="0" /><span class="val" id="adjHueVal">0</span>
-        </div>
-        <div class="row">
-          <label>模糊</label><input type="range" id="adjBlur" min="0" max="20" value="0" /><span class="val" id="adjBlurVal">0</span>
-        </div>
+        <div class="row"><label>亮度</label><input type="range" id="adjBrightness" min="-100" max="100" value="0" /><span class="val" id="adjBrightnessVal">0</span></div>
+        <div class="row"><label>对比度</label><input type="range" id="adjContrast" min="-100" max="100" value="0" /><span class="val" id="adjContrastVal">0</span></div>
+        <div class="row"><label>饱和度</label><input type="range" id="adjSaturation" min="-100" max="100" value="0" /><span class="val" id="adjSaturationVal">0</span></div>
+        <div class="row"><label>色相</label><input type="range" id="adjHue" min="-180" max="180" value="0" /><span class="val" id="adjHueVal">0</span></div>
+        <div class="row"><label>模糊</label><input type="range" id="adjBlur" min="0" max="20" value="0" /><span class="val" id="adjBlurVal">0</span></div>
         <label class="chk"><input type="checkbox" id="adjGray" /> 灰度</label>
         <label class="chk"><input type="checkbox" id="adjInvert" /> 反相</label>
-        <div class="seg">
-          <button id="applyAdj">应用调整</button>
-          <button id="cancelAdj">取消</button>
-        </div>
-        <div class="seg">
-          <button id="sharpenBtn">锐化</button>
-          <button id="resetAdj">重置参数</button>
-        </div>
+        <div class="seg"><button id="applyAdj">应用调整</button><button id="cancelAdj">取消</button></div>
+        <div class="seg"><button id="sharpenBtn">锐化</button><button id="resetAdj">重置参数</button></div>
       </div>
 
       <div class="panel">
@@ -274,22 +225,43 @@
           <button data-preset="grayscale(1) contrast(2) brightness(1.1)">素描</button>
           <button data-preset="blur(1px) brightness(1.08) saturate(1.15)">柔光</button>
         </div>
-        <div class="hint">作用于当前图层，一键应用。</div>
+      </div>
+
+      <div class="panel">
+        <h3>曲线调色</h3>
+        <div class="seg">
+          <button id="curveRGB" class="on">RGB</button>
+          <button id="curveR">R</button>
+          <button id="curveG">G</button>
+          <button id="curveB">B</button>
+        </div>
+        <canvas id="curveEditor" width="240" height="200"></canvas>
+        <div class="seg" style="margin-top:8px;">
+          <button id="applyCurve">应用曲线</button>
+          <button id="resetCurve">重置</button>
+        </div>
+        <div class="hint">点击曲线添加控制点，拖动调整，双击控制点删除（端点保留）。作用于当前图层（含选区）。</div>
       </div>
 
       <div class="panel">
         <h3>渐变</h3>
-        <div class="seg">
-          <button id="gradLinear" class="on">线性</button>
-          <button id="gradRadial">径向</button>
-        </div>
+        <div class="seg"><button id="gradLinear" class="on">线性</button><button id="gradRadial">径向</button></div>
         <div class="hint">选「渐变」工具，从前景色拖到背景色，松手填充当前图层。</div>
+      </div>
+
+      <div class="panel">
+        <h3>参考线</h3>
+        <div class="layer-actions">
+          <button id="toggleGuides">显示/隐藏</button>
+          <button id="clearGuides">清除全部</button>
+        </div>
+        <div class="hint">选「参考线」工具从画布内拖动新建；拖动已有参考线移动，双击删除。移动/形状/文字自动吸附。</div>
       </div>
 
       <div class="panel">
         <h3>历史</h3>
         <div id="historyList"></div>
-        <div class="hint">点击任意步骤可跳转到该状态（撤销/重做也行）。</div>
+        <div class="hint">点击任意步骤可跳转到该状态。</div>
       </div>
     </aside>
   </div>
@@ -298,10 +270,7 @@
     <span id="status">就绪</span>
     <span id="docInfo">画布 800 × 600</span>
     <div class="zoom">
-      <button id="zoomOut">−</button>
-      <span id="zoomVal">100%</span>
-      <button id="zoomIn">+</button>
-      <button id="zoomFit">适应</button>
+      <button id="zoomOut">−</button><span id="zoomVal">100%</span><button id="zoomIn">+</button><button id="zoomFit">适应</button>
     </div>
     <span id="toolInfo" style="margin-left:auto;"></span>
   </footer>
@@ -314,519 +283,256 @@
 <script>
 (function(){
   "use strict";
+  const stage=document.getElementById('stage'), sctx=stage.getContext('2d');
+  const overlay=document.getElementById('overlay'), octx=overlay.getContext('2d');
+  const stageInner=document.getElementById('stageInner'), stageWrap=document.getElementById('stageWrap');
 
-  const stage = document.getElementById('stage');
-  const sctx = stage.getContext('2d');
-  const overlay = document.getElementById('overlay');
-  const octx = overlay.getContext('2d');
-  const stageInner = document.getElementById('stageInner');
-  const stageWrap = document.getElementById('stageWrap');
-
-  let width = 800, height = 600;
-  let layers = [];
-  let activeIdx = 0;
-  let tool = 'select';
-  let color = '#ff6b4a';
-  let bgColor = '#ffffff';
-  let brushSize = 12;
-  let brushOpacity = 1;
-  let viewScale = 1;
-
-  // 历史栈（states 模型，可跳转）
-  let states = [];
-  let histCursor = -1;
-  const HISTORY_MAX = 30;
-
-  // 调整快照
-  let pendingAdj = {brightness:0,contrast:0,saturation:0,hue:0,blur:0,gray:false,invert:false};
-  let adjSnapshot = null;
-  let adjLayerIdx = -1;
-
-  // 交互态
-  let isDown = false;
-  let startPos = null, lastPos = null;
-  let layerSnapshot = null;
-  let moveStart = null;
-  let cropRect = null;
-  let transform = null;
-  let gradientType = 'linear';
-
-  let layerSeq = 1;
+  let width=800,height=600, layers=[], activeIdx=0, tool='select';
+  let color='#ff6b4a', bgColor='#ffffff', brushSize=12, brushOpacity=1, viewScale=1;
+  let states=[], histCursor=-1; const HISTORY_MAX=30;
+  let pendingAdj={brightness:0,contrast:0,saturation:0,hue:0,blur:0,gray:false,invert:false};
+  let adjSnapshot=null, adjLayerIdx=-1;
+  let isDown=false, startPos=null, lastPos=null, layerSnapshot=null, moveStart=null;
+  let cropRect=null, transform=null, gradientType='linear';
+  let selection=null, showGuides=true, editingMask=false;
+  let guides={h:[],v:[]}, draggingGuide=null, wandTol=32;
+  let paintBase=null, paintTmp=null, paintTmpCtx=null;
+  let curves={rgb:[[0,0],[255,255]],r:[[0,0],[255,255]],g:[[0,0],[255,255]],b:[[0,0],[255,255]]};
+  let curveChannel='rgb';
+  let layerSeq=1;
 
   function activeLayer(){ return layers[activeIdx]; }
-  function cloneCanvas(src){
-    const c = document.createElement('canvas'); c.width = src.width; c.height = src.height;
-    c.getContext('2d').drawImage(src,0,0); return c;
-  }
-  function setStatus(t){ document.getElementById('status').textContent = t; }
-  function toast(msg){
-    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-    clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('show'),1800);
-  }
-  function toCanvas(e){
-    const r = stage.getBoundingClientRect();
-    return { x:(e.clientX - r.left) * (stage.width / r.width), y:(e.clientY - r.top) * (stage.height / r.height) };
-  }
+  function cloneCanvas(src){ const c=document.createElement('canvas'); c.width=src.width; c.height=src.height; c.getContext('2d').drawImage(src,0,0); return c; }
+  function newCanvas(){ const c=document.createElement('canvas'); c.width=width; c.height=height; return c; }
+  function setStatus(t){ document.getElementById('status').textContent=t; }
+  function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),1800); }
+  function toCanvas(e){ const r=stage.getBoundingClientRect(); return {x:(e.clientX-r.left)*(stage.width/r.width), y:(e.clientY-r.top)*(stage.height/r.height)}; }
+  function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
 
   // ---------- 图层 ----------
-  function createLayer(name, w, h, img){
-    const c = document.createElement('canvas'); c.width = w; c.height = h;
-    const cx = c.getContext('2d'); if(img) cx.drawImage(img,0,0);
-    return {id:layerSeq++, name:name||('图层 '+layerSeq), canvas:c, ctx:cx, visible:true, opacity:1, type:'raster'};
-  }
-  function addLayer(opts){
-    const L = createLayer(opts&&opts.name, width, height, opts&&opts.img);
-    if(opts&&opts.type) L.type = opts.type;
-    layers.push(L); activeIdx = layers.length-1;
-    pushHistory('新建图层'); renderAll();
-  }
-  function setActive(i){
-    if(i<0||i>=layers.length) return;
-    cancelAdjust(); transform && cancelTransform();
-    activeIdx = i; renderLayersPanel(); updateToolInfo();
-  }
+  function createLayer(name,w,h,img){ const c=document.createElement('canvas'); c.width=w; c.height=h; const cx=c.getContext('2d'); if(img) cx.drawImage(img,0,0); return {id:layerSeq++,name:name||('图层 '+layerSeq),canvas:c,ctx:cx,visible:true,opacity:1,type:'raster',mask:null}; }
+  function addLayer(opts){ const L=createLayer(opts&&opts.name,width,height,opts&&opts.img); if(opts&&opts.type) L.type=opts.type; layers.push(L); activeIdx=layers.length-1; pushHistory('新建图层'); renderAll(); }
+  function setActive(i){ if(i<0||i>=layers.length) return; cancelAdjust(); cancelCurve(); if(transform) cancelTransform(); activeIdx=i; renderLayersPanel(); updateToolInfo(); }
 
   // ---------- 渲染 ----------
-  function resizeStage(){
-    stage.width = width; stage.height = height;
-    overlay.width = width; overlay.height = height;
-    stageInner.style.width = width+'px'; stageInner.style.height = height+'px';
-    applyViewScale();
-  }
-  function applyViewScale(){
-    stageInner.style.transform = 'scale('+viewScale+')';
-    document.getElementById('zoomVal').textContent = Math.round(viewScale*100)+'%';
-  }
-  function fitView(){
-    const pad = 40, aw = stageWrap.clientWidth - pad, ah = stageWrap.clientHeight - pad;
-    viewScale = Math.min(aw/width, ah/height, 4);
-    if(!isFinite(viewScale)||viewScale<=0) viewScale = 1;
-    applyViewScale();
-  }
+  function resizeStage(){ stage.width=width; stage.height=height; overlay.width=width; overlay.height=height; stageInner.style.width=width+'px'; stageInner.style.height=height+'px'; applyViewScale(); }
+  function applyViewScale(){ stageInner.style.transform='scale('+viewScale+')'; document.getElementById('zoomVal').textContent=Math.round(viewScale*100)+'%'; }
+  function fitView(){ const pad=40, aw=stageWrap.clientWidth-pad, ah=stageWrap.clientHeight-pad; viewScale=Math.min(aw/width,ah/height,4); if(!isFinite(viewScale)||viewScale<=0) viewScale=1; applyViewScale(); }
   function render(){
     sctx.clearRect(0,0,width,height);
-    for(const L of layers){
-      if(!L.visible) continue;
-      sctx.globalAlpha = L.opacity; sctx.drawImage(L.canvas,0,0);
+    for(const L of layers){ if(!L.visible) continue; sctx.globalAlpha=1;
+      if(L.mask){ const t=newCanvas(), tc=t.getContext('2d'); tc.drawImage(L.canvas,0,0); tc.globalCompositeOperation='destination-in'; tc.drawImage(L.mask,0,0); sctx.globalAlpha=L.opacity; sctx.drawImage(t,0,0); }
+      else { sctx.globalAlpha=L.opacity; sctx.drawImage(L.canvas,0,0); }
     }
-    sctx.globalAlpha = 1;
+    sctx.globalAlpha=1; drawOverlayChrome();
   }
   function renderAll(){ render(); renderLayersPanel(); updateDocInfo(); updateToolInfo(); }
 
   function renderLayersPanel(){
-    const list = document.getElementById('layersList'); list.innerHTML = '';
-    for(let i=layers.length-1;i>=0;i--){
-      const L = layers[i];
-      const item = document.createElement('div');
-      item.className = 'layer-item'+(i===activeIdx?' active':'');
-      item.onclick = ()=>setActive(i);
-      const eye = document.createElement('button');
-      eye.className = 'eye'+(L.visible?'':' off');
-      eye.textContent = L.visible?'👁':'🚫';
-      eye.onclick = (ev)=>{ ev.stopPropagation(); L.visible=!L.visible; pushHistory(L.visible?'显示图层':'隐藏图层'); renderAll(); };
-      const thumb = document.createElement('canvas');
-      thumb.className = 'layer-thumb'; thumb.width=34; thumb.height=34;
-      const tctx = thumb.getContext('2d'); tctx.fillStyle='#11141d'; tctx.fillRect(0,0,34,34);
-      if(L.canvas.width>0){
-        const s = Math.min(34/L.canvas.width,34/L.canvas.height);
-        const dw=L.canvas.width*s, dh=L.canvas.height*s;
-        tctx.drawImage(L.canvas,(34-dw)/2,(34-dh)/2,dw,dh);
-      }
-      const name = document.createElement('span');
-      name.className='layer-name'; name.textContent=L.name;
-      name.ondblclick = (ev)=>{
-        ev.stopPropagation(); const inp = document.createElement('input');
-        inp.className='rename'; inp.value=L.name; item.replaceChild(inp,name); inp.focus(); inp.select();
-        const commit = ()=>{ L.name = inp.value||L.name; renderLayersPanel(); };
-        inp.onblur = commit; inp.onkeydown = (e)=>{ if(e.key==='Enter') inp.blur(); };
-      };
+    const list=document.getElementById('layersList'); list.innerHTML='';
+    for(let i=layers.length-1;i>=0;i--){ const L=layers[i];
+      const item=document.createElement('div'); item.className='layer-item'+(i===activeIdx?' active':'');
+      item.onclick=()=>setActive(i);
+      const eye=document.createElement('button'); eye.className='eye'+(L.visible?'':' off'); eye.textContent=L.visible?'👁':'🚫';
+      eye.onclick=(ev)=>{ ev.stopPropagation(); L.visible=!L.visible; pushHistory(L.visible?'显示图层':'隐藏图层'); renderAll(); };
+      const thumb=document.createElement('canvas'); thumb.className='layer-thumb'; thumb.width=34; thumb.height=34; const tctx=thumb.getContext('2d'); tctx.fillStyle='#11141d'; tctx.fillRect(0,0,34,34);
+      if(L.canvas.width>0){ const s=Math.min(34/L.canvas.width,34/L.canvas.height), dw=L.canvas.width*s, dh=L.canvas.height*s; tctx.drawImage(L.canvas,(34-dw)/2,(34-dh)/2,dw,dh); }
+      const name=document.createElement('span'); name.className='layer-name'; name.textContent=L.name;
+      name.ondblclick=(ev)=>{ ev.stopPropagation(); const inp=document.createElement('input'); inp.className='rename'; inp.value=L.name; item.replaceChild(inp,name); inp.focus(); inp.select(); const commit=()=>{ L.name=inp.value||L.name; renderLayersPanel(); }; inp.onblur=commit; inp.onkeydown=(e)=>{ if(e.key==='Enter') inp.blur(); }; };
       item.appendChild(eye); item.appendChild(thumb); item.appendChild(name);
+      if(L.mask){ const b=document.createElement('span'); b.className='maskbadge'; b.textContent='蒙版'; item.appendChild(b); }
       list.appendChild(item);
     }
+    document.getElementById('editMask').classList.toggle('on', editingMask);
   }
-  function updateDocInfo(){ document.getElementById('docInfo').textContent = '画布 '+width+' × '+height; }
-  function updateToolInfo(){
-    const names = {select:'移动',brush:'画笔',eraser:'橡皮擦',rect:'矩形',ellipse:'椭圆',line:'直线',arrow:'箭头',gradient:'渐变',text:'文字',crop:'裁剪',transform:'自由变换',eyedropper:'取色'};
-    document.getElementById('toolInfo').textContent = '工具：'+(names[tool]||'');
-  }
+  function updateDocInfo(){ document.getElementById('docInfo').textContent='画布 '+width+' × '+height; }
+  function updateToolInfo(){ const names={select:'移动',brush:'画笔',eraser:'橡皮擦',rect:'矩形',ellipse:'椭圆',line:'直线',arrow:'箭头',gradient:'渐变',text:'文字',crop:'裁剪',transform:'自由变换',eyedropper:'取色',selRect:'矩形选区',selEllipse:'椭圆选区',wand:'魔棒',guide:'参考线'}; document.getElementById('toolInfo').textContent='工具：'+(names[tool]||''); }
 
-  // ---------- 历史（states 模型） ----------
-  function currentSnap(){
-    return { width:width, height:height,
-      layers: layers.map(L=>({name:L.name,visible:L.visible,opacity:L.opacity,type:L.type,canvas:cloneCanvas(L.canvas)})) };
-  }
-  function pushHistory(label){
-    if(histCursor < states.length-1) states = states.slice(0, histCursor+1);
-    const s = currentSnap(); s.label = label||'编辑';
-    states.push(s);
-    if(states.length > HISTORY_MAX+1) states.shift();
-    histCursor = states.length-1;
-    updateHistoryUI();
-  }
-  function restoreSnap(s){
-    width = s.width; height = s.height; resizeStage();
-    layers = s.layers.map(o=>{ const c=cloneCanvas(o.canvas); return {id:layerSeq++,name:o.name,visible:o.visible,opacity:o.opacity,type:o.type,canvas:c,ctx:c.getContext('2d')}; });
-    if(activeIdx>=layers.length) activeIdx = layers.length-1;
-    renderAll();
-  }
+  // ---------- 历史 ----------
+  function currentSnap(){ return {width:width,height:height,layers:layers.map(L=>({name:L.name,visible:L.visible,opacity:L.opacity,type:L.type,canvas:cloneCanvas(L.canvas),mask:L.mask?cloneCanvas(L.mask):null}))}; }
+  function pushHistory(label){ if(histCursor<states.length-1) states=states.slice(0,histCursor+1); const s=currentSnap(); s.label=label||'编辑'; states.push(s); if(states.length>HISTORY_MAX+1) states.shift(); histCursor=states.length-1; updateHistoryUI(); }
+  function restoreSnap(s){ width=s.width; height=s.height; resizeStage(); layers=s.layers.map(o=>{ const c=cloneCanvas(o.canvas); return {id:layerSeq++,name:o.name,visible:o.visible,opacity:o.opacity,type:o.type,canvas:c,ctx:c.getContext('2d'),mask:o.mask?cloneCanvas(o.mask):null}; }); if(activeIdx>=layers.length) activeIdx=layers.length-1; editingMask=false; renderAll(); }
   function undo(){ if(histCursor>0){ histCursor--; restoreSnap(states[histCursor]); updateHistoryUI(); setStatus('已撤销'); } else toast('没有可撤销的操作'); }
   function redo(){ if(histCursor<states.length-1){ histCursor++; restoreSnap(states[histCursor]); updateHistoryUI(); setStatus('已重做'); } else toast('没有可重做的操作'); }
   function jumpTo(i){ if(i<0||i>=states.length) return; histCursor=i; restoreSnap(states[i]); updateHistoryUI(); }
   function updateHistoryUI(){ renderHistoryPanel(); updateHistoryButtons(); }
-  function updateHistoryButtons(){
-    document.getElementById('undoBtn').style.opacity = histCursor>0?1:.4;
-    document.getElementById('redoBtn').style.opacity = histCursor<states.length-1?1:.4;
-  }
-  function renderHistoryPanel(){
-    const el = document.getElementById('historyList'); if(!el) return; el.innerHTML='';
-    states.forEach((s,i)=>{
-      const d = document.createElement('div');
-      d.className = 'hist-item'+(i===histCursor?' active':'');
-      d.textContent = (i+1)+'. '+(s.label||'编辑');
-      d.onclick = ()=>jumpTo(i);
-      el.appendChild(d);
-    });
-  }
+  function updateHistoryButtons(){ document.getElementById('undoBtn').style.opacity=histCursor>0?1:.4; document.getElementById('redoBtn').style.opacity=histCursor<states.length-1?1:.4; }
+  function renderHistoryPanel(){ const el=document.getElementById('historyList'); if(!el) return; el.innerHTML=''; states.forEach((s,i)=>{ const d=document.createElement('div'); d.className='hist-item'+(i===histCursor?' active':''); d.textContent=(i+1)+'. '+(s.label||'编辑'); d.onclick=()=>jumpTo(i); el.appendChild(d); }); }
 
   // ---------- 工具切换 ----------
-  function setTool(t){
-    cancelAdjust();
-    if(transform && t!=='transform') cancelTransform();
-    tool = t;
-    document.querySelectorAll('.tool').forEach(el=>el.classList.toggle('active', el.dataset.tool===t));
-    stage.style.cursor = (t==='text')?'text':(t==='eyedropper'?'crosshair':(t==='transform'?'move':'default'));
-    updateToolInfo();
-    if(t==='transform' && !transform) enterTransform();
-  }
+  function setTool(t){ cancelAdjust(); cancelCurve(); if(transform&&t!=='transform') cancelTransform(); if(t!=='guide'&&draggingGuide) draggingGuide=null; tool=t; document.querySelectorAll('.tool').forEach(el=>el.classList.toggle('active',el.dataset.tool===t)); stage.style.cursor=(t==='text')?'text':(t==='eyedropper'?'crosshair':(t==='transform'?'move':(t==='guide'?'crosshair':'default'))); updateToolInfo(); if(t==='transform'&&!transform) enterTransform(); }
 
   // ---------- 绘制 ----------
-  function strokeSegment(ctx, from, to){
-    ctx.globalAlpha = brushOpacity; ctx.lineWidth = brushSize; ctx.lineCap='round'; ctx.lineJoin='round';
-    if(tool==='eraser'){ ctx.globalCompositeOperation='destination-out'; ctx.strokeStyle='rgba(0,0,0,1)'; }
-    else { ctx.globalCompositeOperation='source-over'; ctx.strokeStyle=color; }
-    ctx.beginPath(); ctx.moveTo(from.x,from.y); ctx.lineTo(to.x,to.y); ctx.stroke();
-    ctx.globalCompositeOperation='source-over'; ctx.globalAlpha=1;
-  }
-  function drawShapeOn(ctx, a, b){
-    ctx.save(); ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=brushSize; ctx.lineCap='round'; ctx.globalAlpha=brushOpacity;
-    if(tool==='rect'){ ctx.strokeRect(Math.min(a.x,b.x),Math.min(a.y,b.y),Math.abs(b.x-a.x),Math.abs(b.y-a.y)); }
-    else if(tool==='ellipse'){ ctx.beginPath(); ctx.ellipse((a.x+b.x)/2,(a.y+b.y)/2,Math.abs(b.x-a.x)/2,Math.abs(b.y-a.y)/2,0,0,Math.PI*2); ctx.stroke(); }
-    else if(tool==='line'){ ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); }
-    else if(tool==='arrow'){ drawArrow(ctx,a,b); }
-    ctx.restore();
-  }
-  function drawArrow(ctx,a,b){
-    const head=Math.max(10,brushSize*2.2), ang=Math.atan2(b.y-a.y,b.x-a.x);
-    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(b.x,b.y);
-    ctx.lineTo(b.x-head*Math.cos(ang-Math.PI/6), b.y-head*Math.sin(ang-Math.PI/6));
-    ctx.lineTo(b.x-head*Math.cos(ang+Math.PI/6), b.y-head*Math.sin(ang+Math.PI/6));
-    ctx.closePath(); ctx.fill();
-  }
+  function strokeSegment(ctx,from,to){ ctx.globalAlpha=brushOpacity; ctx.lineWidth=brushSize; ctx.lineCap='round'; ctx.lineJoin='round'; if(tool==='eraser'){ ctx.globalCompositeOperation='destination-out'; ctx.strokeStyle='rgba(0,0,0,1)'; } else { ctx.globalCompositeOperation='source-over'; ctx.strokeStyle=color; } ctx.beginPath(); ctx.moveTo(from.x,from.y); ctx.lineTo(to.x,to.y); ctx.stroke(); ctx.globalCompositeOperation='source-over'; ctx.globalAlpha=1; }
+  function drawShapeOn(ctx,a,b){ ctx.save(); ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=brushSize; ctx.lineCap='round'; ctx.globalAlpha=brushOpacity; if(tool==='rect'){ ctx.strokeRect(Math.min(a.x,b.x),Math.min(a.y,b.y),Math.abs(b.x-a.x),Math.abs(b.y-a.y)); } else if(tool==='ellipse'){ ctx.beginPath(); ctx.ellipse((a.x+b.x)/2,(a.y+b.y)/2,Math.abs(b.x-a.x)/2,Math.abs(b.y-a.y)/2,0,0,Math.PI*2); ctx.stroke(); } else if(tool==='line'){ ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); } else if(tool==='arrow'){ drawArrow(ctx,a,b); } ctx.restore(); }
+  function drawArrow(ctx,a,b){ const head=Math.max(10,brushSize*2.2), ang=Math.atan2(b.y-a.y,b.x-a.x); ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(b.x,b.y); ctx.lineTo(b.x-head*Math.cos(ang-Math.PI/6),b.y-head*Math.sin(ang-Math.PI/6)); ctx.lineTo(b.x-head*Math.cos(ang+Math.PI/6),b.y-head*Math.sin(ang+Math.PI/6)); ctx.closePath(); ctx.fill(); }
+  function paintGradient(ctx,a,b){ let g; if(gradientType==='radial'){ const r=Math.max(1,Math.hypot(b.x-a.x,b.y-a.y)); g=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,r); } else { g=ctx.createLinearGradient(a.x,a.y,b.x,b.y); } g.addColorStop(0,color); g.addColorStop(1,bgColor); ctx.save(); ctx.globalAlpha=brushOpacity; ctx.fillStyle=g; ctx.fillRect(0,0,activeLayer().canvas.width,activeLayer().canvas.height); ctx.restore(); }
 
-  // ---------- 渐变 ----------
-  function paintGradient(ctx, a, b){
-    let g;
-    if(gradientType==='radial'){ const r=Math.max(1,Math.hypot(b.x-a.x,b.y-a.y)); g=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,r); }
-    else { g=ctx.createLinearGradient(a.x,a.y,b.x,b.y); }
-    g.addColorStop(0,color); g.addColorStop(1,bgColor);
-    ctx.save(); ctx.globalAlpha=brushOpacity; ctx.fillStyle=g; ctx.fillRect(0,0,activeLayer().canvas.width,activeLayer().canvas.height); ctx.restore();
-  }
+  // ---------- 选区裁剪管线 ----------
+  function intersectMask(src,mask){ const c=newCanvas(), cx=c.getContext('2d'); cx.drawImage(src,0,0); cx.globalCompositeOperation='destination-in'; cx.drawImage(mask,0,0); return c; }
+  function beginPaint(isErase){ paintBase=cloneCanvas(activeLayer().canvas); if(editingMask&&activeLayer().mask) paintBase=cloneCanvas(activeLayer().mask); paintTmp=newCanvas(); paintTmpCtx=paintTmp.getContext('2d'); if(isErase) paintTmpCtx.drawImage(paintBase,0,0); }
+  function strokeOnTmp(from,to){ const c=paintTmpCtx; c.lineWidth=brushSize; c.lineCap='round'; c.lineJoin='round'; if(editingMask&&activeLayer().mask){ c.globalCompositeOperation='source-over'; c.strokeStyle=(tool==='eraser')?'#000':'#fff'; c.globalAlpha=1; } else if(tool==='eraser'){ c.globalCompositeOperation='destination-out'; c.strokeStyle='rgba(0,0,0,1)'; c.globalAlpha=1; } else { c.globalCompositeOperation='source-over'; c.strokeStyle=color; c.globalAlpha=brushOpacity; } c.beginPath(); c.moveTo(from.x,from.y); c.lineTo(to.x,to.y); c.stroke(); c.globalCompositeOperation='source-over'; c.globalAlpha=1; }
+  function drawPreview(){ octx.clearRect(0,0,width,height); const px=selection?intersectMask(paintTmp,selection.mask):paintTmp; octx.drawImage(px,0,0); drawOverlayChrome(); }
+  function commitPaint(label){ let px=paintTmp; if(selection) px=intersectMask(paintTmp,selection.mask); const L=activeLayer(); const out=newCanvas(), oc=out.getContext('2d'); oc.drawImage(paintBase,0,0); oc.drawImage(px,0,0); if(editingMask&&L.mask){ L.mask=out; } else { L.canvas=out; L.ctx=out.getContext('2d'); } paintBase=null; paintTmp=null; paintTmpCtx=null; render(); pushHistory(label); }
 
   // ---------- 文字 ----------
-  let textInput = null;
-  function startTextInput(pos){
-    cancelTextInput();
-    const inp = document.createElement('input'); inp.id='textInput';
-    inp.style.left=(pos.x*viewScale)+'px'; inp.style.top=(pos.y*viewScale)+'px';
-    inp.style.fontSize=(brushSize*1.6*viewScale)+'px'; inp.style.color=color;
-    inp.value='双击输入文字'; stageInner.appendChild(inp); inp.focus(); inp.select();
-    textInput = {el:inp, pos:pos};
-    const commit = ()=>{
-      const txt=inp.value.trim();
-      if(txt && txt!=='双击输入文字'){
-        const L=activeLayer(); L.ctx.save(); L.ctx.globalAlpha=brushOpacity; L.ctx.fillStyle=color; L.ctx.textBaseline='top';
-        L.ctx.font=(brushSize*1.6)+'px sans-serif'; L.ctx.fillText(txt,pos.x,pos.y); L.ctx.restore();
-        pushHistory('文字'); render();
-      }
-      cancelTextInput();
-    };
-    inp.onblur = commit;
-    inp.onkeydown = (e)=>{ if(e.key==='Enter'){ e.preventDefault(); inp.blur(); } if(e.key==='Escape'){ inp.value=''; inp.blur(); } };
-  }
+  let textInput=null;
+  function startTextInput(pos){ cancelTextInput(); const inp=document.createElement('input'); inp.id='textInput'; inp.style.left=(pos.x*viewScale)+'px'; inp.style.top=(pos.y*viewScale)+'px'; inp.style.fontSize=(brushSize*1.6*viewScale)+'px'; inp.style.color=color; inp.value='双击输入文字'; stageInner.appendChild(inp); inp.focus(); inp.select(); textInput={el:inp,pos:pos}; const commit=()=>{ const txt=inp.value.trim(); if(txt&&txt!=='双击输入文字'){ const L=activeLayer(); L.ctx.save(); L.ctx.globalAlpha=brushOpacity; L.ctx.fillStyle=color; L.ctx.textBaseline='top'; L.ctx.font=(brushSize*1.6)+'px sans-serif'; L.ctx.fillText(txt,pos.x,pos.y); L.ctx.restore(); pushHistory('文字'); render(); } cancelTextInput(); }; inp.onblur=commit; inp.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); inp.blur(); } if(e.key==='Escape'){ inp.value=''; inp.blur(); } }; }
   function cancelTextInput(){ if(textInput){ textInput.el.remove(); textInput=null; } }
 
   // ---------- 裁剪 ----------
-  function applyCrop(){
-    if(!cropRect) return;
-    const x=Math.round(Math.min(cropRect.a.x,cropRect.b.x)), y=Math.round(Math.min(cropRect.a.y,cropRect.b.y));
-    const w=Math.round(Math.abs(cropRect.b.x-cropRect.a.x)), h=Math.round(Math.abs(cropRect.b.y-cropRect.a.y));
-    if(w<2||h<2){ toast('裁剪区域太小'); return; }
-    const nw=w, nh=h;
-    layers.forEach(L=>{ const c=document.createElement('canvas'); c.width=nw; c.height=nh; c.getContext('2d').drawImage(L.canvas,-x,-y); L.canvas=c; L.ctx=c.getContext('2d'); });
-    width=nw; height=nh; cropRect=null; resizeStage(); renderAll(); pushHistory('裁剪');
-    toast('已裁剪');
-  }
+  function applyCrop(){ if(!cropRect) return; const x=Math.round(Math.min(cropRect.a.x,cropRect.b.x)), y=Math.round(Math.min(cropRect.a.y,cropRect.b.y)), w=Math.round(Math.abs(cropRect.b.x-cropRect.a.x)), h=Math.round(Math.abs(cropRect.b.y-cropRect.a.y)); if(w<2||h<2){ toast('裁剪区域太小'); return; } layers.forEach(L=>{ const c=newCanvas(); c.getContext('2d').drawImage(L.canvas,-x,-y); L.canvas=c; L.ctx=c.getContext('2d'); if(L.mask){ const m=newCanvas(); m.getContext('2d').drawImage(L.mask,-x,-y); L.mask=m; } }); width=w; height=h; cropRect=null; resizeStage(); renderAll(); pushHistory('裁剪'); toast('已裁剪'); }
 
   // ---------- 调整 ----------
-  function buildFilterString(a){
-    const p=[];
-    p.push('brightness('+(1+a.brightness/100)+')');
-    p.push('contrast('+(1+a.contrast/100)+')');
-    p.push('saturate('+(1+a.saturation/100)+')');
-    p.push('hue-rotate('+a.hue+'deg)');
-    if(a.blur>0) p.push('blur('+a.blur+'px)');
-    if(a.gray) p.push('grayscale(1)');
-    if(a.invert) p.push('invert(1)');
-    return p.join(' ');
-  }
+  function buildFilterString(a){ return ['brightness('+(1+a.brightness/100)+')','contrast('+(1+a.contrast/100)+')','saturate('+(1+a.saturation/100)+')','hue-rotate('+a.hue+'deg)',a.blur>0?'blur('+a.blur+'px)':'',a.gray?'grayscale(1)':'',a.invert?'invert(1)':''].filter(Boolean).join(' '); }
   function beginAdjustIfNeeded(){ if(!adjSnapshot){ adjSnapshot=cloneCanvas(activeLayer().canvas); adjLayerIdx=activeIdx; } }
-  function previewAdjust(){
-    if(!adjSnapshot) return; const L=layers[adjLayerIdx]; if(!L) return;
-    L.ctx.clearRect(0,0,L.canvas.width,L.canvas.height);
-    L.ctx.filter=buildFilterString(pendingAdj); L.ctx.drawImage(adjSnapshot,0,0); L.ctx.filter='none'; render();
-  }
-  function applyAdjust(){
-    if(!adjSnapshot){ toast('没有待应用的调整'); return; }
-    adjSnapshot=null; adjLayerIdx=-1; pushHistory('调整'); setStatus('调整已应用');
-  }
-  function cancelAdjust(){
-    if(adjSnapshot){ const L=layers[adjLayerIdx]; if(L){ L.ctx.clearRect(0,0,L.canvas.width,L.canvas.height); L.ctx.drawImage(adjSnapshot,0,0); } adjSnapshot=null; adjLayerIdx=-1; render(); }
-    pendingAdj={brightness:0,contrast:0,saturation:0,hue:0,blur:0,gray:false,invert:false}; setAdjInputs();
-  }
-  function setAdjInputs(){
-    document.getElementById('adjBrightness').value=pendingAdj.brightness;
-    document.getElementById('adjContrast').value=pendingAdj.contrast;
-    document.getElementById('adjSaturation').value=pendingAdj.saturation;
-    document.getElementById('adjHue').value=pendingAdj.hue;
-    document.getElementById('adjBlur').value=pendingAdj.blur;
-    document.getElementById('adjGray').checked=pendingAdj.gray;
-    document.getElementById('adjInvert').checked=pendingAdj.invert;
-    ['Brightness','Contrast','Saturation','Hue','Blur'].forEach(k=>{ document.getElementById('adj'+k+'Val').textContent=pendingAdj[k.toLowerCase()]; });
-  }
-  function applyPreset(filterStr){
-    const L=activeLayer(); if(!L) return;
-    const tmp=cloneCanvas(L.canvas);
-    L.ctx.clearRect(0,0,L.canvas.width,L.canvas.height);
-    L.ctx.filter=filterStr; L.ctx.drawImage(tmp,0,0); L.ctx.filter='none';
-    pushHistory('滤镜预设'); render(); toast('已应用滤镜预设');
-  }
-  function sharpenLayer(){
-    const L=activeLayer(); const w=L.canvas.width, h=L.canvas.height;
-    const src=L.ctx.getImageData(0,0,w,h), dst=L.ctx.createImageData(w,h);
-    const s=src.data, d=dst.data, k=[0,-1,0,-1,5,-1,0,-1,0];
-    const conv=(x,y,ch)=>{ let v=0; for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){ const xx=Math.min(w-1,Math.max(0,x+i)), yy=Math.min(h-1,Math.max(0,y+j)); v+=s[(yy*w+xx)*4+ch]*k[(j+1)*3+(i+1)]; } return Math.min(255,Math.max(0,v)); };
-    for(let y=0;y<h;y++)for(let x=0;x<w;x++){ const idx=(y*w+x)*4; d[idx]=conv(x,y,0); d[idx+1]=conv(x,y,1); d[idx+2]=conv(x,y,2); d[idx+3]=s[idx+3]; }
-    L.ctx.putImageData(dst,0,0); pushHistory('锐化'); render(); toast('已锐化');
-  }
+  function previewAdjust(){ if(!adjSnapshot) return; const L=layers[adjLayerIdx]; if(!L) return; L.ctx.clearRect(0,0,L.canvas.width,L.canvas.height); L.ctx.filter=buildFilterString(pendingAdj); L.ctx.drawImage(adjSnapshot,0,0); L.ctx.filter='none'; render(); }
+  function applyAdjust(){ if(!adjSnapshot){ toast('没有待应用的调整'); return; } adjSnapshot=null; adjLayerIdx=-1; pushHistory('调整'); setStatus('调整已应用'); }
+  function cancelAdjust(){ if(adjSnapshot){ const L=layers[adjLayerIdx]; if(L){ L.ctx.clearRect(0,0,L.canvas.width,L.canvas.height); L.ctx.drawImage(adjSnapshot,0,0); } adjSnapshot=null; adjLayerIdx=-1; render(); } pendingAdj={brightness:0,contrast:0,saturation:0,hue:0,blur:0,gray:false,invert:false}; setAdjInputs(); }
+  function setAdjInputs(){ ['Brightness','Contrast','Saturation','Hue','Blur'].forEach(k=>{ document.getElementById('adj'+k).value=pendingAdj[k.toLowerCase()]; document.getElementById('adj'+k+'Val').textContent=pendingAdj[k.toLowerCase()]; }); document.getElementById('adjGray').checked=pendingAdj.gray; document.getElementById('adjInvert').checked=pendingAdj.invert; }
+  function applyPreset(f){ const L=activeLayer(); const tmp=cloneCanvas(L.canvas); L.ctx.clearRect(0,0,L.canvas.width,L.canvas.height); L.ctx.filter=f; L.ctx.drawImage(tmp,0,0); L.ctx.filter='none'; pushHistory('滤镜预设'); render(); toast('已应用滤镜预设'); }
+  function sharpenLayer(){ const L=activeLayer(), w=L.canvas.width, h=L.canvas.height, src=L.ctx.getImageData(0,0,w,h), dst=L.ctx.createImageData(w,h), s=src.data, d=dst.data, k=[0,-1,0,-1,5,-1,0,-1,0]; const conv=(x,y,ch)=>{ let v=0; for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){ const xx=clamp(x+i,0,w-1), yy=clamp(y+j,0,h-1); v+=s[(yy*w+xx)*4+ch]*k[(j+1)*3+(i+1)]; } return clamp(Math.round(v),0,255); }; for(let y=0;y<h;y++)for(let x=0;x<w;x++){ const idx=(y*w+x)*4; d[idx]=conv(x,y,0); d[idx+1]=conv(x,y,1); d[idx+2]=conv(x,y,2); d[idx+3]=s[idx+3]; } L.ctx.putImageData(dst,0,0); pushHistory('锐化'); render(); toast('已锐化'); }
 
   // ---------- 翻转 ----------
-  function flipLayer(h){
-    const L=activeLayer(); if(!L) return;
-    const tmp=cloneCanvas(L.canvas); L.ctx.clearRect(0,0,L.canvas.width,L.canvas.height); L.ctx.save();
-    if(h){ L.ctx.translate(L.canvas.width,0); L.ctx.scale(-1,1); } else { L.ctx.translate(0,L.canvas.height); L.ctx.scale(1,-1); }
-    L.ctx.drawImage(tmp,0,0); L.ctx.restore();
-    pushHistory(h?'水平翻转':'垂直翻转'); renderAll();
-  }
-  function flipCanvas(h){
-    layers.forEach(L=>{ const tmp=cloneCanvas(L.canvas); L.ctx.clearRect(0,0,L.canvas.width,L.canvas.height); L.ctx.save();
-      if(h){ L.ctx.translate(L.canvas.width,0); L.ctx.scale(-1,1); } else { L.ctx.translate(0,L.canvas.height); L.ctx.scale(1,-1); }
-      L.ctx.drawImage(tmp,0,0); L.ctx.restore(); });
-    pushHistory(h?'画布水平翻转':'画布垂直翻转'); renderAll();
-  }
+  function flipLayer(h){ const L=activeLayer(); if(!L) return; const tmp=cloneCanvas(L.canvas); L.ctx.clearRect(0,0,L.canvas.width,L.canvas.height); L.ctx.save(); if(h){ L.ctx.translate(L.canvas.width,0); L.ctx.scale(-1,1); } else { L.ctx.translate(0,L.canvas.height); L.ctx.scale(1,-1); } L.ctx.drawImage(tmp,0,0); L.ctx.restore(); if(L.mask){ const tm=cloneCanvas(L.mask); L.mask.getContext('2d').clearRect(0,0,L.mask.width,L.mask.height); const mc=L.mask.getContext('2d'); mc.save(); if(h){ mc.translate(L.mask.width,0); mc.scale(-1,1); } else { mc.translate(0,L.mask.height); mc.scale(1,-1); } mc.drawImage(tm,0,0); mc.restore(); } pushHistory(h?'水平翻转':'垂直翻转'); renderAll(); }
+  function flipCanvas(h){ layers.forEach(L=>{ const tmp=cloneCanvas(L.canvas); L.ctx.clearRect(0,0,L.canvas.width,L.canvas.height); L.ctx.save(); if(h){ L.ctx.translate(L.canvas.width,0); L.ctx.scale(-1,1); } else { L.ctx.translate(0,L.canvas.height); L.ctx.scale(1,-1); } L.ctx.drawImage(tmp,0,0); L.ctx.restore(); if(L.mask){ const tm=cloneCanvas(L.mask); const mc=L.mask.getContext('2d'); mc.clearRect(0,0,L.mask.width,L.mask.height); mc.save(); if(h){ mc.translate(L.mask.width,0); mc.scale(-1,1); } else { mc.translate(0,L.mask.height); mc.scale(1,-1); } mc.drawImage(tm,0,0); mc.restore(); } }); pushHistory(h?'画布水平翻转':'画布垂直翻转'); renderAll(); }
 
   // ---------- 自由变换 ----------
-  function enterTransform(){
-    if(!layers.length) return;
-    transform = { box:{x:0,y:0,w:width,h:height}, angle:0, cx:width/2, cy:height/2, mode:null };
-    document.getElementById('applyTransformBtn').classList.remove('hidden');
-    document.getElementById('cancelTransformBtn').classList.remove('hidden');
-    setStatus('自由变换：拖控制点缩放，顶部圆点旋转，Enter 应用 / Esc 取消');
-    drawTransformOverlay();
-  }
-  function cancelTransform(){
-    transform=null; octx.clearRect(0,0,width,height);
-    document.getElementById('applyTransformBtn').classList.add('hidden');
-    document.getElementById('cancelTransformBtn').classList.add('hidden');
-  }
-  function handlePositions(){
-    const b=transform.box;
-    return { tl:{x:b.x,y:b.y}, tr:{x:b.x+b.w,y:b.y}, bl:{x:b.x,y:b.y+b.h}, br:{x:b.x+b.w,y:b.y+b.h},
-      t:{x:b.x+b.w/2,y:b.y}, b:{x:b.x+b.w/2,y:b.y+b.h}, l:{x:b.x,y:b.y+b.h/2}, r:{x:b.x+b.w,y:b.y+b.h/2},
-      rot:{x:b.x+b.w/2,y:b.y-30} };
-  }
-  function toLocal(p){
-    const dx=p.x-transform.cx, dy=p.y-transform.cy, c=Math.cos(-transform.angle), s=Math.sin(-transform.angle);
-    return {x:transform.cx+dx*c-dy*s, y:transform.cy+dx*s+dy*c};
-  }
-  function toScreen(p){
-    const dx=p.x-transform.cx, dy=p.y-transform.cy, c=Math.cos(transform.angle), s=Math.sin(transform.angle);
-    return {x:transform.cx+dx*c-dy*s, y:transform.cy+dx*s+dy*c};
-  }
-  function hitTestTransform(pos){
-    const hp=handlePositions(), local=toLocal(pos), R=10/viewScale;
-    for(const k of ['tl','tr','br','bl','t','b','l','r','rot']){ const p=hp[k]; if(Math.hypot(local.x-p.x,local.y-p.y)<=R) return k; }
-    const b=transform.box;
-    if(local.x>=b.x&&local.x<=b.x+b.w&&local.y>=b.y&&local.y<=b.y+b.h) return 'move';
-    return null;
-  }
-  function onDownTransform(pos){
-    const mode=hitTestTransform(pos); if(!mode) return;
-    transform.mode=mode; isDown=true;
-    if(mode==='move'){ transform.startMouse=pos; transform.startBox={...transform.box}; transform.startCenter={x:transform.cx,y:transform.cy}; }
-    else if(mode!=='rotate'){ const opp={tl:'br',tr:'bl',bl:'tr',br:'tl',t:'b',b:'t',l:'r',r:'l'}[mode]; transform.fixedLocal=handlePositions()[opp]; }
-  }
-  function onMoveTransform(pos){
-    if(transform.mode==='rotate'){ transform.angle=Math.atan2(pos.y-transform.cy,pos.x-transform.cx)+Math.PI/2; }
-    else if(transform.mode==='move'){ const dx=pos.x-transform.startMouse.x, dy=pos.y-transform.startMouse.y;
-      transform.box.x=transform.startBox.x+dx; transform.box.y=transform.startBox.y+dy; transform.cx=transform.startCenter.x+dx; transform.cy=transform.startCenter.y+dy; }
-    else { const ml=toLocal(pos), f=transform.fixedLocal;
-      const nx=Math.min(f.x,ml.x), ny=Math.min(f.y,ml.y), nw=Math.max(2,Math.abs(ml.x-f.x)), nh=Math.max(2,Math.abs(ml.y-f.y));
-      if(transform.mode==='t'||transform.mode==='b'){ transform.box.y=ny; transform.box.h=nh; transform.cy=(f.y+ml.y)/2; }
-      else if(transform.mode==='l'||transform.mode==='r'){ transform.box.x=nx; transform.box.w=nw; transform.cx=(f.x+ml.x)/2; }
-      else { transform.box.x=nx; transform.box.y=ny; transform.box.w=nw; transform.box.h=nh; transform.cx=(f.x+ml.x)/2; transform.cy=(f.y+ml.y)/2; } }
-    drawTransformOverlay();
-  }
-  function drawTransformOverlay(){
-    octx.clearRect(0,0,width,height);
-    octx.save(); octx.translate(transform.cx,transform.cy); octx.rotate(transform.angle);
-    const L=activeLayer(); octx.globalAlpha=L?L.opacity:1;
-    if(L) octx.drawImage(L.canvas, transform.box.x-transform.cx, transform.box.y-transform.cy, transform.box.w, transform.box.h);
-    octx.globalAlpha=1; octx.strokeStyle='#ff6b4a'; octx.lineWidth=2/viewScale;
-    octx.strokeRect(transform.box.x-transform.cx, transform.box.y-transform.cy, transform.box.w, transform.box.h);
-    octx.restore();
-    const hp=handlePositions(), R=10/viewScale;
-    for(const k of ['tl','tr','br','bl','t','b','l','r']){ const s=toScreen(hp[k]);
-      octx.fillStyle='#fff'; octx.strokeStyle='#ff6b4a'; octx.lineWidth=2/viewScale;
-      octx.fillRect(s.x-R/2,s.y-R/2,R,R); octx.strokeRect(s.x-R/2,s.y-R/2,R,R); }
-    const rs=toScreen(hp.rot), tm=toScreen(hp.t);
-    octx.beginPath(); octx.moveTo(tm.x,tm.y); octx.lineTo(rs.x,rs.y); octx.strokeStyle='#ff6b4a'; octx.lineWidth=2/viewScale; octx.stroke();
-    octx.beginPath(); octx.arc(rs.x,rs.y,R/1.4,0,Math.PI*2); octx.fillStyle='#ff6b4a'; octx.fill();
-  }
-  function commitTransform(){
-    if(!transform) return;
-    const L=activeLayer(); if(!L){ cancelTransform(); return; }
-    const c=document.createElement('canvas'); c.width=width; c.height=height; const cx2=c.getContext('2d');
-    cx2.translate(transform.cx,transform.cy); cx2.rotate(transform.angle);
-    cx2.drawImage(L.canvas, transform.box.x-transform.cx, transform.box.y-transform.cy, transform.box.w, transform.box.h);
-    L.canvas=c; L.ctx=cx2; cancelTransform(); pushHistory('自由变换'); renderAll(); toast('已应用变换');
-  }
+  function enterTransform(){ if(!layers.length) return; transform={box:{x:0,y:0,w:width,h:height},angle:0,cx:width/2,cy:height/2,mode:null}; document.getElementById('applyTransformBtn').classList.remove('hidden'); document.getElementById('cancelTransformBtn').classList.remove('hidden'); setStatus('自由变换：拖控制点缩放，顶部圆点旋转，Enter 应用 / Esc 取消'); drawTransformOverlay(); }
+  function cancelTransform(){ transform=null; octx.clearRect(0,0,width,height); document.getElementById('applyTransformBtn').classList.add('hidden'); document.getElementById('cancelTransformBtn').classList.add('hidden'); drawOverlayChrome(); }
+  function handlePositions(){ const b=transform.box; return {tl:{x:b.x,y:b.y},tr:{x:b.x+b.w,y:b.y},bl:{x:b.x,y:b.y+b.h},br:{x:b.x+b.w,y:b.y+b.h},t:{x:b.x+b.w/2,y:b.y},b:{x:b.x+b.w/2,y:b.y+b.h},l:{x:b.x,y:b.y+b.h/2},r:{x:b.x+b.w,y:b.y+b.h/2},rot:{x:b.x+b.w/2,y:b.y-30}}; }
+  function toLocal(p){ const dx=p.x-transform.cx, dy=p.y-transform.cy, c=Math.cos(-transform.angle), s=Math.sin(-transform.angle); return {x:transform.cx+dx*c-dy*s,y:transform.cy+dx*s+dy*c}; }
+  function toScreen(p){ const dx=p.x-transform.cx, dy=p.y-transform.cy, c=Math.cos(transform.angle), s=Math.sin(transform.angle); return {x:transform.cx+dx*c-dy*s,y:transform.cy+dx*s+dy*c}; }
+  function hitTestTransform(pos){ const hp=handlePositions(), local=toLocal(pos), R=10/viewScale; for(const k of ['tl','tr','br','bl','t','b','l','r','rot']){ const p=hp[k]; if(Math.hypot(local.x-p.x,local.y-p.y)<=R) return k; } const b=transform.box; if(local.x>=b.x&&local.x<=b.x+b.w&&local.y>=b.y&&local.y<=b.y+b.h) return 'move'; return null; }
+  function onDownTransform(pos){ const mode=hitTestTransform(pos); if(!mode) return; transform.mode=mode; isDown=true; if(mode==='move'){ transform.startMouse=pos; transform.startBox={...transform.box}; transform.startCenter={x:transform.cx,y:transform.cy}; } else if(mode!=='rotate'){ const opp={tl:'br',tr:'bl',bl:'tr',br:'tl',t:'b',b:'t',l:'r',r:'l'}[mode]; transform.fixedLocal=handlePositions()[opp]; } }
+  function onMoveTransform(pos){ if(transform.mode==='rotate'){ transform.angle=Math.atan2(pos.y-transform.cy,pos.x-transform.cx)+Math.PI/2; } else if(transform.mode==='move'){ const dx=pos.x-transform.startMouse.x, dy=pos.y-transform.startMouse.y; transform.box.x=transform.startBox.x+dx; transform.box.y=transform.startBox.y+dy; transform.cx=transform.startCenter.x+dx; transform.cy=transform.startCenter.y+dy; } else { const ml=toLocal(pos), f=transform.fixedLocal, nx=Math.min(f.x,ml.x), ny=Math.min(f.y,ml.y), nw=Math.max(2,Math.abs(ml.x-f.x)), nh=Math.max(2,Math.abs(ml.y-f.y)); if(transform.mode==='t'||transform.mode==='b'){ transform.box.y=ny; transform.box.h=nh; transform.cy=(f.y+ml.y)/2; } else if(transform.mode==='l'||transform.mode==='r'){ transform.box.x=nx; transform.box.w=nw; transform.cx=(f.x+ml.x)/2; } else { transform.box.x=nx; transform.box.y=ny; transform.box.w=nw; transform.box.h=nh; transform.cx=(f.x+ml.x)/2; transform.cy=(f.y+ml.y)/2; } } drawTransformOverlay(); }
+  function drawTransformOverlay(){ octx.clearRect(0,0,width,height); octx.save(); octx.translate(transform.cx,transform.cy); octx.rotate(transform.angle); const L=activeLayer(); octx.globalAlpha=L?L.opacity:1; if(L) octx.drawImage(L.canvas,transform.box.x-transform.cx,transform.box.y-transform.cy,transform.box.w,transform.box.h); octx.globalAlpha=1; octx.strokeStyle='#ff6b4a'; octx.lineWidth=2/viewScale; octx.strokeRect(transform.box.x-transform.cx,transform.box.y-transform.cy,transform.box.w,transform.box.h); octx.restore(); const hp=handlePositions(), R=10/viewScale; for(const k of ['tl','tr','br','bl','t','b','l','r']){ const s=toScreen(hp[k]); octx.fillStyle='#fff'; octx.strokeStyle='#ff6b4a'; octx.lineWidth=2/viewScale; octx.fillRect(s.x-R/2,s.y-R/2,R,R); octx.strokeRect(s.x-R/2,s.y-R/2,R,R); } const rs=toScreen(hp.rot), tm=toScreen(hp.t); octx.beginPath(); octx.moveTo(tm.x,tm.y); octx.lineTo(rs.x,rs.y); octx.strokeStyle='#ff6b4a'; octx.lineWidth=2/viewScale; octx.stroke(); octx.beginPath(); octx.arc(rs.x,rs.y,R/1.4,0,Math.PI*2); octx.fillStyle='#ff6b4a'; octx.fill(); }
+  function commitTransform(){ if(!transform) return; const L=activeLayer(); if(!L){ cancelTransform(); return; } const c=newCanvas(), cx2=c.getContext('2d'); cx2.translate(transform.cx,transform.cy); cx2.rotate(transform.angle); cx2.drawImage(L.canvas,transform.box.x-transform.cx,transform.box.y-transform.cy,transform.box.w,transform.box.h); L.canvas=c; L.ctx=cx2; if(L.mask){ const m=newCanvas(), mc=m.getContext('2d'); mc.translate(transform.cx,transform.cy); mc.rotate(transform.angle); mc.drawImage(L.mask,transform.box.x-transform.cx,transform.box.y-transform.cy,transform.box.w,transform.box.h); L.mask=m; } cancelTransform(); pushHistory('自由变换'); renderAll(); toast('已应用变换'); }
+
+  // ---------- 选区 ----------
+  function makeMaskFromShape(type,x,y,w,h){ const c=newCanvas(), cx=c.getContext('2d'); cx.fillStyle='#fff'; cx.beginPath(); if(type==='rect') cx.rect(x,y,w,h); else cx.ellipse(x+w/2,y+h/2,Math.abs(w/2),Math.abs(h/2),0,0,Math.PI*2); cx.fill(); return c; }
+  function boundsOfMask(mask){ const d=mask.getContext('2d').getImageData(0,0,width,height).data; let minx=width,miny=height,maxx=0,maxy=0,any=false; for(let y=0;y<height;y++)for(let x=0;x<width;x++){ if(d[(y*width+x)*4+3]>0){ any=true; if(x<minx)minx=x; if(x>maxx)maxx=x; if(y<miny)miny=y; if(y>maxy)maxy=y; } } if(!any) return {x:0,y:0,w:width,h:height}; return {x:minx,y:miny,w:maxx-minx+1,h:maxy-miny+1}; }
+  function magicWand(pos,tol){ const data=sctx.getImageData(0,0,width,height).data; const sx=clamp(Math.round(pos.x),0,width-1), sy=clamp(Math.round(pos.y),0,height-1); const idx=(sy*width+sx)*4, tr=data[idx],tg=data[idx+1],tb=data[idx+2],ta=data[idx+3], tol2=tol*tol*3; const mask=newCanvas(), mc=mask.getContext('2d'), mdata=mc.createImageData(width,height), md=mdata.data, visited=new Uint8Array(width*height), stack=[[sx,sy]]; while(stack.length){ const p=stack.pop(), x=p[0], y=p[1]; if(x<0||y<0||x>=width||y>=height) continue; const i=y*width+x; if(visited[i]) continue; visited[i]=1; const q=i*4, dr=data[q]-tr,dg=data[q+1]-tg,db=data[q+2]-tb,da=data[q+3]-ta; if(dr*dr+dg*dg+db*db+da*da<=tol2){ md[q]=255;md[q+1]=255;md[q+2]=255;md[q+3]=255; stack.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]); } } mc.putImageData(mdata,0,0); return mask; }
+  function setSelection(type,mask){ selection={type:type,mask:mask,bounds:boundsOfMask(mask)}; drawOverlayChrome(); }
+  function onDownSel(pos){ isDown=true; startPos=pos; selection={type:tool==='selRect'?'rect':'ellipse',mask:null,bounds:{x:pos.x,y:pos.y,w:0,h:0}}; }
+  function onMoveSel(pos){ const x=Math.min(startPos.x,pos.x), y=Math.min(startPos.y,pos.y), w=Math.abs(pos.x-startPos.x), h=Math.abs(pos.y-startPos.y); selection.mask=makeMaskFromShape(selection.type,x,y,w,h); selection.bounds={x,y,w,h}; octx.clearRect(0,0,width,height); octx.save(); octx.strokeStyle='#fff'; octx.setLineDash([4/viewScale,3/viewScale]); octx.lineWidth=1/viewScale; octx.strokeRect(x,y,w,h); octx.strokeStyle='#000'; octx.lineDashOffset=2/viewScale; octx.strokeRect(x,y,w,h); octx.setLineDash([]); octx.restore(); }
+  function onUpSel(){ if(!selection.bounds||selection.bounds.w<2||selection.bounds.h<2){ selection=null; octx.clearRect(0,0,width,height); drawOverlayChrome(); return; } }
+  function onDownWand(pos){ selection={type:'wand',mask:magicWand(pos,wandTol),bounds:{x:0,y:0,w:0,h:0}}; selection.bounds=boundsOfMask(selection.mask); drawOverlayChrome(); }
+
+  // ---------- 参考线 ----------
+  function snapPos(pos){ let x=pos.x,y=pos.y,thr=6/viewScale; for(const gx of guides.v){ if(Math.abs(pos.x-gx)<thr) x=gx; } for(const gy of guides.h){ if(Math.abs(pos.y-gy)<thr) y=gy; } return {x,y}; }
+  function onDownGuide(pos){ for(let i=0;i<guides.h.length;i++){ if(Math.abs(pos.y-guides.h[i])<6/viewScale){ draggingGuide={axis:'h',i:i}; return; } } for(let i=0;i<guides.v.length;i++){ if(Math.abs(pos.x-guides.v[i])<6/viewScale){ draggingGuide={axis:'v',i:i}; return; } } if(e_shift){ if(pos.x>=0&&pos.x<=width) guides.v.push(pos.x); else return; draggingGuide={axis:'v',i:guides.v.length-1}; } else { if(pos.y>=0&&pos.y<=height) guides.h.push(pos.y); else return; draggingGuide={axis:'h',i:guides.h.length-1}; } drawOverlayChrome(); }
+  function drawOverlayChrome(){ octx.save(); if(showGuides){ octx.strokeStyle='rgba(90,170,255,.85)'; octx.lineWidth=1/viewScale; guides.h.forEach(y=>{ octx.beginPath(); octx.moveTo(0,y+0.5); octx.lineTo(width,y+0.5); octx.stroke(); }); guides.v.forEach(x=>{ octx.beginPath(); octx.moveTo(x+0.5,0); octx.lineTo(x+0.5,height); octx.stroke(); }); } if(selection&&selection.bounds){ const b=selection.bounds; octx.strokeStyle='#fff'; octx.lineWidth=1/viewScale; octx.setLineDash([5/viewScale,4/viewScale]); octx.lineDashOffset=0; octx.strokeRect(b.x+0.5,b.y+0.5,b.w,b.h); octx.strokeStyle='#000'; octx.lineDashOffset=2.5/viewScale; octx.strokeRect(b.x+0.5,b.y+0.5,b.w,b.h); octx.setLineDash([]); } octx.restore(); }
+
+  // ---------- 曲线 ----------
+  const curveEditor=document.getElementById('curveEditor'), ced=curveEditor.getContext('2d');
+  let curveBase=null;
+  function curvePoints(){ return curves[curveChannel]; }
+  function setCurvePoints(arr){ curves[curveChannel]=arr; }
+  function lerpLUT(pts){ const lut=new Array(256); for(let v=0;v<256;v++){ let a=pts[0],b=pts[pts.length-1]; for(let i=0;i<pts.length-1;i++){ if(v>=pts[i][0]&&v<=pts[i+1][0]){ a=pts[i]; b=pts[i+1]; break; } } if(b[0]===a[0]) lut[v]=a[1]; else lut[v]=a[1]+(b[1]-a[1])*(v-a[0])/(b[0]-a[0]); lut[v]=clamp(Math.round(lut[v]),0,255); } return lut; }
+  function drawCurveEditor(){ const W=curveEditor.width,H=curveEditor.height; ced.clearRect(0,0,W,H); ced.fillStyle='#11141d'; ced.fillRect(0,0,W,H); ced.strokeStyle='#2f3548'; ced.lineWidth=1; for(let i=1;i<4;i++){ const p=i/4; ced.beginPath(); ced.moveTo(p*W,0); ced.lineTo(p*W,H); ced.moveTo(0,p*H); ced.lineTo(W,p*H); ced.stroke(); } const pts=curvePoints(); ced.strokeStyle='#ff6b4a'; ced.lineWidth=2; ced.beginPath(); pts.forEach((p,i)=>{ const x=p[0]/255*W, y=H-p[1]/255*H; if(i===0) ced.moveTo(x,y); else ced.lineTo(x,y); }); ced.stroke(); ced.fillStyle='#fff'; pts.forEach(p=>{ const x=p[0]/255*W, y=H-p[1]/255*H; ced.beginPath(); ced.arc(x,y,4,0,Math.PI*2); ced.fill(); }); }
+  function curveFromEvent(e){ const r=curveEditor.getBoundingClientRect(); return {x:clamp(Math.round((e.clientX-r.left)/r.width*255),0,255), y:clamp(Math.round((1-(e.clientY-r.top)/r.height)*255),0,255)}; }
+  let dragPt=null;
+  function curveDown(e){ const m=curveFromEvent(e), pts=curvePoints(); let hit=-1; pts.forEach((p,i)=>{ if(Math.hypot(p[0]-m.x,p[1]-m.y)<12) hit=i; }); if(hit>=0){ dragPt=hit; } else { const np=pts.concat([m]).sort((a,b)=>a[0]-b[0]); setCurvePoints(np); dragPt=np.indexOf(m); } applyCurveLive(); }
+  function curveMove(e){ if(dragPt===null) return; const m=curveFromEvent(e), pts=curvePoints(); if(dragPt>0&&dragPt<pts.length-1){ pts[dragPt]=[clamp(m.x,pts[dragPt-1][0]+1,pts[dragPt+1][0]-1),clamp(m.y,0,255)]; } else { pts[dragPt][1]=clamp(m.y,0,255); } drawCurveEditor(); applyCurveLive(); }
+  function curveUp(){ applyCurveLive(); }
+  function applyCurveLive(){ const L=activeLayer(); if(!L) return; if(!curveBase) curveBase=cloneCanvas(L.canvas); const src=curveBase; const tmp=cloneCanvas(src); applyLUT(tmp); let result=tmp; if(selection){ const px=intersectMask(tmp,selection.mask); const out=newCanvas(),oc=out.getContext('2d'); oc.drawImage(src,0,0); oc.drawImage(px,0,0); result=out; } L.canvas=result; L.ctx=result.getContext('2d'); render(); }
+  function cancelCurve(){ if(curveBase){ const L=activeLayer(); L.canvas=curveBase; L.ctx=curveBase.getContext('2d'); curveBase=null; renderLayersPanel(); } }
+  function hasMaskEdit(){ return editingMask&&activeLayer()&&activeLayer().mask; }
+  function applyLUT(canvas){ const lutR=lerpLUT(curves.r),lutG=lerpLUT(curves.g),lutB=lerpLUT(curves.b),img=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height),d=img.data; for(let i=0;i<d.length;i+=4){ d[i]=lutR[d[i]]; d[i+1]=lutG[d[i+1]]; d[i+2]=lutB[d[i+2]]; } canvas.getContext('2d').putImageData(img,0,0); }
+  function applyCurve(){ const L=activeLayer(); if(!L) return; if(!curveBase){ toast('未做曲线调整'); return; } const src=curveBase; const tmp=cloneCanvas(src); applyLUT(tmp); let result=tmp; if(selection){ const px=intersectMask(tmp,selection.mask); const out=newCanvas(),oc=out.getContext('2d'); oc.drawImage(src,0,0); oc.drawImage(px,0,0); result=out; } L.canvas=result; L.ctx=result.getContext('2d'); curveBase=null; render(); pushHistory('曲线'); toast('已应用曲线'); }
 
   // ---------- 鼠标事件 ----------
-  function onDown(e){
-    if(textInput) return;
-    if(layers.length===0) return;
-    const pos=toCanvas(e);
+  let e_shift=false;
+  function onDown(e){ e_shift=e.shiftKey; if(textInput) return; if(layers.length===0) return; const pos=toCanvas(e);
     if(tool==='transform'){ if(!transform) enterTransform(); onDownTransform(pos); return; }
+    if(tool==='guide'){ onDownGuide(pos); return; }
+    if(tool==='selRect'||tool==='selEllipse'){ onDownSel(pos); return; }
+    if(tool==='wand'){ onDownWand(pos); return; }
     if(tool==='gradient'){ isDown=true; startPos=pos; return; }
     isDown=true; startPos=pos; lastPos=pos;
-    if(tool==='brush'||tool==='eraser'){ beginSnap(); strokeSegment(activeLayer().ctx,pos,pos); render(); }
+    if(tool==='brush'||tool==='eraser'){ if(selection||hasMaskEdit()){ beginPaint(tool==='eraser'); strokeOnTmp(startPos,startPos); drawPreview(); } else { beginSnap(); strokeSegment(activeLayer().ctx,pos,pos); render(); } }
     else if(tool==='select'){ beginSnap(); moveStart=pos; }
-    else if(tool==='text'){ isDown=false; startTextInput(pos); }
+    else if(tool==='text'){ isDown=false; startTextInput(snapPos(pos)); }
     else if(tool==='crop'){ cropRect={a:pos,b:pos}; }
     else if(tool==='eyedropper'){ isDown=false; pickColor(pos); }
   }
   function beginSnap(){ layerSnapshot=cloneCanvas(activeLayer().canvas); }
-  function onMove(e){
-    const pos=toCanvas(e);
+  function onMove(e){ const pos=toCanvas(e);
     if(tool==='transform'&&transform){ if(isDown) onMoveTransform(pos); return; }
-    if(tool==='gradient'){ if(isDown){ octx.clearRect(0,0,width,height); paintGradient(octx,startPos,pos); } return; }
+    if(tool==='guide'&&draggingGuide){ if(draggingGuide.axis==='h') guides.h[draggingGuide.i]=clamp(pos.y,0,height); else guides.v[draggingGuide.i]=clamp(pos.x,0,width); octx.clearRect(0,0,width,height); drawOverlayChrome(); return; }
+    if((tool==='selRect'||tool==='selEllipse')&&isDown){ onMoveSel(pos); return; }
+    if(tool==='gradient'){ if(isDown){ octx.clearRect(0,0,width,height); paintGradient(octx,startPos,pos); drawOverlayChrome(); } return; }
     if(!isDown) return;
-    if(tool==='brush'||tool==='eraser'){ strokeSegment(activeLayer().ctx,lastPos,pos); lastPos=pos; render(); }
-    else if(tool==='select'){ const dx=pos.x-moveStart.x, dy=pos.y-moveStart.y, L=activeLayer();
-      L.ctx.clearRect(0,0,L.canvas.width,L.canvas.height); L.ctx.drawImage(layerSnapshot,dx,dy); render(); }
-    else if(tool==='rect'||tool==='ellipse'||tool==='line'||tool==='arrow'){ octx.clearRect(0,0,width,height); drawShapeOn(octx,startPos,pos); }
-    else if(tool==='crop'){ cropRect.b=pos; octx.clearRect(0,0,width,height);
-      const x=Math.min(cropRect.a.x,cropRect.b.x), y=Math.min(cropRect.a.y,cropRect.b.y), w=Math.abs(cropRect.b.x-cropRect.a.x), h=Math.abs(cropRect.b.y-cropRect.a.y);
-      octx.save(); octx.fillStyle='rgba(0,0,0,.45)'; octx.fillRect(0,0,width,height); octx.clearRect(x,y,w,h);
-      octx.strokeStyle='#ff6b4a'; octx.lineWidth=2; octx.strokeRect(x,y,w,h); octx.restore(); }
+    if(tool==='brush'||tool==='eraser'){ if(paintTmp){ strokeOnTmp(lastPos,pos); lastPos=pos; drawPreview(); } else { strokeSegment(activeLayer().ctx,lastPos,pos); lastPos=pos; render(); } }
+    else if(tool==='select'){ const sp=snapPos(pos), dx=sp.x-moveStart.x, dy=sp.y-moveStart.y, L=activeLayer(); L.ctx.clearRect(0,0,L.canvas.width,L.canvas.height); L.ctx.drawImage(layerSnapshot,dx,dy); render(); }
+    else if(tool==='rect'||tool==='ellipse'||tool==='line'||tool==='arrow'){ if(selection){ octx.clearRect(0,0,width,height); drawShapeOn(octx,startPos,pos); drawOverlayChrome(); } else { octx.clearRect(0,0,width,height); drawShapeOn(octx,startPos,pos); } }
+    else if(tool==='crop'){ cropRect.b=pos; octx.clearRect(0,0,width,height); const x=Math.min(cropRect.a.x,cropRect.b.x),y=Math.min(cropRect.a.y,cropRect.b.y),w=Math.abs(cropRect.b.x-cropRect.a.x),h=Math.abs(cropRect.b.y-cropRect.a.y); octx.save(); octx.fillStyle='rgba(0,0,0,.45)'; octx.fillRect(0,0,width,height); octx.clearRect(x,y,w,h); octx.strokeStyle='#ff6b4a'; octx.lineWidth=2; octx.strokeRect(x,y,w,h); octx.restore(); }
   }
-  function onUp(e){
+  function onUp(e){ const pos=toCanvas(e);
     if(tool==='transform'&&transform){ if(isDown){ isDown=false; transform.mode=null; } return; }
-    if(tool==='gradient'){ if(isDown){ isDown=false; const pos=toCanvas(e); paintGradient(activeLayer().ctx,startPos,pos); octx.clearRect(0,0,width,height); pushHistory('渐变'); renderLayersPanel(); } return; }
-    if(!isDown) return;
-    isDown=false; const pos=toCanvas(e);
-    if(tool==='brush'||tool==='eraser'){ pushHistory('绘制'); renderLayersPanel(); }
+    if(tool==='guide'&&draggingGuide){ draggingGuide=null; return; }
+    if((tool==='selRect'||tool==='selEllipse')&&isDown){ isDown=false; onUpSel(); return; }
+    if(tool==='gradient'){ if(isDown){ isDown=false; const L=activeLayer(); if(selection||hasMaskEdit()){ beginPaint(false); const sc=color,sb=bgColor; if(hasMaskEdit()){ color='#fff'; bgColor='#000'; } paintTmpCtx.globalAlpha=brushOpacity; paintGradient(paintTmpCtx,startPos,pos); if(hasMaskEdit()){ color=sc; bgColor=sb; } commitPaint('渐变'); } else { paintGradient(L.ctx,startPos,pos); pushHistory('渐变'); } octx.clearRect(0,0,width,height); drawOverlayChrome(); renderLayersPanel(); } return; }
+    if(!isDown) return; isDown=false; const p=toCanvas(e);
+    if(tool==='brush'||tool==='eraser'){ if(paintTmp){ commitPaint(editingMask?'编辑蒙版':(tool==='eraser'?'擦除':'绘制')); renderLayersPanel(); } else { pushHistory(tool==='eraser'?'擦除':'绘制'); renderLayersPanel(); } }
     else if(tool==='select'){ pushHistory('移动'); renderLayersPanel(); }
-    else if(tool==='rect'||tool==='ellipse'||tool==='line'||tool==='arrow'){ drawShapeOn(activeLayer().ctx,startPos,pos); octx.clearRect(0,0,width,height); pushHistory('形状'); renderLayersPanel(); }
-    else if(tool==='crop'){ cropRect.b=pos; setStatus('框选后按 Enter 或双击画布应用，Delete 取消'); }
+    else if(tool==='rect'||tool==='ellipse'||tool==='line'||tool==='arrow'){ if(selection||hasMaskEdit()){ beginPaint(false); const sc=color; if(hasMaskEdit()) color='#fff'; drawShapeOn(paintTmpCtx,startPos,p); if(hasMaskEdit()) color=sc; commitPaint('形状'); } else { drawShapeOn(activeLayer().ctx,startPos,p); pushHistory('形状'); } octx.clearRect(0,0,width,height); drawOverlayChrome(); renderLayersPanel(); }
+    else if(tool==='crop'){ cropRect.b=p; setStatus('框选后按 Enter 或双击画布应用，Delete 取消'); }
   }
-  function pickColor(pos){
-    const x=Math.max(0,Math.min(width-1,Math.round(pos.x))), y=Math.max(0,Math.min(height-1,Math.round(pos.y)));
-    const d=sctx.getImageData(x,y,1,1).data;
-    const hex='#'+[d[0],d[1],d[2]].map(v=>v.toString(16).padStart(2,'0')).join('').toUpperCase();
-    setColor(hex); toast('取色：'+hex);
-  }
-
+  function pickColor(pos){ const x=clamp(Math.round(pos.x),0,width-1), y=clamp(Math.round(pos.y),0,height-1), d=sctx.getImageData(x,y,1,1).data, hex='#'+[d[0],d[1],d[2]].map(v=>v.toString(16).padStart(2,'0')).join('').toUpperCase(); setColor(hex); toast('取色：'+hex); }
   function setColor(hex){ color=hex; document.getElementById('colorPicker').value=hex; document.getElementById('curColorHex').textContent='前景 '+hex; }
   function setBgColor(hex){ bgColor=hex; document.getElementById('bgPicker').value=hex; }
 
   // ---------- 文件 / 导出 ----------
-  function newDocument(w,h){
-    width=w||800; height=h||600; layers=[]; activeIdx=0; layerSeq=1; states=[]; histCursor=-1; transform=null;
-    addLayer({name:'背景图层'}); fitView(); updateHistoryUI();
-  }
-  function loadImageFile(file){
-    const img=new Image();
-    img.onload=()=>{ width=img.width; height=img.height; layers=[]; activeIdx=0; layerSeq=1; states=[]; histCursor=-1; transform=null;
-      addLayer({name:'图片',img:img}); fitView(); updateHistoryUI(); toast('已打开图片 '+width+'×'+height); };
-    img.onerror=()=>toast('图片加载失败'); img.src=URL.createObjectURL(file);
-  }
-  function saveProject(){
-    const data={app:'online-ps',version:2,width:width,height:height,
-      layers:layers.map(L=>({name:L.name,visible:L.visible,opacity:L.opacity,type:L.type,data:L.canvas.toDataURL()}))};
-    downloadBlob(new Blob([JSON.stringify(data)],{type:'application/json'}),'project.onlineps.json'); toast('工程已保存');
-  }
-  function loadProjectFile(file){
-    const reader=new FileReader();
-    reader.onload=()=>{ try{
-      const data=JSON.parse(reader.result); width=data.width; height=data.height; layers=[]; layerSeq=1; states=[]; histCursor=-1; transform=null;
-      data.layers.forEach(o=>{ const im=new Image(); im.onload=()=>{ const L=createLayer(o.name,width,height,im); L.visible=o.visible!==false; L.opacity=o.opacity==null?1:o.opacity; L.type=o.type||'raster'; layers.push(L); activeIdx=layers.length-1; if(layers.length===data.layers.length){ fitView(); renderAll(); pushHistory('打开工程'); } }; im.src=o.data; });
-      toast('工程已载入');
-    }catch(err){ toast('工程文件解析失败'); } };
-    reader.readAsText(file);
-  }
-  function exportImage(type,ext){
-    const tmp=document.createElement('canvas'); tmp.width=width; tmp.height=height; const cx=tmp.getContext('2d');
-    if(type==='image/jpeg'){ cx.fillStyle='#ffffff'; cx.fillRect(0,0,width,height); }
-    for(const L of layers){ if(!L.visible) continue; cx.globalAlpha=L.opacity; cx.drawImage(L.canvas,0,0); }
-    cx.globalAlpha=1;
-    tmp.toBlob(blob=>{ downloadBlob(blob,'image.'+ext); toast('已导出 '+ext.toUpperCase()); },type,0.92);
-  }
+  function newDocument(w,h){ width=w||800; height=h||600; layers=[]; activeIdx=0; layerSeq=1; states=[]; histCursor=-1; transform=null; selection=null; guides={h:[],v:[]}; editingMask=false; addLayer({name:'背景图层'}); fitView(); updateHistoryUI(); }
+  function loadImageFile(file){ const img=new Image(); img.onload=()=>{ width=img.width; height=img.height; layers=[]; activeIdx=0; layerSeq=1; states=[]; histCursor=-1; transform=null; selection=null; guides={h:[],v:[]}; img.onload=null; addLayer({name:'图片',img:img}); fitView(); updateHistoryUI(); toast('已打开图片 '+width+'×'+height); }; img.onerror=()=>toast('图片加载失败'); img.src=URL.createObjectURL(file); }
+  function saveProject(){ const data={app:'online-ps',version:3,width:width,height:height,layers:layers.map(L=>({name:L.name,visible:L.visible,opacity:L.opacity,type:L.type,data:L.canvas.toDataURL(),mask:L.mask?L.mask.toDataURL():null}))}; downloadBlob(new Blob([JSON.stringify(data)],{type:'application/json'}),'project.onlineps.json'); toast('工程已保存'); }
+  function loadProjectFile(file){ const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); width=data.width; height=data.height; layers=[]; layerSeq=1; states=[]; histCursor=-1; transform=null; selection=null; guides={h:[],v:[]}; data.layers.forEach(o=>{ const im=new Image(); im.onload=()=>{ const L=createLayer(o.name,width,height,im); L.visible=o.visible!==false; L.opacity=o.opacity==null?1:o.opacity; L.type=o.type||'raster'; if(o.mask){ const m=new Image(); m.onload=()=>{ const mc=newCanvas(); mc.getContext('2d').drawImage(m,0,0); L.mask=mc; }; m.src=o.mask; } layers.push(L); activeIdx=layers.length-1; if(layers.length===data.layers.length){ fitView(); renderAll(); pushHistory('打开工程'); } }; im.src=o.data; }); toast('工程已载入'); }catch(err){ toast('工程文件解析失败'); } }; reader.readAsText(file); }
+  function exportImage(type,ext){ const tmp=newCanvas(), cx=tmp.getContext('2d'); if(type==='image/jpeg'){ cx.fillStyle='#ffffff'; cx.fillRect(0,0,width,height); } for(const L of layers){ if(!L.visible) continue; cx.globalAlpha=L.opacity; cx.drawImage(L.canvas,0,0); } cx.globalAlpha=1; tmp.toBlob(blob=>{ downloadBlob(blob,'image.'+ext); toast('已导出 '+ext.toUpperCase()); },type,0.92); }
   function downloadBlob(blob,name){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
-  function rotateDoc(){
-    if(!layers.length) return;
-    layers.forEach(L=>{ const c=document.createElement('canvas'); c.width=height; c.height=width; const cx=c.getContext('2d');
-      cx.translate(height/2,width/2); cx.rotate(Math.PI/2); cx.drawImage(L.canvas,-width/2,-height/2); L.canvas=c; L.ctx=c.getContext('2d'); });
-    const nw=height, nh=width; width=nw; height=nh; resizeStage(); renderAll(); pushHistory('旋转画布');
+  function rotateDoc(){ if(!layers.length) return; layers.forEach(L=>{ const c=newCanvas(); c.width=height; c.height=width; const cx=c.getContext('2d'); cx.translate(height/2,width/2); cx.rotate(Math.PI/2); cx.drawImage(L.canvas,-width/2,-height/2); L.canvas=c; L.ctx=c.getContext('2d'); if(L.mask){ const m=newCanvas(); m.width=height; m.height=width; const mc=m.getContext('2d'); mc.translate(height/2,width/2); mc.rotate(Math.PI/2); mc.drawImage(L.mask,-width/2,-height/2); L.mask=m; } }); const nw=height,nh=width; width=nw; height=nh; resizeStage(); renderAll(); pushHistory('旋转画布'); }
+  function resizeDocDialog(){ const w=prompt('画布宽度（像素）：',width); if(w===null) return; const h=prompt('画布高度（像素）：',height); if(h===null) return; const nw=parseInt(w,10)||width, nh=parseInt(h,10)||height; if(nw<1||nh<1){ toast('尺寸无效'); return; } layers.forEach(L=>{ const c=newCanvas(); c.width=nw; c.height=nh; c.getContext('2d').drawImage(L.canvas,0,0); L.canvas=c; L.ctx=c.getContext('2d'); if(L.mask){ const m=newCanvas(); m.width=nw; m.height=nh; m.getContext('2d').drawImage(L.mask,0,0); L.mask=m; } }); width=nw; height=nh; resizeStage(); renderAll(); pushHistory('调整画布尺寸'); }
+  function mergeDown(){ if(activeIdx<1){ toast('下方没有可合并的图层'); return; } const top=layers[activeIdx], bottom=layers[activeIdx-1]; bottom.ctx.globalAlpha=top.opacity; bottom.ctx.drawImage(top.canvas,0,0); bottom.ctx.globalAlpha=1; if(bottom.mask&&top.mask){ bottom.mask.getContext('2d').drawImage(top.mask,0,0); } else if(bottom.mask&&!top.mask){ /* keep */ } bottom.mask=bottom.mask||top.mask; layers.splice(activeIdx,1); activeIdx=activeIdx-1; renderAll(); pushHistory('向下合并'); }
+  function addMaskToLayer(){ const L=activeLayer(); if(!L) return; if(!L.mask){ const m=newCanvas(); m.getContext('2d').fillStyle='#fff'; m.getContext('2d').fillRect(0,0,width,height); L.mask=m; } editingMask=true; renderLayersPanel(); pushHistory('添加蒙版'); toast('已添加蒙版，画笔涂白显示/涂黑隐藏'); }
+
+  // ---------- 蒙版/选区按钮 ----------
+  function bindMasksSelection(){
+    document.getElementById('addMask').onclick=addMaskToLayer;
+    document.getElementById('editMask').onclick=()=>{ editingMask=!editingMask; if(editingMask&&!activeLayer().mask) addMaskToLayer(); renderLayersPanel(); setStatus(editingMask?'编辑蒙版：画笔涂白=显示，涂黑=隐藏':'已退出蒙版编辑'); };
+    document.getElementById('selAll').onclick=()=>{ const c=newCanvas(); c.getContext('2d').fillStyle='#fff'; c.getContext('2d').fillRect(0,0,width,height); setSelection('rect',c); setStatus('全选'); };
+    document.getElementById('selNone').onclick=()=>{ selection=null; octx.clearRect(0,0,width,height); drawOverlayChrome(); setStatus('已取消选区'); };
+    document.getElementById('selInv').onclick=()=>{ if(!selection){ toast('没有活动选区'); return; } const inv=newCanvas(), ic=inv.getContext('2d'); ic.drawImage(selection.mask,0,0); const d=ic.getImageData(0,0,width,height).data; for(let i=3;i<d.length;i+=4) d[i]=255-d[i]; ic.putImageData(new ImageData(d,width,height),0,0); setSelection('rect',inv); };
+    document.getElementById('wandTol').oninput=(e)=>{ wandTol=+e.target.value; document.getElementById('wandTolVal').textContent=wandTol; };
+    document.getElementById('toggleGuides').onclick=()=>{ showGuides=!showGuides; octx.clearRect(0,0,width,height); drawOverlayChrome(); };
+    document.getElementById('clearGuides').onclick=()=>{ guides={h:[],v:[]}; octx.clearRect(0,0,width,height); drawOverlayChrome(); };
   }
-  function resizeDocDialog(){
-    const w=prompt('画布宽度（像素）：',width); if(w===null) return;
-    const h=prompt('画布高度（像素）：',height); if(h===null) return;
-    const nw=parseInt(w,10)||width, nh=parseInt(h,10)||height; if(nw<1||nh<1){ toast('尺寸无效'); return; }
-    layers.forEach(L=>{ const c=document.createElement('canvas'); c.width=nw; c.height=nh; c.getContext('2d').drawImage(L.canvas,0,0); L.canvas=c; L.ctx=c.getContext('2d'); });
-    width=nw; height=nh; resizeStage(); renderAll(); pushHistory('调整画布尺寸');
-  }
-  function mergeDown(){
-    if(activeIdx<1){ toast('下方没有可合并的图层'); return; }
-    const top=layers[activeIdx], bottom=layers[activeIdx-1];
-    bottom.ctx.globalAlpha=top.opacity; bottom.ctx.drawImage(top.canvas,0,0); bottom.ctx.globalAlpha=1;
-    layers.splice(activeIdx,1); activeIdx=activeIdx-1; renderAll(); pushHistory('向下合并');
+
+  // ---------- 曲线 UI ----------
+  function bindCurves(){
+    const setCh=(ch)=>{ curveChannel=ch; ['RGB','R','G','B'].forEach(k=>document.getElementById('curve'+k).classList.toggle('on',k.toLowerCase()===ch)); drawCurveEditor(); };
+    document.getElementById('curveRGB').onclick=()=>setCh('rgb');
+    document.getElementById('curveR').onclick=()=>setCh('r');
+    document.getElementById('curveG').onclick=()=>setCh('g');
+    document.getElementById('curveB').onclick=()=>setCh('b');
+    curveEditor.addEventListener('mousedown',curveDown);
+    window.addEventListener('mousemove',(e)=>{ if(dragPt!==null) curveMove(e); });
+    window.addEventListener('mouseup',()=>{ if(dragPt!==null) curveUp(); });
+    curveEditor.addEventListener('dblclick',(e)=>{ const m=curveFromEvent(e), pts=curvePoints(); let hit=-1; pts.forEach((p,i)=>{ if(Math.hypot(p[0]-m.x,p[1]-m.y)<12) hit=i; }); if(hit>0&&hit<pts.length-1){ pts.splice(hit,1); setCurvePoints(pts); drawCurveEditor(); } });
+    document.getElementById('applyCurve').onclick=applyCurve;
+    document.getElementById('resetCurve').onclick=()=>{ setCurvePoints([[0,0],[255,255]]); if(curveChannel==='rgb'){ curves.r=[[0,0],[255,255]]; curves.g=[[0,0],[255,255]]; curves.b=[[0,0],[255,255]]; } else { curves[curveChannel]=[[0,0],[255,255]]; } cancelCurve(); drawCurveEditor(); toast('曲线已重置'); };
   }
 
   // ---------- 事件绑定 ----------
   function bind(){
     stage.addEventListener('mousedown',onDown);
-    window.addEventListener('mousemove',onMove);
     window.addEventListener('mouseup',onUp);
     document.querySelectorAll('.tool').forEach(el=>{ el.onclick=()=>setTool(el.dataset.tool); });
-
     document.getElementById('colorPicker').oninput=(e)=>setColor(e.target.value.toUpperCase());
     document.getElementById('bgPicker').oninput=(e)=>setBgColor(e.target.value.toUpperCase());
     document.getElementById('swapColor').onclick=()=>{ const t=color; setColor(bgColor); setBgColor(t); };
     document.getElementById('brushSize').oninput=(e)=>{ brushSize=+e.target.value; document.getElementById('brushSizeVal').textContent=brushSize; };
     document.getElementById('brushOpacity').oninput=(e)=>{ brushOpacity=+e.target.value/100; document.getElementById('brushOpacityVal').textContent=e.target.value; };
-
     const bindAdj=(id,key)=>{ document.getElementById(id).oninput=(e)=>{ pendingAdj[key]=+e.target.value; document.getElementById(id+'Val').textContent=e.target.value; beginAdjustIfNeeded(); previewAdjust(); }; };
     bindAdj('adjBrightness','brightness'); bindAdj('adjContrast','contrast'); bindAdj('adjSaturation','saturation'); bindAdj('adjHue','hue'); bindAdj('adjBlur','blur');
     document.getElementById('adjGray').onchange=(e)=>{ pendingAdj.gray=e.target.checked; beginAdjustIfNeeded(); previewAdjust(); };
@@ -835,20 +541,15 @@
     document.getElementById('cancelAdj').onclick=()=>{ cancelAdjust(); renderLayersPanel(); toast('已取消调整'); };
     document.getElementById('sharpenBtn').onclick=sharpenLayer;
     document.getElementById('resetAdj').onclick=()=>{ cancelAdjust(); toast('参数已重置'); };
-
     document.querySelectorAll('.presets button').forEach(b=>{ b.onclick=()=>applyPreset(b.dataset.preset); });
     document.getElementById('gradLinear').onclick=()=>{ gradientType='linear'; document.getElementById('gradLinear').classList.add('on'); document.getElementById('gradRadial').classList.remove('on'); };
     document.getElementById('gradRadial').onclick=()=>{ gradientType='radial'; document.getElementById('gradRadial').classList.add('on'); document.getElementById('gradLinear').classList.remove('on'); };
-
     document.getElementById('addLayer').onclick=()=>addLayer({name:'图层 '+layerSeq});
-    document.getElementById('dupLayer').onclick=()=>{ if(!layers.length) return; const L=activeLayer(); const c=cloneCanvas(L.canvas);
-      const nl={id:layerSeq++,name:L.name+' 副本',canvas:c,ctx:c.getContext('2d'),visible:L.visible,opacity:L.opacity,type:L.type};
-      layers.splice(activeIdx+1,0,nl); activeIdx=activeIdx+1; pushHistory('复制图层'); renderAll(); };
+    document.getElementById('dupLayer').onclick=()=>{ if(!layers.length) return; const L=activeLayer(); const c=cloneCanvas(L.canvas); const nl={id:layerSeq++,name:L.name+' 副本',canvas:c,ctx:c.getContext('2d'),visible:L.visible,opacity:L.opacity,type:L.type,mask:L.mask?cloneCanvas(L.mask):null}; layers.splice(activeIdx+1,0,nl); activeIdx=activeIdx+1; pushHistory('复制图层'); renderAll(); };
     document.getElementById('delLayer').onclick=()=>{ if(layers.length<=1){ toast('至少保留一个图层'); return; } layers.splice(activeIdx,1); if(activeIdx>=layers.length) activeIdx=layers.length-1; pushHistory('删除图层'); renderAll(); };
     document.getElementById('mergeDown').onclick=mergeDown;
     document.getElementById('flipLayerH').onclick=()=>flipLayer(true);
     document.getElementById('flipLayerV').onclick=()=>flipLayer(false);
-
     document.getElementById('newDoc').onclick=()=>{ const w=prompt('新建画布宽度：',800); if(w===null) return; const h=prompt('新建画布高度：',600); if(h===null) return; newDocument(parseInt(w,10)||800,parseInt(h,10)||600); };
     document.getElementById('openImage').onclick=()=>document.getElementById('fileImage').click();
     document.getElementById('fileImage').onchange=(e)=>{ if(e.target.files[0]) loadImageFile(e.target.files[0]); e.target.value=''; };
@@ -864,34 +565,36 @@
     document.getElementById('flipCanvasV').onclick=()=>flipCanvas(false);
     document.getElementById('applyTransformBtn').onclick=commitTransform;
     document.getElementById('cancelTransformBtn').onclick=()=>{ cancelTransform(); render(); setStatus('已取消变换'); };
-
     document.getElementById('zoomIn').onclick=()=>{ viewScale=Math.min(4,viewScale*1.2); applyViewScale(); };
     document.getElementById('zoomOut').onclick=()=>{ viewScale=Math.max(0.05,viewScale/1.2); applyViewScale(); };
     document.getElementById('zoomFit').onclick=fitView;
     document.getElementById('undoBtn').onclick=undo;
     document.getElementById('redoBtn').onclick=redo;
-
-    stage.addEventListener('dblclick',()=>{ if(tool==='crop'&&cropRect) applyCrop(); else if(tool==='transform'&&transform) commitTransform(); });
-
-    window.addEventListener('keydown',(e)=>{
-      if(e.target.tagName==='INPUT') return;
-      const mod=e.ctrlKey||e.metaKey;
-      if(mod&&e.key.toLowerCase()==='z'){ e.preventDefault(); e.shiftKey?redo():undo(); return; }
-      if(mod&&e.key.toLowerCase()==='y'){ e.preventDefault(); redo(); return; }
-      if(mod&&e.key.toLowerCase()==='t'){ e.preventDefault(); setTool('transform'); return; }
-      if(e.key==='Enter'){ if(tool==='transform'&&transform) commitTransform(); else if(tool==='crop'&&cropRect) applyCrop(); return; }
-      if(e.key==='Escape'){ if(transform) cancelTransform(); if(cropRect){ cropRect=null; octx.clearRect(0,0,width,height); } return; }
+    bindMasksSelection(); bindCurves();
+    stage.addEventListener('dblclick',(e)=>{
+      if(tool==='crop'&&cropRect){ applyCrop(); return; }
+      if(tool==='transform'&&transform){ commitTransform(); return; }
+      if(tool==='guide'){ const pos=toCanvas(e); for(let i=0;i<guides.h.length;i++){ if(Math.abs(pos.y-guides.h[i])<6/viewScale){ guides.h.splice(i,1); octx.clearRect(0,0,width,height); drawOverlayChrome(); return; } } for(let i=0;i<guides.v.length;i++){ if(Math.abs(pos.x-guides.v[i])<6/viewScale){ guides.v.splice(i,1); octx.clearRect(0,0,width,height); drawOverlayChrome(); return; } } }
+    });
+    window.addEventListener('keydown',(ev)=>{
+      if(ev.target.tagName==='INPUT') return;
+      const mod=ev.ctrlKey||ev.metaKey;
+      if(mod&&ev.key.toLowerCase()==='z'){ ev.preventDefault(); ev.shiftKey?redo():undo(); return; }
+      if(mod&&ev.key.toLowerCase()==='y'){ ev.preventDefault(); redo(); return; }
+      if(mod&&ev.key.toLowerCase()==='t'){ ev.preventDefault(); setTool('transform'); return; }
+      if(mod&&ev.key.toLowerCase()==='a'){ ev.preventDefault(); document.getElementById('selAll').click(); return; }
+      if(mod&&ev.key.toLowerCase()==='d'){ ev.preventDefault(); document.getElementById('selNone').click(); return; }
+      if(mod&&ev.shiftKey&&ev.key.toLowerCase()==='i'){ ev.preventDefault(); document.getElementById('selInv').click(); return; }
+      if(ev.key==='Enter'){ if(tool==='transform'&&transform) commitTransform(); else if(tool==='crop'&&cropRect) applyCrop(); return; }
+      if(ev.key==='Escape'){ if(transform) cancelTransform(); if(cropRect){ cropRect=null; octx.clearRect(0,0,width,height); drawOverlayChrome(); } return; }
       const map={v:'select',b:'brush',e:'eraser',r:'rect',o:'ellipse',l:'line',a:'arrow',g:'gradient',t:'text',c:'crop',i:'eyedropper'};
-      if(map[e.key.toLowerCase()]) setTool(map[e.key.toLowerCase()]);
-      if(e.key.toLowerCase()==='x'){ const t=color; setColor(bgColor); setBgColor(t); }
-      if(e.key==='Delete'&&tool==='crop'){ cropRect=null; octx.clearRect(0,0,width,height); }
+      if(map[ev.key.toLowerCase()]) setTool(map[ev.key.toLowerCase()]);
+      if(ev.key.toLowerCase()==='x'){ const t=color; setColor(bgColor); setBgColor(t); }
+      if(ev.key==='Delete'&&tool==='crop'){ cropRect=null; octx.clearRect(0,0,width,height); drawOverlayChrome(); }
     });
   }
 
-  function init(){
-    if(!stage||!overlay){ console.error('canvas missing'); return; }
-    resizeStage(); bind(); newDocument(800,600); setColor('#ff6b4a'); setStatus('就绪 — 开始编辑吧');
-  }
+  function init(){ if(!stage||!overlay){ console.error('canvas missing'); return; } resizeStage(); bind(); newDocument(800,600); setColor('#ff6b4a'); drawCurveEditor(); setStatus('就绪 — 开始编辑吧'); }
   init();
 })();
 </script>
