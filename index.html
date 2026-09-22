@@ -100,6 +100,35 @@
   .hist-item:hover{border-color:var(--coral);}
   .hist-item.active{border-color:var(--coral);color:#fff;background:#3a2a25;}
   #curveEditor{width:100%;height:200px;background:#11141d;border:1px solid var(--line);border-radius:6px;cursor:crosshair;touch-action:none;}
+  /* ---------- 批量处理模态框 ---------- */
+  .modal-mask{position:fixed;inset:0;background:rgba(8,10,16,.66);display:flex;align-items:center;justify-content:center;z-index:300;}
+  .modal-mask.hidden{display:none;}
+  .modal{width:min(780px,94vw);max-height:90vh;background:var(--panel);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.55);}
+  .modal-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);flex:0 0 auto;}
+  .modal-head h2{margin:0;font-size:16px;color:var(--text);}
+  .modal-head .x{margin-left:auto;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:6px;}
+  .modal-head .x:hover{color:var(--coral);background:var(--coral-soft);}
+  .modal-body{padding:16px 18px;overflow-y:auto;flex:1 1 auto;}
+  .modal-foot{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap;flex:0 0 auto;}
+  .modal-foot .spacer{flex:1;}
+  .drop{border:2px dashed var(--line);border-radius:12px;padding:26px 16px;text-align:center;color:var(--muted);cursor:pointer;transition:.15s;background:rgba(255,255,255,.02);}
+  .drop:hover{border-color:var(--coral);color:var(--text);}
+  .batch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px;margin-top:14px;}
+  .batch-card{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;overflow:hidden;position:relative;}
+  .batch-card img{width:100%;height:84px;object-fit:cover;display:block;background:#11141d;}
+  .batch-card .meta{font-size:11px;color:var(--muted);padding:6px 8px;line-height:1.45;word-break:break-all;}
+  .batch-card .del{position:absolute;top:4px;right:4px;background:rgba(17,20,29,.82);border:none;color:#fff;border-radius:6px;width:22px;height:22px;cursor:pointer;font-size:13px;line-height:1;}
+  .batch-card .del:hover{background:var(--coral);}
+  .opt-row{display:flex;align-items:center;gap:8px;margin:14px 0 0;flex-wrap:wrap;}
+  .opt-row label{font-size:13px;color:var(--muted);min-width:64px;}
+  .opt-row select,.opt-row input[type=number]{background:#11141d;color:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:inherit;font-size:13px;outline:none;}
+  .opt-row select:hover,.opt-row input[type=number]:hover{border-color:var(--coral);}
+  .opt-row input[type=range]{accent-color:var(--coral);}
+  .batch-stat{font-size:12px;color:var(--muted);}
+  .progress{height:8px;background:var(--panel-2);border-radius:6px;overflow:hidden;margin-top:12px;}
+  .progress>div{height:100%;width:0;background:var(--coral);transition:width .15s;}
+  .progress.hidden{display:none;}
+  .hint{font-size:11px;color:var(--muted);line-height:1.5;margin-top:6px;}
 </style>
 </head>
 <body>
@@ -120,6 +149,7 @@
       <button class="mbtn primary" id="exportPng">导出PNG</button>
       <button class="mbtn" id="exportJpg">JPG</button>
       <button class="mbtn" id="exportWebp">WebP</button>
+      <button class="mbtn warn" id="batchBtn" title="批量导入图片并按比例缩放、转换格式后打包导出">⚡ 批量处理</button>
     </div>
     <div class="spacer"></div>
     <div class="menus">
@@ -328,6 +358,56 @@
 <input type="file" id="fileImage" accept="image/*" />
 <input type="file" id="fileProject" accept=".json,application/json" />
 <div class="toast" id="toast"></div>
+
+<!-- 批量处理模态框 -->
+<div class="modal-mask hidden" id="batchMask">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>⚡ 批量处理图片</h2>
+      <button class="x" id="batchClose" title="关闭">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="drop" id="batchDrop">
+        <div style="font-size:30px;margin-bottom:6px;">🖼️</div>
+        点击此处，或将图片拖拽到这里批量导入（支持多选）
+        <div class="hint">可一次选择多张图片；支持浏览器可解码的格式（JPG / PNG / WebP / GIF 首帧等）</div>
+      </div>
+      <input type="file" id="batchFiles" accept="image/*" multiple />
+      <div class="batch-grid" id="batchGrid"></div>
+      <div class="opt-row">
+        <label>缩放比例</label>
+        <select id="batchRatio">
+          <option value="0.25">25%</option>
+          <option value="0.5" selected>50%</option>
+          <option value="0.75">75%</option>
+          <option value="1">100%（原尺寸）</option>
+          <option value="custom">自定义…</option>
+        </select>
+        <input type="number" id="batchRatioCustom" min="1" max="1000" value="40" style="width:72px;display:none;" /> <span style="font-size:13px;color:var(--muted);">%</span>
+      </div>
+      <div class="opt-row">
+        <label>输出格式</label>
+        <select id="batchFormat">
+          <option value="jpg">JPG</option>
+          <option value="png">PNG</option>
+          <option value="webp" selected>WebP</option>
+        </select>
+        <label style="min-width:auto;margin-left:8px;">质量</label>
+        <input type="range" id="batchQuality" min="10" max="100" value="92" style="width:160px;" />
+        <span id="batchQualityVal" style="font-size:12px;width:34px;text-align:right;color:var(--text);">92</span>
+      </div>
+      <div class="progress hidden" id="batchProgress"><div></div></div>
+      <div class="batch-stat" id="batchStat" style="margin-top:10px;"></div>
+    </div>
+    <div class="modal-foot">
+      <span class="batch-stat" id="batchCount">共 0 张</span>
+      <div class="spacer"></div>
+      <button class="mbtn" id="batchClear">清空</button>
+      <button class="mbtn" id="batchCancel">取消</button>
+      <button class="mbtn primary" id="batchRun">开始处理并打包下载</button>
+    </div>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -678,6 +758,22 @@
     document.getElementById('exportPng').onclick=()=>exportImage('image/png','png');
     document.getElementById('exportJpg').onclick=()=>exportImage('image/jpeg','jpg');
     document.getElementById('exportWebp').onclick=()=>exportImage('image/webp','webp');
+    // 批量处理
+    document.getElementById('batchBtn').onclick=openBatch;
+    document.getElementById('batchClose').onclick=closeBatch;
+    document.getElementById('batchCancel').onclick=closeBatch;
+    document.getElementById('batchClear').onclick=()=>{ batchItems.forEach(it=>URL.revokeObjectURL(it.url)); batchItems=[]; renderBatch(); };
+    document.getElementById('batchRun').onclick=runBatch;
+    batchDrop.onclick=()=>batchFilesInput.click();
+    batchFilesInput.onchange=(e)=>{ addBatchFiles(e.target.files); e.target.value=''; };
+    batchRatioSel.onchange=()=>{ batchRatioCustom.style.display = batchRatioSel.value==='custom' ? 'inline-block' : 'none'; renderBatch(); };
+    batchRatioCustom.oninput=renderBatch;
+    batchFormat.onchange=()=>{ renderBatch(); };
+    batchQuality.oninput=()=>{ batchQualityVal.textContent=batchQuality.value; };
+    ['dragenter','dragover'].forEach(ev=>batchDrop.addEventListener(ev,e=>{ e.preventDefault(); batchDrop.style.borderColor='var(--coral)'; }));
+    ['dragleave','drop'].forEach(ev=>batchDrop.addEventListener(ev,e=>{ e.preventDefault(); batchDrop.style.borderColor=''; }));
+    batchDrop.addEventListener('drop',e=>{ if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length) addBatchFiles(e.dataTransfer.files); });
+    batchMask.addEventListener('click',e=>{ if(e.target===batchMask) closeBatch(); });
     document.getElementById('resizeDoc').onclick=resizeDocDialog;
     document.getElementById('rotateDoc').onclick=rotateDoc;
     document.getElementById('flipCanvasH').onclick=()=>flipCanvas(true);
@@ -712,6 +808,7 @@
       if(tool==='guide'){ const pos=toCanvas(e); for(let i=0;i<guides.h.length;i++){ if(Math.abs(pos.y-guides.h[i])<6/viewScale){ guides.h.splice(i,1); octx.clearRect(0,0,width,height); drawOverlayChrome(); return; } } for(let i=0;i<guides.v.length;i++){ if(Math.abs(pos.x-guides.v[i])<6/viewScale){ guides.v.splice(i,1); octx.clearRect(0,0,width,height); drawOverlayChrome(); return; } } }
     });
     window.addEventListener('keydown',(ev)=>{
+      if(!document.getElementById('batchMask').classList.contains('hidden')){ if(ev.key==='Escape') closeBatch(); return; }
       if(ev.target.tagName==='INPUT') return;
       const mod=ev.ctrlKey||ev.metaKey;
       if(mod&&(ev.key==='0'||ev.key===')')){ ev.preventDefault(); fitView(); return; }
@@ -731,6 +828,128 @@
       if(ev.key.toLowerCase()==='x'){ const t=color; setColor(bgColor); setBgColor(t); }
       if(ev.key==='Delete'&&tool==='crop'){ cropRect=null; octx.clearRect(0,0,width,height); drawOverlayChrome(); }
     });
+  }
+
+  // ---------- 批量处理（多图导入 → 按比例缩放 → 转格式 → 打包 ZIP） ----------
+  const batchMask=document.getElementById('batchMask');
+  const batchFilesInput=document.getElementById('batchFiles');
+  const batchGrid=document.getElementById('batchGrid');
+  const batchDrop=document.getElementById('batchDrop');
+  const batchCount=document.getElementById('batchCount');
+  const batchStat=document.getElementById('batchStat');
+  const batchProgress=document.getElementById('batchProgress');
+  const batchRatioSel=document.getElementById('batchRatio');
+  const batchRatioCustom=document.getElementById('batchRatioCustom');
+  const batchFormat=document.getElementById('batchFormat');
+  const batchQuality=document.getElementById('batchQuality');
+  const batchQualityVal=document.getElementById('batchQualityVal');
+  let batchItems=[];
+  let batchBusy=false;
+
+  function loadImg(src){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=()=>rej(new Error('load fail')); im.src=src; }); }
+  function escapeHtml(s){ return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function stripExt(n){ return n.replace(/\.[^./\\]+$/,''); }
+  function stamp(){ const d=new Date(), p=n=>(''+n).padStart(2,'0'); return ''+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds()); }
+  function getBatchRatio(){ if(batchRatioSel.value==='custom'){ const v=parseFloat(batchRatioCustom.value); return (isFinite(v)&&v>0)?v/100:1; } return parseFloat(batchRatioSel.value)||1; }
+
+  function openBatch(){ batchMask.classList.remove('hidden'); }
+  function closeBatch(){ if(batchBusy) return; batchMask.classList.add('hidden'); }
+
+  function renderBatch(){
+    batchGrid.innerHTML='';
+    const ratio=getBatchRatio();
+    batchItems.forEach((it,idx)=>{
+      const w=Math.max(1,Math.round(it.w*ratio)), h=Math.max(1,Math.round(it.h*ratio));
+      const card=document.createElement('div'); card.className='batch-card';
+      card.innerHTML='<button class="del" data-i="'+idx+'">✕</button>'
+        +'<img src="'+it.url+'" alt="">'
+        +'<div class="meta">'+escapeHtml(it.name)+'<br>'+it.w+'×'+it.h+' → <b style="color:var(--coral)">'+w+'×'+h+'</b></div>';
+      batchGrid.appendChild(card);
+    });
+    batchGrid.querySelectorAll('.del').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; URL.revokeObjectURL(batchItems[i].url); batchItems.splice(i,1); renderBatch(); });
+    batchCount.textContent='共 '+batchItems.length+' 张';
+    batchStat.textContent = batchItems.length ? '输出尺寸按当前比例实时预览；处理后打包为 ZIP 下载。' : '';
+  }
+
+  function addBatchFiles(fileList){
+    const files=Array.from(fileList).filter(f=>f.type.startsWith('image/'));
+    if(!files.length){ toast('未识别到图片文件'); return; }
+    files.forEach(f=>{
+      const url=URL.createObjectURL(f);
+      loadImg(url).then(im=>{ batchItems.push({file:f,name:f.name,url:url,w:im.naturalWidth||im.width,h:im.naturalHeight||im.height}); renderBatch(); })
+        .catch(()=>{ URL.revokeObjectURL(url); toast('图片加载失败：'+f.name); });
+    });
+  }
+
+  async function runBatch(){
+    if(batchBusy) return;
+    if(!batchItems.length){ toast('请先添加图片'); return; }
+    batchBusy=true;
+    const ratio=getBatchRatio(), type=getBatchType(), ext=getBatchExt(), q=parseInt(batchQuality.value,10)/100;
+    const usedNames={}, zipFiles=[];
+    batchProgress.classList.remove('hidden');
+    const bar=batchProgress.firstElementChild; bar.style.width='0%';
+    setStatus('批量处理中… 0/'+batchItems.length);
+    try{
+      for(let i=0;i<batchItems.length;i++){
+        const it=batchItems[i];
+        const im=await loadImg(it.url);
+        const w=Math.max(1,Math.round(it.w*ratio)), h=Math.max(1,Math.round(it.h*ratio));
+        const c=document.createElement('canvas'); c.width=w; c.height=h;
+        const cx=c.getContext('2d');
+        if(type==='image/jpeg'){ cx.fillStyle='#ffffff'; cx.fillRect(0,0,w,h); } // JPG 无透明通道，填白底
+        cx.drawImage(im,0,0,w,h);
+        const blob=await new Promise(res=>c.toBlob(res,type,q));
+        if(!blob) throw new Error('当前浏览器不支持导出 '+ext.toUpperCase()+'，请换 PNG/JPG');
+        const buf=new Uint8Array(await blob.arrayBuffer());
+        let base=stripExt(it.name), fname=base+'.'+ext, k=2;
+        while(usedNames[fname]){ fname=base+'_'+(k++)+'.'+ext; }
+        usedNames[fname]=1;
+        zipFiles.push({name:fname,data:buf});
+        bar.style.width=Math.round((i+1)/batchItems.length*100)+'%';
+        setStatus('批量处理中… '+(i+1)+'/'+batchItems.length);
+      }
+      const zip=buildZip(zipFiles);
+      downloadBlob(zip,'batch_'+stamp()+'.zip');
+      toast('已处理 '+zipFiles.length+' 张，已打包下载');
+      setStatus('批量处理完成：'+zipFiles.length+' 张');
+      batchStat.textContent='已完成 '+zipFiles.length+' 张，ZIP 已下载（batch_'+stamp()+'.zip）。';
+    }catch(err){ toast('处理出错：'+((err&&err.message)||err)); setStatus('批量处理失败'); }
+    finally{ batchBusy=false; setTimeout(()=>batchProgress.classList.add('hidden'),600); }
+  }
+  function getBatchType(){ const f=batchFormat.value; return f==='jpg'?'image/jpeg':f==='png'?'image/png':'image/webp'; }
+  function getBatchExt(){ return batchFormat.value; }
+
+  // 纯 JS ZIP 写入器（store 模式，无压缩，零依赖）
+  function crc32(buf){
+    if(!crc32.t){ crc32.t=[]; for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); crc32.t[n]=c>>>0; } }
+    let c=0xFFFFFFFF;
+    for(let i=0;i<buf.length;i++) c=crc32.t[(c^buf[i])&0xFF]^(c>>>8);
+    return (c^0xFFFFFFFF)>>>0;
+  }
+  function buildZip(files){
+    const enc=new TextEncoder(), chunks=[], central=[]; let offset=0;
+    files.forEach(f=>{
+      const nb=enc.encode(f.name), data=f.data, crc=crc32(data);
+      const lh=new DataView(new ArrayBuffer(30));
+      lh.setUint32(0,0x04034b50,true); lh.setUint16(4,20,true); lh.setUint16(6,0x0800,true); lh.setUint16(8,0,true);
+      lh.setUint16(10,0,true); lh.setUint16(12,0,true); lh.setUint32(14,crc,true);
+      lh.setUint32(18,data.length,true); lh.setUint32(22,data.length,true); lh.setUint16(26,nb.length,true); lh.setUint16(28,0,true);
+      chunks.push(new Uint8Array(lh.buffer),nb,data);
+      const ch=new DataView(new ArrayBuffer(46));
+      ch.setUint32(0,0x02014b50,true); ch.setUint16(4,20,true); ch.setUint16(6,20,true); ch.setUint16(8,0x0800,true);
+      ch.setUint16(10,0,true); ch.setUint16(12,0,true); ch.setUint32(16,crc,true);
+      ch.setUint32(20,data.length,true); ch.setUint32(24,data.length,true); ch.setUint16(28,nb.length,true);
+      ch.setUint16(30,0,true); ch.setUint16(32,0,true); ch.setUint16(34,0,true); ch.setUint16(36,0,true); ch.setUint32(38,0,true); ch.setUint32(42,offset,true);
+      central.push({h:new Uint8Array(ch.buffer),n:nb});
+      offset+=30+nb.length+data.length;
+    });
+    let cs=0; central.forEach(c=>{ chunks.push(c.h,c.n); cs+=c.h.length+c.n.length; });
+    const eo=new DataView(new ArrayBuffer(22));
+    eo.setUint32(0,0x06054b50,true); eo.setUint16(4,0,true); eo.setUint16(6,0,true);
+    eo.setUint16(8,files.length,true); eo.setUint16(10,files.length,true); eo.setUint32(12,cs,true); eo.setUint32(16,offset,true); eo.setUint16(20,0,true);
+    chunks.push(new Uint8Array(eo.buffer));
+    return new Blob(chunks,{type:'application/zip'});
   }
 
   function init(){ if(!stage||!overlay){ console.error('canvas missing'); return; } resizeStage(); bind(); newDocument(800,600); setColor('#ff6b4a'); drawCurveEditor(); setStatus('就绪 — 开始编辑吧'); }
