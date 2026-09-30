@@ -93,6 +93,12 @@
   #textInput{position:absolute;z-index:30;border:1px dashed var(--coral);background:rgba(255,255,255,.06);color:#fff;font-family:sans-serif;outline:none;padding:2px 4px;min-width:40px;}
   input[type=file]{display:none;}
   .hint{font-size:11px;color:var(--muted);line-height:1.5;margin-top:6px;}
+  .coral-btn{background:var(--coral)!important;border:1px solid var(--coral)!important;color:#fff!important;font-weight:600;}
+  .coral-btn:hover{filter:brightness(1.08);}
+  .wm-box{border:1px solid var(--line);border-radius:8px;padding:10px 10px 2px;margin-bottom:8px;background:rgba(255,107,74,.05);}
+  .wm-box .row{margin-bottom:8px;}
+  .wm-num{width:70px;flex:0 0 auto;background:#11141d;border:1px solid var(--line);color:var(--text);border-radius:5px;padding:3px 6px;font-size:12px;font-family:inherit;}
+  .wm-box select{flex:1;background:#11141d;border:1px solid var(--line);color:var(--text);border-radius:5px;padding:4px 6px;font-size:12px;font-family:inherit;outline:none;cursor:pointer;}
   .toast{position:fixed;bottom:46px;left:50%;transform:translateX(-50%);background:#11141d;border:1px solid var(--coral);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:200;box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;transition:.25s;pointer-events:none;}
   .toast.show{opacity:1;}
   #historyList{display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;}
@@ -242,7 +248,27 @@
         </div>
         <div class="layer-actions">
           <button id="contentFill">内容识别填充</button>
+          <button id="wmRemoveBtn" class="coral-btn" title="按相对位置自动去除固定角标类水印（无需框选）">🧼 一键去水印</button>
         </div>
+        <div class="wm-box">
+          <div class="row">
+            <label>位置</label>
+            <select id="wmPosS">
+              <option value="br">右下角</option>
+              <option value="bl">左下角</option>
+              <option value="tr">右上角</option>
+              <option value="tl">左上角</option>
+              <option value="center">居中</option>
+              <option value="custom">自定义</option>
+            </select>
+          </div>
+          <div class="row"><label>宽 %</label><input type="number" id="wmWpctS" min="1" max="100" value="30" class="wm-num" /><span class="val">%</span></div>
+          <div class="row"><label>高 %</label><input type="number" id="wmHpctS" min="1" max="100" value="20" class="wm-num" /><span class="val">%</span></div>
+          <div class="row hidden" id="wmCustomS"><label>左上%</label><input type="number" id="wmXpctS" min="0" max="100" value="0" class="wm-num" /><input type="number" id="wmYpctS" min="0" max="100" value="0" class="wm-num" /></div>
+          <div class="row"><label>柔化</label><input type="range" id="wmFeatherS" min="0" max="60" value="14" /><span class="val" id="wmFeatherSVal">14</span></div>
+          <div class="row"><label>填充范围</label><input type="range" id="wmRangeS" min="4" max="40" value="18" /><span class="val" id="wmRangeSVal">18</span></div>
+        </div>
+        <div class="hint">🧼 一键去水印：按相对位置自动去除角标类水印，无需框选，结果可撤销（Ctrl+Z）。位置/大小可调以适配非角标水印。</div>
         <div class="row">
           <label>填充范围</label><input type="range" id="fillRange" min="4" max="40" value="18" /><span class="val" id="fillRangeVal">18</span>
         </div>
@@ -845,6 +871,22 @@
     document.getElementById('fillPath').onclick=fillPath;
     document.getElementById('delPath').onclick=delPath;
     document.getElementById('contentFill').onclick=contentFill;
+    // 单图一键去水印
+    const wmRemoveBtn=document.getElementById('wmRemoveBtn');
+    const wmPosS=document.getElementById('wmPosS');
+    const wmWpctS=document.getElementById('wmWpctS');
+    const wmHpctS=document.getElementById('wmHpctS');
+    const wmXpctS=document.getElementById('wmXpctS');
+    const wmYpctS=document.getElementById('wmYpctS');
+    const wmFeatherS=document.getElementById('wmFeatherS');
+    const wmRangeS=document.getElementById('wmRangeS');
+    const wmCustomS=document.getElementById('wmCustomS');
+    const wmFeatherSVal=document.getElementById('wmFeatherSVal');
+    const wmRangeSVal=document.getElementById('wmRangeSVal');
+    wmPosS.onchange=()=>{ wmCustomS.classList.toggle('hidden', wmPosS.value!=='custom'); };
+    wmFeatherS.oninput=()=>{ wmFeatherSVal.textContent=wmFeatherS.value; };
+    wmRangeS.oninput=()=>{ wmRangeSVal.textContent=wmRangeS.value; };
+    wmRemoveBtn.onclick=removeWatermarkSingle;
     document.getElementById('fillRange').oninput=(e)=>{ fillRange=+e.target.value; document.getElementById('fillRangeVal').textContent=fillRange; };
     stage.addEventListener('dblclick',(e)=>{
       if(tool==='path'){ const pos=toCanvas(e); const hit=hitPath(pos); if(hit){ paths[hit.idx].closed=!paths[hit.idx].closed; drawOverlayChrome(); toast('已'+(paths[hit.idx].closed?'闭合':'开放')+'路径'); } return; }
@@ -1064,6 +1106,33 @@
       else if(strength>0){ d[ti*4]=Math.round(d[ti*4]*(1-strength)+fr*strength); d[ti*4+1]=Math.round(d[ti*4+1]*(1-strength)+fg*strength); d[ti*4+2]=Math.round(d[ti*4+2]*(1-strength)+fb*strength); }
     }
     ctx.putImageData(img,0,0);
+  }
+
+  // 单图一键去水印：在激活图层上按相对位置自动去除角标类水印（复用 computeRegion / inpaintCanvas）
+  function removeWatermarkSingle(){
+    const L=activeLayer();
+    if(!L){ toast('请先打开一张图片'); return; }
+    const w=width, h=height;
+    if(!(w>0&&h>0)){ toast('画布尺寸无效'); return; }
+    const $=(id)=>document.getElementById(id);
+    const pos=$('wmPosS').value;
+    const cfg={
+      pos:pos,
+      Wp: clamp(parseFloat($('wmWpctS').value)||30,1,100)/100,
+      Hp: clamp(parseFloat($('wmHpctS').value)||20,1,100)/100,
+      Xp: clamp(parseFloat($('wmXpctS').value)||0,0,100)/100,
+      Yp: clamp(parseFloat($('wmYpctS').value)||0,0,100)/100,
+      feather: clamp(parseInt($('wmFeatherS').value,10)||0,0,60),
+      range: clamp(parseInt($('wmRangeS').value,10)||18,4,40)
+    };
+    const rg=computeRegion(w,h,cfg);
+    if(rg.w<=0||rg.h<=0){ toast('去水印区域无效，请调整大小'); return; }
+    inpaintCanvas(L.canvas, rg.x, rg.y, rg.w, rg.h, cfg.feather, cfg.range);
+    render();
+    const labelMap={br:'右下',bl:'左下',tr:'右上',tl:'左上',center:'居中',custom:'自定义'};
+    pushHistory('去除水印·'+(labelMap[pos]||''));
+    toast('已去除水印（'+rg.w+'×'+rg.h+'）');
+    setStatus('已去除水印（'+(labelMap[pos]||'')+'，'+rg.w+'×'+rg.h+'）');
   }
 
   // 纯 JS ZIP 写入器（store 模式，无压缩，零依赖）
