@@ -119,6 +119,7 @@
   .batch-card .meta{font-size:11px;color:var(--muted);padding:6px 8px;line-height:1.45;word-break:break-all;}
   .batch-card .del{position:absolute;top:4px;right:4px;background:rgba(17,20,29,.82);border:none;color:#fff;border-radius:6px;width:22px;height:22px;cursor:pointer;font-size:13px;line-height:1;}
   .batch-card .del:hover{background:var(--coral);}
+  .badge-wm{position:absolute;top:4px;left:4px;background:var(--coral);color:#fff;border:none;border-radius:6px;font-size:11px;line-height:1;padding:3px 6px;font-weight:600;pointer-events:none;}
   .opt-row{display:flex;align-items:center;gap:8px;margin:14px 0 0;flex-wrap:wrap;}
   .opt-row label{font-size:13px;color:var(--muted);min-width:64px;}
   .opt-row select,.opt-row input[type=number]{background:#11141d;color:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:inherit;font-size:13px;outline:none;}
@@ -149,7 +150,7 @@
       <button class="mbtn primary" id="exportPng">导出PNG</button>
       <button class="mbtn" id="exportJpg">JPG</button>
       <button class="mbtn" id="exportWebp">WebP</button>
-      <button class="mbtn warn" id="batchBtn" title="批量导入图片并按比例缩放、转换格式后打包导出">⚡ 批量处理</button>
+      <button class="mbtn warn" id="batchBtn" title="批量导入图片：可缩放 / 转换格式，或按设定区域批量去除水印，最后打包导出 ZIP">⚡ 批量处理</button>
     </div>
     <div class="spacer"></div>
     <div class="menus">
@@ -395,6 +396,46 @@
         <label style="min-width:auto;margin-left:8px;">质量</label>
         <input type="range" id="batchQuality" min="10" max="100" value="92" style="width:160px;" />
         <span id="batchQualityVal" style="font-size:12px;width:34px;text-align:right;color:var(--text);">92</span>
+      </div>
+      <div class="opt-row" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">
+        <label>操作</label>
+        <select id="batchOp">
+          <option value="convert" selected>缩放 / 转换格式</option>
+          <option value="watermark">去除水印</option>
+        </select>
+      </div>
+      <div id="wmPanel" style="display:none;">
+        <div class="opt-row">
+          <label>水印位置</label>
+          <select id="wmPos">
+            <option value="br" selected>右下角</option>
+            <option value="bl">左下角</option>
+            <option value="tr">右上角</option>
+            <option value="tl">左上角</option>
+            <option value="center">居中</option>
+            <option value="custom">自定义区域</option>
+          </select>
+        </div>
+        <div class="opt-row" id="wmSizeRow">
+          <label>区域大小</label>
+          <input type="number" id="wmWpct" min="1" max="100" value="30" style="width:60px;" /> <span style="font-size:13px;color:var(--muted);">% 宽</span>
+          <input type="number" id="wmHpct" min="1" max="100" value="20" style="width:60px;margin-left:8px;" /> <span style="font-size:13px;color:var(--muted);">% 高</span>
+        </div>
+        <div class="opt-row" id="wmCustomRow" style="display:none;">
+          <label>左上角</label>
+          <span style="font-size:12px;color:var(--muted);">X <input type="number" id="wmXpct" min="0" max="100" value="0" style="width:54px;" />% &nbsp; Y <input type="number" id="wmYpct" min="0" max="100" value="0" style="width:54px;" />%</span>
+        </div>
+        <div class="opt-row">
+          <label>边缘柔化</label>
+          <input type="range" id="wmFeather" min="0" max="60" value="14" style="width:160px;" />
+          <span id="wmFeatherVal" style="font-size:12px;width:34px;text-align:right;color:var(--text);">14</span>
+        </div>
+        <div class="opt-row">
+          <label>填充范围</label>
+          <input type="range" id="wmRange" min="4" max="40" value="18" style="width:160px;" />
+          <span id="wmRangeVal" style="font-size:12px;width:34px;text-align:right;color:var(--text);">18</span>
+        </div>
+        <div class="hint">将为每张图在相对位置生成去水印区域并自动内容识别填充（扩散 + 纹理采样）。适合固定角标类水印；区域过大或纹理极复杂时效果有限，可多试几次或缩小区域。</div>
       </div>
       <div class="progress hidden" id="batchProgress"><div></div></div>
       <div class="batch-stat" id="batchStat" style="margin-top:10px;"></div>
@@ -770,6 +811,10 @@
     batchRatioCustom.oninput=renderBatch;
     batchFormat.onchange=()=>{ renderBatch(); };
     batchQuality.oninput=()=>{ batchQualityVal.textContent=batchQuality.value; };
+    batchOp.onchange=()=>{ const on=batchOp.value==='watermark'; wmPanel.style.display=on?'block':'none'; if(on){ wmCustomRow.style.display = wmPos.value==='custom'?'flex':'none'; } renderBatch(); };
+    wmPos.onchange=()=>{ wmCustomRow.style.display = wmPos.value==='custom'?'flex':'none'; };
+    wmFeather.oninput=()=>{ wmFeatherVal.textContent=wmFeather.value; };
+    wmRange.oninput=()=>{ wmRangeVal.textContent=wmRange.value; };
     ['dragenter','dragover'].forEach(ev=>batchDrop.addEventListener(ev,e=>{ e.preventDefault(); batchDrop.style.borderColor='var(--coral)'; }));
     ['dragleave','drop'].forEach(ev=>batchDrop.addEventListener(ev,e=>{ e.preventDefault(); batchDrop.style.borderColor=''; }));
     batchDrop.addEventListener('drop',e=>{ if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length) addBatchFiles(e.dataTransfer.files); });
@@ -843,6 +888,19 @@
   const batchFormat=document.getElementById('batchFormat');
   const batchQuality=document.getElementById('batchQuality');
   const batchQualityVal=document.getElementById('batchQualityVal');
+  const batchOp=document.getElementById('batchOp');
+  const wmPanel=document.getElementById('wmPanel');
+  const wmPos=document.getElementById('wmPos');
+  const wmSizeRow=document.getElementById('wmSizeRow');
+  const wmCustomRow=document.getElementById('wmCustomRow');
+  const wmWpct=document.getElementById('wmWpct');
+  const wmHpct=document.getElementById('wmHpct');
+  const wmXpct=document.getElementById('wmXpct');
+  const wmYpct=document.getElementById('wmYpct');
+  const wmFeather=document.getElementById('wmFeather');
+  const wmFeatherVal=document.getElementById('wmFeatherVal');
+  const wmRange=document.getElementById('wmRange');
+  const wmRangeVal=document.getElementById('wmRangeVal');
   let batchItems=[];
   let batchBusy=false;
 
@@ -858,17 +916,19 @@
   function renderBatch(){
     batchGrid.innerHTML='';
     const ratio=getBatchRatio();
+    const wmOn=batchOp.value==='watermark';
     batchItems.forEach((it,idx)=>{
       const w=Math.max(1,Math.round(it.w*ratio)), h=Math.max(1,Math.round(it.h*ratio));
       const card=document.createElement('div'); card.className='batch-card';
-      card.innerHTML='<button class="del" data-i="'+idx+'">✕</button>'
+      const badge=wmOn?'<span class="badge-wm">去水印</span>':'';
+      card.innerHTML='<button class="del" data-i="'+idx+'">✕</button>'+badge
         +'<img src="'+it.url+'" alt="">'
         +'<div class="meta">'+escapeHtml(it.name)+'<br>'+it.w+'×'+it.h+' → <b style="color:var(--coral)">'+w+'×'+h+'</b></div>';
       batchGrid.appendChild(card);
     });
     batchGrid.querySelectorAll('.del').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; URL.revokeObjectURL(batchItems[i].url); batchItems.splice(i,1); renderBatch(); });
     batchCount.textContent='共 '+batchItems.length+' 张';
-    batchStat.textContent = batchItems.length ? '输出尺寸按当前比例实时预览；处理后打包为 ZIP 下载。' : '';
+    batchStat.textContent = batchItems.length ? (wmOn?'将按设定区域自动去水印；处理后打包为 ZIP 下载。':'输出尺寸按当前比例实时预览；处理后打包为 ZIP 下载。') : '';
   }
 
   function addBatchFiles(fileList){
@@ -886,10 +946,11 @@
     if(!batchItems.length){ toast('请先添加图片'); return; }
     batchBusy=true;
     const ratio=getBatchRatio(), type=getBatchType(), ext=getBatchExt(), q=parseInt(batchQuality.value,10)/100;
+    const op=batchOp.value, cfg=(op==='watermark')?getWmConfig():null;
     const usedNames={}, zipFiles=[];
     batchProgress.classList.remove('hidden');
     const bar=batchProgress.firstElementChild; bar.style.width='0%';
-    setStatus('批量处理中… 0/'+batchItems.length);
+    setStatus((op==='watermark'?'去水印':'批量处理')+'中… 0/'+batchItems.length);
     try{
       for(let i=0;i<batchItems.length;i++){
         const it=batchItems[i];
@@ -899,6 +960,7 @@
         const cx=c.getContext('2d');
         if(type==='image/jpeg'){ cx.fillStyle='#ffffff'; cx.fillRect(0,0,w,h); } // JPG 无透明通道，填白底
         cx.drawImage(im,0,0,w,h);
+        if(cfg){ const rg=computeRegion(w,h,cfg); inpaintCanvas(c, rg.x, rg.y, rg.w, rg.h, cfg.feather, cfg.range); }
         const blob=await new Promise(res=>c.toBlob(res,type,q));
         if(!blob) throw new Error('当前浏览器不支持导出 '+ext.toUpperCase()+'，请换 PNG/JPG');
         const buf=new Uint8Array(await blob.arrayBuffer());
@@ -907,18 +969,102 @@
         usedNames[fname]=1;
         zipFiles.push({name:fname,data:buf});
         bar.style.width=Math.round((i+1)/batchItems.length*100)+'%';
-        setStatus('批量处理中… '+(i+1)+'/'+batchItems.length);
+        setStatus((op==='watermark'?'去水印':'批量处理')+'中… '+(i+1)+'/'+batchItems.length);
       }
       const zip=buildZip(zipFiles);
       downloadBlob(zip,'batch_'+stamp()+'.zip');
-      toast('已处理 '+zipFiles.length+' 张，已打包下载');
-      setStatus('批量处理完成：'+zipFiles.length+' 张');
-      batchStat.textContent='已完成 '+zipFiles.length+' 张，ZIP 已下载（batch_'+stamp()+'.zip）。';
+      const doneMsg=(op==='watermark'?'去水印完成：':'批量处理完成：')+zipFiles.length+' 张';
+      toast(doneMsg+'，已打包下载');
+      setStatus(doneMsg);
+      batchStat.textContent='已完成 '+zipFiles.length+' 张，ZIP 已下载（batch_'+stamp()+'.zip）。'+(cfg?'已按设定区域去除水印。':'');
     }catch(err){ toast('处理出错：'+((err&&err.message)||err)); setStatus('批量处理失败'); }
     finally{ batchBusy=false; setTimeout(()=>batchProgress.classList.add('hidden'),600); }
   }
   function getBatchType(){ const f=batchFormat.value; return f==='jpg'?'image/jpeg':f==='png'?'image/png':'image/webp'; }
   function getBatchExt(){ return batchFormat.value; }
+
+  // ---------- 批量去水印：区域配置 + 内容识别填充（扩散 + 纹理采样） ----------
+  function getWmConfig(){
+    return {
+      pos: wmPos.value,
+      Wp: clamp(parseFloat(wmWpct.value)||30,1,100)/100,
+      Hp: clamp(parseFloat(wmHpct.value)||20,1,100)/100,
+      Xp: clamp(parseFloat(wmXpct.value)||0,0,100)/100,
+      Yp: clamp(parseFloat(wmYpct.value)||0,0,100)/100,
+      feather: clamp(parseInt(wmFeather.value,10)||0,0,60),
+      range: clamp(parseInt(wmRange.value,10)||18,4,40)
+    };
+  }
+  function computeRegion(w,h,cfg){
+    let rw=Math.max(1,Math.round(w*cfg.Wp)), rh=Math.max(1,Math.round(h*cfg.Hp));
+    rw=Math.min(rw,w); rh=Math.min(rh,h);
+    let rx,ry;
+    if(cfg.pos==='custom'){ rx=Math.round(w*cfg.Xp); ry=Math.round(h*cfg.Yp); }
+    else { switch(cfg.pos){
+      case 'bl': rx=0; ry=h-rh; break;
+      case 'tr': rx=w-rw; ry=0; break;
+      case 'tl': rx=0; ry=0; break;
+      case 'center': rx=(w-rw)/2; ry=(h-rh)/2; break;
+      default: rx=w-rw; ry=h-rh; // br
+    } }
+    rx=clamp(Math.round(rx),0,Math.max(0,w-rw));
+    ry=clamp(Math.round(ry),0,Math.max(0,h-rh));
+    return {x:rx,y:ry,w:rw,h:rh};
+  }
+  // 对离屏 canvas c 的矩形区域做「最近背景」填充（去除固定角标类水印）
+  // 算法：以区域外所有背景像素为源做多源 BFS，区域内每个像素取「最近源像素」的颜色（把紧邻水印的背景推回区域内），
+  // 再做少量平滑迭代消除最近源填充的 Voronoi 接缝；O(区域) 复杂度，任意尺寸区域都能正确填满，优于单图 contentFill 的扩散近似。
+  function inpaintCanvas(c, rx, ry, rw, rh, feather, range){
+    const ctx=c.getContext('2d'); const w=c.width, h=c.height;
+    rx=clamp(rx|0,0,Math.max(0,w-1)); ry=clamp(ry|0,0,Math.max(0,h-1));
+    rw=Math.min(rw, w-rx); rh=Math.min(rh, h-ry);
+    if(rw<=0||rh<=0) return;
+    const x0=rx, y0=ry, x1=rx+rw, y1=ry+rh;
+    const img=ctx.getImageData(0,0,w,h), d=img.data;
+    const inRegion=(x,y)=> x>=x0&&x<x1&&y>=y0&&y<y1;
+    // 限定处理窗口，避免对整张大图做全画布 BFS（源像素本就在区域边界附近）
+    const R=Math.max(rw,rh);
+    const bx0=Math.max(0,x0-R), by0=Math.max(0,y0-R), bx1=Math.min(w,x1+R), by1=Math.min(h,y1+R);
+    const lw=bx1-bx0, lh=by1-by0;
+    if(lw<=0||lh<=0) return;
+    const L=(x,y)=>(y-by0)*lw+(x-bx0); // 窗口局部索引
+    const dist=new Float32Array(lw*lh); dist.fill(Infinity);
+    const sxi=new Int32Array(lw*lh).fill(-1), syi=new Int32Array(lw*lh).fill(-1);
+    const q=[]; let qh=0;
+    for(let y=by0;y<by1;y++) for(let x=bx0;x<bx1;x++){ if(!inRegion(x,y)){ const k=L(x,y); dist[k]=0; sxi[k]=x; syi[k]=y; q.push(k); } }
+    while(qh<q.length){
+      const k=q[qh++]; const x=bx0+(k%lw), y=by0+((k/lw)|0); const nd=dist[k]+1;
+      if(x>bx0){ const n=k-1; if(dist[n]>nd){ dist[n]=nd; sxi[n]=sxi[k]; syi[n]=syi[k]; q.push(n); } }
+      if(x<bx1-1){ const n=k+1; if(dist[n]>nd){ dist[n]=nd; sxi[n]=sxi[k]; syi[n]=syi[k]; q.push(n); } }
+      if(y>by0){ const n=k-lw; if(dist[n]>nd){ dist[n]=nd; sxi[n]=sxi[k]; syi[n]=syi[k]; q.push(n); } }
+      if(y<by1-1){ const n=k+lw; if(dist[n]>nd){ dist[n]=nd; sxi[n]=sxi[k]; syi[n]=syi[k]; q.push(n); } }
+    }
+    const targets=[];
+    for(let y=y0;y<y1;y++) for(let x=x0;x<x1;x++) targets.push(y*w+x);
+    if(!targets.length) return;
+    const fill=new Float32Array(w*h*3);
+    for(const ti of targets){ const k=L(ti%w,(ti/w)|0); const si=(syi[k]*w+sxi[k]); fill[ti*3]=d[si*4]; fill[ti*3+1]=d[si*4+1]; fill[ti*3+2]=d[si*4+2]; }
+    // 少量平滑迭代消除 Voronoi 接缝（区域外源像素作固定边界）
+    const SMOOTH=clamp(Math.round(range/3),2,12);
+    for(let it=0;it<SMOOTH;it++){
+      for(const ti of targets){ const x=ti%w, y=(ti/w)|0; let sr=0,sg=0,sb=0,c=0;
+        if(x>0){ if(inRegion(x-1,y)){ const n=ti-1; sr+=fill[n*3]; sg+=fill[n*3+1]; sb+=fill[n*3+2]; } else { const m=ti-1; sr+=d[m*4]; sg+=d[m*4+1]; sb+=d[m*4+2]; } c++; }
+        if(x<w-1){ if(inRegion(x+1,y)){ const n=ti+1; sr+=fill[n*3]; sg+=fill[n*3+1]; sb+=fill[n*3+2]; } else { const m=ti+1; sr+=d[m*4]; sg+=d[m*4+1]; sb+=d[m*4+2]; } c++; }
+        if(y>0){ if(inRegion(x,y-1)){ const n=ti-w; sr+=fill[n*3]; sg+=fill[n*3+1]; sb+=fill[n*3+2]; } else { const m=ti-w; sr+=d[m*4]; sg+=d[m*4+1]; sb+=d[m*4+2]; } c++; }
+        if(y<h-1){ if(inRegion(x,y+1)){ const n=ti+w; sr+=fill[n*3]; sg+=fill[n*3+1]; sb+=fill[n*3+2]; } else { const m=ti+w; sr+=d[m*4]; sg+=d[m*4+1]; sb+=d[m*4+2]; } c++; }
+        if(c>0){ fill[ti*3]=sr/c; fill[ti*3+1]=sg/c; fill[ti*3+2]=sb/c; }
+      }
+    }
+    for(const ti of targets){
+      const x=ti%w, y=(ti/w)|0;
+      const fr=clamp(Math.round(fill[ti*3]),0,255), fg=clamp(Math.round(fill[ti*3+1]),0,255), fb=clamp(Math.round(fill[ti*3+2]),0,255);
+      let strength=1;
+      if(feather>0){ const distE=Math.min(x-x0, x1-1-x, y-y0, y1-1-y); strength=clamp(distE/feather,0,1); }
+      if(strength>=1){ d[ti*4]=fr; d[ti*4+1]=fg; d[ti*4+2]=fb; }
+      else if(strength>0){ d[ti*4]=Math.round(d[ti*4]*(1-strength)+fr*strength); d[ti*4+1]=Math.round(d[ti*4+1]*(1-strength)+fg*strength); d[ti*4+2]=Math.round(d[ti*4+2]*(1-strength)+fb*strength); }
+    }
+    ctx.putImageData(img,0,0);
+  }
 
   // 纯 JS ZIP 写入器（store 模式，无压缩，零依赖）
   function crc32(buf){
