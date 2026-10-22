@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="zh-CN" data-page-node-id="nVwXdLIq3a80KREqpflyzz">
+<head data-page-node-id="KppZlzdmFVEDZNIYBGDzNG">
+<meta charset="UTF-8" data-page-node-id="ZkGlkWMfVHcUZBVivyIEza" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="bzOCKpyoq6vPjOudRJQ6qB" />
 <title>在线 PS · 图片编辑器</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" data-page-node-id="lc1JGrKeXABL3LPLMFWeeO" />
 <style>
   :root{
     --coral:#ff6b4a; --coral-dark:#e25536; --coral-soft:#fff1ec;
@@ -138,409 +138,409 @@
   .hint{font-size:11px;color:var(--muted);line-height:1.5;margin-top:6px;}
 </style>
 </head>
-<body>
-<div id="app">
-  <header class="topbar">
-    <div class="brand"><span class="dot"></span>在线 PS</div>
-    <div class="menus">
-      <button class="mbtn" id="newDoc">新建</button>
-      <button class="mbtn" id="openImage">打开图片</button>
-      <button class="mbtn" id="openProject">打开工程</button>
-      <button class="mbtn" id="saveProject">保存工程</button>
-      <span class="tool-sep" style="width:1px;height:24px;background:var(--line);display:inline-block;"></span>
-      <button class="mbtn" id="resizeDoc">画布尺寸</button>
-      <button class="mbtn" id="rotateDoc">旋转90°</button>
-      <button class="mbtn" id="flipCanvasH">画布↔翻转</button>
-      <button class="mbtn" id="flipCanvasV">画布↕翻转</button>
-      <span class="tool-sep" style="width:1px;height:24px;background:var(--line);display:inline-block;"></span>
-      <button class="mbtn primary" id="exportPng">导出PNG</button>
-      <button class="mbtn" id="exportJpg">JPG</button>
-      <button class="mbtn" id="exportWebp">WebP</button>
-      <button class="mbtn warn" id="batchBtn" title="批量导入图片：可缩放 / 转换格式，或按设定区域批量去除水印，最后打包导出 ZIP">⚡ 批量处理</button>
+<body data-page-node-id="x4cgciZKcDk4v0jwNl0WgE">
+<div id="app" data-page-node-id="IsF88GwLnL2pXdrYy9Juge">
+  <header class="topbar" data-page-node-id="H3ylICcuTZQAnObYDH5ECj">
+    <div class="brand" data-page-node-id="ABuQX08jqc321hYRMBkoMH"><span class="dot" data-page-node-id="KET96o6DzKLu2IcZ5P5obF"></span>在线 PS</div>
+    <div class="menus" data-page-node-id="X77IB5EZU9rqpSRCzqQbfP">
+      <button class="mbtn" id="newDoc" data-page-node-id="j4YQP76TJFcbSQkAeGMNyx">新建</button>
+      <button class="mbtn" id="openImage" data-page-node-id="8PD6DDHeEsV0gd5CwzFBaJ">打开图片</button>
+      <button class="mbtn" id="openProject" data-page-node-id="5zmWicJHLIKjnqSVpkWQs7">打开工程</button>
+      <button class="mbtn" id="saveProject" data-page-node-id="q7bTAPfKTVcsH3l2alGeqA">保存工程</button>
+      <span class="tool-sep" style="width:1px;height:24px;background:var(--line);display:inline-block;" data-page-node-id="GSFnEqh7eSADLLC4lwKFX7"></span>
+      <button class="mbtn" id="resizeDoc" data-page-node-id="lEA0TrQml4aUwkZf4MscT4">画布尺寸</button>
+      <button class="mbtn" id="rotateDoc" data-page-node-id="kspelbvH1IPhZNku3A4OoA">旋转90°</button>
+      <button class="mbtn" id="flipCanvasH" data-page-node-id="psRXwCkkt70wQOkggSEojw">画布↔翻转</button>
+      <button class="mbtn" id="flipCanvasV" data-page-node-id="4UPSJV6TClZGjIBkHWYF1t">画布↕翻转</button>
+      <span class="tool-sep" style="width:1px;height:24px;background:var(--line);display:inline-block;" data-page-node-id="7ZvC4ujRXVXFTGK498gW9D"></span>
+      <button class="mbtn primary" id="exportPng" data-page-node-id="6TP5aVKnNAXva6cPz36NIQ">导出PNG</button>
+      <button class="mbtn" id="exportJpg" data-page-node-id="7M0d7uuqvzOtRWWCrnIWFg">JPG</button>
+      <button class="mbtn" id="exportWebp" data-page-node-id="yJZ8MBr60UgNsYqAySDk7P">WebP</button>
+      <button class="mbtn warn" id="batchBtn" title="批量导入图片：可缩放 / 转换格式，或按设定区域批量去除水印，最后打包导出 ZIP" data-page-node-id="hRqA4iiDoXB6YoJ2A1PSU7">⚡ 批量处理</button>
     </div>
-    <div class="spacer"></div>
-    <div class="menus">
-      <button class="mbtn" id="undoBtn" title="撤销 (Ctrl+Z)">↶ 撤销</button>
-      <button class="mbtn" id="redoBtn" title="重做 (Ctrl+Y)">↷ 重做</button>
-      <button class="mbtn warn hidden" id="applyTransformBtn">✓ 应用变换</button>
-      <button class="mbtn hidden" id="cancelTransformBtn">✕ 取消</button>
+    <div class="spacer" data-page-node-id="DIxkSFjTW1S5pchD3FnvtG"></div>
+    <div class="menus" data-page-node-id="SWapYzWqnOLmLl5V6Z6zXF">
+      <button class="mbtn" id="undoBtn" title="撤销 (Ctrl+Z)" data-page-node-id="lRwMK0OSiCPeOJBFfgeHVa">↶ 撤销</button>
+      <button class="mbtn" id="redoBtn" title="重做 (Ctrl+Y)" data-page-node-id="abHdOWOXVPPE5hLJDN6wmZ">↷ 重做</button>
+      <button class="mbtn warn hidden" id="applyTransformBtn" data-page-node-id="AXU87Bk9N45OtYx9F3xpaM">✓ 应用变换</button>
+      <button class="mbtn hidden" id="cancelTransformBtn" data-page-node-id="5P1YECslBGipscfDX1KSgw">✕ 取消</button>
     </div>
   </header>
 
-  <div class="workspace">
-    <aside class="tools" id="toolbar">
-      <div class="tool active" data-tool="select" title="移动/选择">⤡<span class="tip">移动 (V)</span></div>
-      <div class="tool" data-tool="brush" title="画笔">🖌<span class="tip">画笔 (B)</span></div>
-      <div class="tool" data-tool="eraser" title="橡皮擦">🧽<span class="tip">橡皮擦 (E)</span></div>
-      <div class="tool-sep"></div>
-      <div class="tool" data-tool="rect" title="矩形">▭<span class="tip">矩形 (R)</span></div>
-      <div class="tool" data-tool="ellipse" title="椭圆">◯<span class="tip">椭圆 (O)</span></div>
-      <div class="tool" data-tool="line" title="直线">／<span class="tip">直线 (L)</span></div>
-      <div class="tool" data-tool="arrow" title="箭头">➤<span class="tip">箭头 (A)</span></div>
-      <div class="tool" data-tool="gradient" title="渐变">▦<span class="tip">渐变 (G)</span></div>
-      <div class="tool" data-tool="text" title="文字">T<span class="tip">文字 (T)</span></div>
-      <div class="tool-sep"></div>
-      <div class="tool" data-tool="crop" title="裁剪">✂<span class="tip">裁剪 (C)</span></div>
-      <div class="tool" data-tool="transform" title="自由变换">⤢<span class="tip">自由变换 (Ctrl+T)</span></div>
-      <div class="tool" data-tool="eyedropper" title="取色">💧<span class="tip">取色 (I)</span></div>
-      <div class="tool-sep"></div>
-      <div class="tool" data-tool="selRect" title="矩形选区">⬚<span class="tip">矩形选区</span></div>
-      <div class="tool" data-tool="selEllipse" title="椭圆选区">⬭<span class="tip">椭圆选区</span></div>
-      <div class="tool" data-tool="wand" title="魔棒">✷<span class="tip">魔棒</span></div>
-      <div class="tool" data-tool="guide" title="参考线">📏<span class="tip">参考线 (拖拽/吸附)</span></div>
-      <div class="tool" data-tool="path" title="路径">✒<span class="tip">路径 (P)</span></div>
+  <div class="workspace" data-page-node-id="5ilqfbQ9DdFctKYTYkr9Ro">
+    <aside class="tools" id="toolbar" data-page-node-id="kihvAj3b8d2elypetpxO2t">
+      <div class="tool active" data-tool="select" title="移动/选择" data-page-node-id="YFKWitM3YA5Hc9FYNRX1vl">⤡<span class="tip" data-page-node-id="6NSSYBsAOm5lDiDZyCNsfn">移动 (V)</span></div>
+      <div class="tool" data-tool="brush" title="画笔" data-page-node-id="jwETaHBF6Eo7gmnUd5qyuC">🖌<span class="tip" data-page-node-id="bfUAIxhNFHvGvg0Hs7BH1F">画笔 (B)</span></div>
+      <div class="tool" data-tool="eraser" title="橡皮擦" data-page-node-id="bTZKVjSpbSpoPdHvZqGrHB">🧽<span class="tip" data-page-node-id="mIbZDbC4en2TAmHW4zgmxF">橡皮擦 (E)</span></div>
+      <div class="tool-sep" data-page-node-id="XW9Dm2omncQ5qVuHjD7FjA"></div>
+      <div class="tool" data-tool="rect" title="矩形" data-page-node-id="GydMNbQVrh6tJgyFylInOj">▭<span class="tip" data-page-node-id="BihPxmvi3VigoUCPE3zaXg">矩形 (R)</span></div>
+      <div class="tool" data-tool="ellipse" title="椭圆" data-page-node-id="xXd0QhtuYZTboi73SbUx9O">◯<span class="tip" data-page-node-id="GOokWCkLWL62oPDL5bHrTv">椭圆 (O)</span></div>
+      <div class="tool" data-tool="line" title="直线" data-page-node-id="Ze2vusxql9azK1tpCMZ7ep">／<span class="tip" data-page-node-id="pv7VfHa3A9ClEsXLaheX63">直线 (L)</span></div>
+      <div class="tool" data-tool="arrow" title="箭头" data-page-node-id="HE5P4IHAEuvDme3jnSGAUE">➤<span class="tip" data-page-node-id="0OwVA2ZSCyy43F0ZajX6CP">箭头 (A)</span></div>
+      <div class="tool" data-tool="gradient" title="渐变" data-page-node-id="Q9urRLYH31Eh9DdTV0nDRf">▦<span class="tip" data-page-node-id="ulKAUC9A5IsKXtA4oMDycA">渐变 (G)</span></div>
+      <div class="tool" data-tool="text" title="文字" data-page-node-id="qLsMXl2YnomsxvhFmczuBF">T<span class="tip" data-page-node-id="TIU9EB7bgqegaZ3svB3Lak">文字 (T)</span></div>
+      <div class="tool-sep" data-page-node-id="uNiwfYfm2JmT9A61vaqU1P"></div>
+      <div class="tool" data-tool="crop" title="裁剪" data-page-node-id="ghzkkAR75oZEcLYMGYLKmF">✂<span class="tip" data-page-node-id="Dr62VF446WBG1P0s2cYYnD">裁剪 (C)</span></div>
+      <div class="tool" data-tool="transform" title="自由变换" data-page-node-id="PpXzn0tHbIXkjBT5YTIjrF">⤢<span class="tip" data-page-node-id="2n5ygZu6QIZTK7XGyEWog0">自由变换 (Ctrl+T)</span></div>
+      <div class="tool" data-tool="eyedropper" title="取色" data-page-node-id="K3SmZx3B8CgcqX3SxUSihX">💧<span class="tip" data-page-node-id="ral1FEfKEHfPmqxqZHnfWD">取色 (I)</span></div>
+      <div class="tool-sep" data-page-node-id="dFY6YNGSUxfgaP2UIzbNhM"></div>
+      <div class="tool" data-tool="selRect" title="矩形选区" data-page-node-id="brzXQfGOPuAF9eU6vO7Le9">⬚<span class="tip" data-page-node-id="4Q589m4li8wVFwDYfFcQkY">矩形选区</span></div>
+      <div class="tool" data-tool="selEllipse" title="椭圆选区" data-page-node-id="PBldGeZHZ367DNgHsMWfmO">⬭<span class="tip" data-page-node-id="PwTleBq2u5kYc1KKVzSLU5">椭圆选区</span></div>
+      <div class="tool" data-tool="wand" title="魔棒" data-page-node-id="phPvEYlNXqSCVHvQEa8q1m">✷<span class="tip" data-page-node-id="I1Nh21GhLmXFvXXIhqlv8v">魔棒</span></div>
+      <div class="tool" data-tool="guide" title="参考线" data-page-node-id="FO6CkaBqLwfwZyoJfHApsE">📏<span class="tip" data-page-node-id="MGg2swssdLhWGMxcGHnDu2">参考线 (拖拽/吸附)</span></div>
+      <div class="tool" data-tool="path" title="路径" data-page-node-id="5Ch4qK6WnTfMKHm9Rou1SH">✒<span class="tip" data-page-node-id="VADtqsBsNFvxZ9ADwuslyt">路径 (P)</span></div>
     </aside>
 
-    <main class="stage-wrap" id="stageWrap">
-      <div class="stage-inner" id="stageInner">
-        <canvas id="stage"></canvas>
-        <canvas id="overlay"></canvas>
+    <main class="stage-wrap" id="stageWrap" data-page-node-id="rB3AdDSpDpyOKh9zDH1vXI">
+      <div class="stage-inner" id="stageInner" data-page-node-id="6MvuCwGAbQAAGDsZAn4AL5">
+        <canvas id="stage" data-page-node-id="rOjSBQCdj1XuzK2uigoIXV"></canvas>
+        <canvas id="overlay" data-page-node-id="fi9lY45t7ywHu6xAt5Osbt"></canvas>
       </div>
     </main>
 
-    <aside class="side">
-      <div class="panel">
-        <h3>图层</h3>
-        <div class="layer-actions">
-          <button id="addLayer">+ 新建</button>
-          <button id="dupLayer">复制</button>
-          <button id="delLayer">删除</button>
-          <button id="mergeDown">向下合并</button>
+    <aside class="side" data-page-node-id="80R3TsDHx63s0XARnnEI3G">
+      <div class="panel" data-page-node-id="LyzaIEb04FdBN2CgMEOapk">
+        <h3 data-page-node-id="vTOn2NGQYV1Rj3vQnV3ttX">图层</h3>
+        <div class="layer-actions" data-page-node-id="WpScqQLoq1LV6fzrHZVtyB">
+          <button id="addLayer" data-page-node-id="OFP99RX4KDt6RHrAUJa2ts">+ 新建</button>
+          <button id="dupLayer" data-page-node-id="JAYHoDNiDZPfRFIhzBGCAN">复制</button>
+          <button id="delLayer" data-page-node-id="9yfXP4xXR7DF9aZDmXglGO">删除</button>
+          <button id="mergeDown" data-page-node-id="J9WinoID2kcfmHSHipT1e8">向下合并</button>
         </div>
-        <div class="layer-actions">
-          <button id="flipLayerH">图层↔翻转</button>
-          <button id="flipLayerV">图层↕翻转</button>
+        <div class="layer-actions" data-page-node-id="Fwovs2XQ9RpV2nIKcHbizC">
+          <button id="flipLayerH" data-page-node-id="vjHrdb3SLkDyurjtqt2PE2">图层↔翻转</button>
+          <button id="flipLayerV" data-page-node-id="eCD2igklm5Wr6vpCvPAeud">图层↕翻转</button>
         </div>
-        <div class="layer-actions">
-          <button id="addMask">添加蒙版</button>
-          <button id="editMask">编辑蒙版</button>
+        <div class="layer-actions" data-page-node-id="y3lj0lf81nEHiVX62WfRFZ">
+          <button id="addMask" data-page-node-id="JorR75IFK64YIyxHOBNXPS">添加蒙版</button>
+          <button id="editMask" data-page-node-id="gdsynxO7zQ0A0q7bKz3pcQ">编辑蒙版</button>
         </div>
-        <div id="layersList"></div>
+        <div id="layersList" data-page-node-id="M0dsntiyGYlEaBxGwY2c2K"></div>
       </div>
 
-      <div class="panel">
-        <h3>颜色</h3>
-        <div class="color-row">
-          <div class="swatches">
-            <input type="color" class="fg" id="colorPicker" value="#ff6b4a" title="前景色" />
-            <input type="color" class="bg" id="bgPicker" value="#ffffff" title="背景色" />
+      <div class="panel" data-page-node-id="0EOn9JnTgFEHF5CZDnPpCc">
+        <h3 data-page-node-id="ww13IceCPcyjPyl0FYoaig">颜色</h3>
+        <div class="color-row" data-page-node-id="gvM1EcaotTyVmaFezeL534">
+          <div class="swatches" data-page-node-id="7R22Y25K8nRNCEYGRpCiH3">
+            <input type="color" class="fg" id="colorPicker" value="#ff6b4a" title="前景色" data-page-node-id="AlISpwTmJZmv39IZCsGVgo" />
+            <input type="color" class="bg" id="bgPicker" value="#ffffff" title="背景色" data-page-node-id="CYYG5KbPGDaK3xYGCLdFfq" />
           </div>
-          <button class="swap" id="swapColor" title="交换前景/背景 (X)">⇄</button>
-          <span id="curColorHex" style="font-size:12px;margin-left:auto;">前景 #FF6B4A</span>
+          <button class="swap" id="swapColor" title="交换前景/背景 (X)" data-page-node-id="uYBtB1DrRXfhHwVYHwEQwD">⇄</button>
+          <span id="curColorHex" style="font-size:12px;margin-left:auto;" data-page-node-id="pzzOB61zA0eLH8YHRrF0YA">前景 #FF6B4A</span>
         </div>
-        <div class="row">
-          <label>笔刷大小</label><input type="range" id="brushSize" min="1" max="120" value="12" /><span class="val" id="brushSizeVal">12</span>
+        <div class="row" data-page-node-id="m5Lual388x2q4F7IQWxZJ7">
+          <label data-page-node-id="J5wmCsmO4Nxg273mLcNX34">笔刷大小</label><input type="range" id="brushSize" min="1" max="120" value="12" data-page-node-id="Zu63VSevSZ6VekmRRZjqFd" /><span class="val" id="brushSizeVal" data-page-node-id="sFNAVHXQGT5Ur6jSMleUEZ">12</span>
         </div>
-        <div class="row">
-          <label>不透明度</label><input type="range" id="brushOpacity" min="1" max="100" value="100" /><span class="val" id="brushOpacityVal">100</span>
+        <div class="row" data-page-node-id="GR7iEqAovLa3XFt7C2GHPz">
+          <label data-page-node-id="fcERSqReZzIrAClOhHK0UL">不透明度</label><input type="range" id="brushOpacity" min="1" max="100" value="100" data-page-node-id="XWQ0ZHViBHIdW3j1hqPsXd" /><span class="val" id="brushOpacityVal" data-page-node-id="e5LyZREp9H4CrPCyEDi3DH">100</span>
         </div>
       </div>
 
-      <div class="panel">
-        <h3>选区</h3>
-        <div class="layer-actions">
-          <button id="selAll">全选</button>
-          <button id="selNone">取消</button>
-          <button id="selInv">反选</button>
+      <div class="panel" data-page-node-id="GtaN0FtJYJYbuy4lR9X2tk">
+        <h3 data-page-node-id="N0mkWM1GKuWfJk9Bla97hp">选区</h3>
+        <div class="layer-actions" data-page-node-id="yw2x25gXxFxQaobf6l8HQJ">
+          <button id="selAll" data-page-node-id="7EMvENOGlcjF0pBQNqPiJK">全选</button>
+          <button id="selNone" data-page-node-id="YFl0jMKRbhB8M59JyGzDaY">取消</button>
+          <button id="selInv" data-page-node-id="xvZMivBHUHvHhmL4nB92K2">反选</button>
         </div>
-        <div class="row">
-          <label>魔棒容差</label><input type="range" id="wandTol" min="0" max="150" value="32" /><span class="val" id="wandTolVal">32</span>
+        <div class="row" data-page-node-id="Qcilog0HBZuLC6a298CskI">
+          <label data-page-node-id="xvXEBepa1r9RUVWVF6J2Tf">魔棒容差</label><input type="range" id="wandTol" min="0" max="150" value="32" data-page-node-id="11gGQbs84qSJqzK4efqiuv" /><span class="val" id="wandTolVal" data-page-node-id="tGSnqB8sFsz3Xc5IrrHDNC">32</span>
         </div>
-        <div class="layer-actions">
-          <button id="contentFill">内容识别填充</button>
-          <button id="wmRemoveBtn" class="coral-btn" title="按相对位置自动去除固定角标类水印（无需框选）">🧼 一键去水印</button>
+        <div class="layer-actions" data-page-node-id="O3WxvacKhaTTWjV9CLXGA5">
+          <button id="contentFill" data-page-node-id="bN3BmnwthIHmXc0EHSreZ7">内容识别填充</button>
+          <button id="wmRemoveBtn" class="coral-btn" title="按相对位置自动去除固定角标类水印（无需框选）" data-page-node-id="CKSXPlsBOBuNLWsExEJxOS">🧼 一键去水印</button>
         </div>
-        <div class="wm-box">
-          <div class="row">
-            <label>位置</label>
-            <select id="wmPosS">
-              <option value="br">右下角</option>
-              <option value="bl">左下角</option>
-              <option value="tr">右上角</option>
-              <option value="tl">左上角</option>
-              <option value="center">居中</option>
-              <option value="custom">自定义</option>
+        <div class="wm-box" data-page-node-id="cpBfwfDvJtqn1pMAglAlHS">
+          <div class="row" data-page-node-id="ntWpSEQRM9YxUaXl1hH0Da">
+            <label data-page-node-id="K3gvmE4vMspEGDzRssiCcn">位置</label>
+            <select id="wmPosS" data-page-node-id="vlcv6w1KZv7l2jD9w8j7ws">
+              <option value="br" data-page-node-id="RLJFidFZXAUQa4jhGwqFed">右下角</option>
+              <option value="bl" data-page-node-id="L2AffBAAFw5E030GK4CgJs">左下角</option>
+              <option value="tr" data-page-node-id="Ci0wOLockJA6PUkhXKm44S">右上角</option>
+              <option value="tl" data-page-node-id="14CDMugBknafuC2pSGlmHi">左上角</option>
+              <option value="center" data-page-node-id="fv6wnSqObRmKvBplv2eHk5">居中</option>
+              <option value="custom" data-page-node-id="AJnhmWRO1INhUsZs5sQGcg">自定义</option>
             </select>
           </div>
-          <div class="row"><label>宽 %</label><input type="number" id="wmWpctS" min="1" max="100" value="30" class="wm-num" /><span class="val">%</span></div>
-          <div class="row"><label>高 %</label><input type="number" id="wmHpctS" min="1" max="100" value="20" class="wm-num" /><span class="val">%</span></div>
-          <div class="row hidden" id="wmCustomS"><label>左上%</label><input type="number" id="wmXpctS" min="0" max="100" value="0" class="wm-num" /><input type="number" id="wmYpctS" min="0" max="100" value="0" class="wm-num" /></div>
-          <div class="row"><label>柔化</label><input type="range" id="wmFeatherS" min="0" max="60" value="14" /><span class="val" id="wmFeatherSVal">14</span></div>
-          <div class="row"><label>填充范围</label><input type="range" id="wmRangeS" min="4" max="40" value="18" /><span class="val" id="wmRangeSVal">18</span></div>
+          <div class="row" data-page-node-id="imB8jKKPOUMLWeVkEPJ0AC"><label data-page-node-id="bxL4XjLrFZL3E0KwxFuJwq">宽 %</label><input type="number" id="wmWpctS" min="1" max="100" value="30" class="wm-num" data-page-node-id="Fputo2YeHE82InGX0yBslA" /><span class="val" data-page-node-id="2ggEeUc9jVzH4HCDXLq1fI">%</span></div>
+          <div class="row" data-page-node-id="exQtVp6TGtmqNV3uk35JC7"><label data-page-node-id="XGrQVlFCYvXQHv0sbTsY2T">高 %</label><input type="number" id="wmHpctS" min="1" max="100" value="20" class="wm-num" data-page-node-id="CT7leEvdCPNDwHpq9sdF3T" /><span class="val" data-page-node-id="kSJf2Jt2MSgcqpXieFhnGX">%</span></div>
+          <div class="row hidden" id="wmCustomS" data-page-node-id="62DaXG3zFdYscrVeJ2etfH"><label data-page-node-id="PPkLykL6RbqoYXkWGMfyX2">左上%</label><input type="number" id="wmXpctS" min="0" max="100" value="0" class="wm-num" data-page-node-id="niyMJLPJquz9hAv5jbxpRL" /><input type="number" id="wmYpctS" min="0" max="100" value="0" class="wm-num" data-page-node-id="TH8XILIZn9a4yUNEkfTn2i" /></div>
+          <div class="row" data-page-node-id="t4hDnOeHiEdTcyq4zHEXD0"><label data-page-node-id="K2OCzTjBS945FTfkcCP6FP">柔化</label><input type="range" id="wmFeatherS" min="0" max="60" value="14" data-page-node-id="WHa1SG7N3FTgysgqsUHnx3" /><span class="val" id="wmFeatherSVal" data-page-node-id="NmLUPnbzQa0K4rNeq6W6gN">14</span></div>
+          <div class="row" data-page-node-id="CrSGGxOjr1CjpqKF2guk4t"><label data-page-node-id="0Ns0kzQNKrxfQ6l6AW9BHL">填充范围</label><input type="range" id="wmRangeS" min="4" max="40" value="18" data-page-node-id="rNehlyULCPJaG03gxyyNcJ" /><span class="val" id="wmRangeSVal" data-page-node-id="y3jMwf0CXYF7A6DPuAA2i5">18</span></div>
         </div>
-        <div class="hint">🧼 一键去水印：按相对位置自动去除角标类水印，无需框选，结果可撤销（Ctrl+Z）。位置/大小可调以适配非角标水印。</div>
-        <div class="row">
-          <label>填充范围</label><input type="range" id="fillRange" min="4" max="40" value="18" /><span class="val" id="fillRangeVal">18</span>
+        <div class="hint" data-page-node-id="OASAwCVAXL3Tv4ZlwZPoae">🧼 一键去水印：按相对位置自动去除角标类水印，无需框选，结果可撤销（Ctrl+Z）。位置/大小可调以适配非角标水印。</div>
+        <div class="row" data-page-node-id="icl0W1jtF9XJ9MtGecr4BL">
+          <label data-page-node-id="Bni4dEDGb7MDnCfKx1Ddvv">填充范围</label><input type="range" id="fillRange" min="4" max="40" value="18" data-page-node-id="Wjux4H1A4vwzEhvaPFEqRE" /><span class="val" id="fillRangeVal" data-page-node-id="4H3hCfB2g1yJhd32kMgAec">18</span>
         </div>
-        <div class="hint">选区限制绘制/曲线范围；蚂蚁线为选区边界。内容识别填充为近似算法（扩散+纹理采样）。</div>
+        <div class="hint" data-page-node-id="zX78nbjouGOkp5BqMR7rh4">选区限制绘制/曲线范围；蚂蚁线为选区边界。内容识别填充为近似算法（扩散+纹理采样）。</div>
       </div>
 
-      <div class="panel">
-        <h3>调整</h3>
-        <div class="row"><label>亮度</label><input type="range" id="adjBrightness" min="-100" max="100" value="0" /><span class="val" id="adjBrightnessVal">0</span></div>
-        <div class="row"><label>对比度</label><input type="range" id="adjContrast" min="-100" max="100" value="0" /><span class="val" id="adjContrastVal">0</span></div>
-        <div class="row"><label>饱和度</label><input type="range" id="adjSaturation" min="-100" max="100" value="0" /><span class="val" id="adjSaturationVal">0</span></div>
-        <div class="row"><label>色相</label><input type="range" id="adjHue" min="-180" max="180" value="0" /><span class="val" id="adjHueVal">0</span></div>
-        <div class="row"><label>模糊</label><input type="range" id="adjBlur" min="0" max="20" value="0" /><span class="val" id="adjBlurVal">0</span></div>
-        <label class="chk"><input type="checkbox" id="adjGray" /> 灰度</label>
-        <label class="chk"><input type="checkbox" id="adjInvert" /> 反相</label>
-        <div class="seg"><button id="applyAdj">应用调整</button><button id="cancelAdj">取消</button></div>
-        <div class="seg"><button id="sharpenBtn">锐化</button><button id="resetAdj">重置参数</button></div>
+      <div class="panel" data-page-node-id="6N04Lk7HFegpkjzKxYsYVP">
+        <h3 data-page-node-id="lhMFTgS0N7g8L2golCTkIC">调整</h3>
+        <div class="row" data-page-node-id="Y4LnIkK8Z8AQD7bln6yraK"><label data-page-node-id="pGh5kOkYw9tmkNXDpwwwWm">亮度</label><input type="range" id="adjBrightness" min="-100" max="100" value="0" data-page-node-id="YTKockDH14ed2v5JsaPTvj" /><span class="val" id="adjBrightnessVal" data-page-node-id="lXAggir5CcORyybDGj8QhF">0</span></div>
+        <div class="row" data-page-node-id="vfHcIr8vv5bZG0ncgtd8LU"><label data-page-node-id="tyWIn4nHON98CObo5bYHoi">对比度</label><input type="range" id="adjContrast" min="-100" max="100" value="0" data-page-node-id="nB2E7bWFC3XHW5mw4H9ClG" /><span class="val" id="adjContrastVal" data-page-node-id="2IqvZ0BgJH3jE5JvQqQ4PO">0</span></div>
+        <div class="row" data-page-node-id="jXWWe2I4cqSJlD4eFiGVFS"><label data-page-node-id="DvCpjQBEmxziNkG6dk9hpZ">饱和度</label><input type="range" id="adjSaturation" min="-100" max="100" value="0" data-page-node-id="avQJibYADODw589dKazIWO" /><span class="val" id="adjSaturationVal" data-page-node-id="BYsnlsmNsHjKf8zHUAONRf">0</span></div>
+        <div class="row" data-page-node-id="qExrxC0JLIGNAGu44QHIx8"><label data-page-node-id="mFC5DCTRz58bGT8RcPoIqq">色相</label><input type="range" id="adjHue" min="-180" max="180" value="0" data-page-node-id="CPrGuonIisp9xgDPtfZK9B" /><span class="val" id="adjHueVal" data-page-node-id="B7Xse0nn5mgEJ3TMkoOp2E">0</span></div>
+        <div class="row" data-page-node-id="yCO9vwXB7k5sIadnYZ7D9Z"><label data-page-node-id="cwLjcCSpyt3ZIMdaHnSmmT">模糊</label><input type="range" id="adjBlur" min="0" max="20" value="0" data-page-node-id="VnCZnaxBhhUoGf8zifSCx7" /><span class="val" id="adjBlurVal" data-page-node-id="c6POSrGf1cWcf7SNatHzuw">0</span></div>
+        <label class="chk" data-page-node-id="6Rl6PwD9UiMxFRYqGDOxkv"><input type="checkbox" id="adjGray" data-page-node-id="Rs0CAa053F7qFOARp2f7Wy" /> 灰度</label>
+        <label class="chk" data-page-node-id="H6EVo5CVNHPBsMUR9CzyDs"><input type="checkbox" id="adjInvert" data-page-node-id="YOGEmQfwKlS0kHfVpG6VUt" /> 反相</label>
+        <div class="seg" data-page-node-id="DXBZvIes35rWrtc26JtxvE"><button id="applyAdj" data-page-node-id="ylgnhOGPgHBocbENIi5dqu">应用调整</button><button id="cancelAdj" data-page-node-id="D4l4550YT64qA5yfpLWuQ0">取消</button></div>
+        <div class="seg" data-page-node-id="8wx1jssSNiKcFVdIiKS5xf"><button id="sharpenBtn" data-page-node-id="J66uuXOoCZGQWlCHkul4o0">锐化</button><button id="resetAdj" data-page-node-id="mx8ctSwA0IDOsh4n4Wsv59">重置参数</button></div>
       </div>
 
-      <div class="panel">
-        <h3>滤镜预设</h3>
-        <div class="presets">
-          <button data-preset="sepia(0.6) contrast(1.1) brightness(1.05) saturate(1.2)">复古</button>
-          <button data-preset="saturate(1.8) contrast(1.1)">鲜艳</button>
-          <button data-preset="hue-rotate(-15deg) saturate(1.2) brightness(1.05)">冷调</button>
-          <button data-preset="hue-rotate(15deg) sepia(0.2) saturate(1.3)">暖调</button>
-          <button data-preset="grayscale(1) contrast(1.1)">黑白</button>
-          <button data-preset="invert(1)">反相</button>
-          <button data-preset="grayscale(1) contrast(2) brightness(1.1)">素描</button>
-          <button data-preset="blur(1px) brightness(1.08) saturate(1.15)">柔光</button>
+      <div class="panel" data-page-node-id="57c7haHVitKBkiCGttzIJF">
+        <h3 data-page-node-id="AtlChDBXvOvT3RXOZCC4So">滤镜预设</h3>
+        <div class="presets" data-page-node-id="jSsCNy1Zs9iUCWWeFgCtNA">
+          <button data-preset="sepia(0.6) contrast(1.1) brightness(1.05) saturate(1.2)" data-page-node-id="RrMlxnt8rUA4uYObKh3KY0">复古</button>
+          <button data-preset="saturate(1.8) contrast(1.1)" data-page-node-id="omD67I0GLnxfI7dwFGN43j">鲜艳</button>
+          <button data-preset="hue-rotate(-15deg) saturate(1.2) brightness(1.05)" data-page-node-id="NGxjexhDeqQ3CWUuiNPLMr">冷调</button>
+          <button data-preset="hue-rotate(15deg) sepia(0.2) saturate(1.3)" data-page-node-id="BIo0u6CkJo7EtDJ17WoR58">暖调</button>
+          <button data-preset="grayscale(1) contrast(1.1)" data-page-node-id="5V62MeH0Hs69kJS0eHsO8x">黑白</button>
+          <button data-preset="invert(1)" data-page-node-id="U1YPMG5j3YqzUYEURGvUyh">反相</button>
+          <button data-preset="grayscale(1) contrast(2) brightness(1.1)" data-page-node-id="NwkSoR1BeJJR6c2RGkF9Hv">素描</button>
+          <button data-preset="blur(1px) brightness(1.08) saturate(1.15)" data-page-node-id="WK1vSweRfxzrMVz5IIAs4q">柔光</button>
         </div>
       </div>
 
-      <div class="panel">
-        <h3>曲线调色</h3>
-        <div class="seg">
-          <button id="curveRGB" class="on">RGB</button>
-          <button id="curveR">R</button>
-          <button id="curveG">G</button>
-          <button id="curveB">B</button>
+      <div class="panel" data-page-node-id="BWXraTND2yB24xOmegy6nZ">
+        <h3 data-page-node-id="CPGEfd5UOfYv9QV3tcNQ3w">曲线调色</h3>
+        <div class="seg" data-page-node-id="PP86SNrn6yB9n8LVgUSQbi">
+          <button id="curveRGB" class="on" data-page-node-id="WYfm8wCPeKUaGGv1yy65a1">RGB</button>
+          <button id="curveR" data-page-node-id="lZa0mRzEFKQjzLCtF3gmR7">R</button>
+          <button id="curveG" data-page-node-id="hIox3fzYfnR5diKvOQsmYj">G</button>
+          <button id="curveB" data-page-node-id="ofhyKB4jyaDt5lmghouQPy">B</button>
         </div>
-        <canvas id="curveEditor" width="240" height="200"></canvas>
-        <div class="seg" style="margin-top:8px;">
-          <button id="applyCurve">应用曲线</button>
-          <button id="resetCurve">重置</button>
+        <canvas id="curveEditor" width="240" height="200" data-page-node-id="VfTER6QFE2eSVsFc5rXFqF"></canvas>
+        <div class="seg" style="margin-top:8px;" data-page-node-id="dH5Rd69v3WeiNoz8HUoMKf">
+          <button id="applyCurve" data-page-node-id="5eLKCMeOGM5GLYcWFctbOb">应用曲线</button>
+          <button id="resetCurve" data-page-node-id="pAGfSRuWOl7Z2bHetACvGr">重置</button>
         </div>
-        <div class="hint">点击曲线添加控制点，拖动调整，双击控制点删除（端点保留）。作用于当前图层（含选区）。</div>
+        <div class="hint" data-page-node-id="OCXSf1rrdpESenxFyPpV3C">点击曲线添加控制点，拖动调整，双击控制点删除（端点保留）。作用于当前图层（含选区）。</div>
       </div>
 
-      <div class="panel">
-        <h3>渐变</h3>
-        <div class="seg"><button id="gradLinear" class="on">线性</button><button id="gradRadial">径向</button></div>
-        <div class="hint">选「渐变」工具，从前景色拖到背景色，松手填充当前图层。</div>
+      <div class="panel" data-page-node-id="jD3e6MGYDkgrP5lwxiPWXE">
+        <h3 data-page-node-id="BzMB6A82HTk7eoFDuPRe4V">渐变</h3>
+        <div class="seg" data-page-node-id="JFJR4fzfQC0A79uOEj0alk"><button id="gradLinear" class="on" data-page-node-id="QWcuNcltCRRVnvoSirMCce">线性</button><button id="gradRadial" data-page-node-id="hKjNntuhWoSPkpuOsrDxvC">径向</button></div>
+        <div class="hint" data-page-node-id="Xvo3fVQv5MHkHmtyahfpPd">选「渐变」工具，从前景色拖到背景色，松手填充当前图层。</div>
       </div>
 
-      <div class="panel">
-        <h3>参考线</h3>
-        <div class="layer-actions">
-          <button id="toggleGuides">显示/隐藏</button>
-          <button id="clearGuides">清除全部</button>
+      <div class="panel" data-page-node-id="kU2jmmdCfjA6GKQzuNqd5Y">
+        <h3 data-page-node-id="V9Gbg4Nct7vnMdm8gSvdiJ">参考线</h3>
+        <div class="layer-actions" data-page-node-id="4BTaTro7StCQrb95aLVWY5">
+          <button id="toggleGuides" data-page-node-id="6DczMMEhUlHMCp3UC3Gz1k">显示/隐藏</button>
+          <button id="clearGuides" data-page-node-id="7nvvHL0bIWtLEm7VnhgEQT">清除全部</button>
         </div>
-        <div class="hint">选「参考线」工具从画布内拖动新建；拖动已有参考线移动，双击删除。移动/形状/文字自动吸附。</div>
+        <div class="hint" data-page-node-id="w927mlLDoE0Gyc7TBJBHql">选「参考线」工具从画布内拖动新建；拖动已有参考线移动，双击删除。移动/形状/文字自动吸附。</div>
       </div>
 
-      <div class="panel">
-        <h3>路径</h3>
-        <div class="layer-actions">
-          <button id="selToPath">选区→路径</button>
-          <button id="pathToSel">路径→选区</button>
+      <div class="panel" data-page-node-id="bdhMmZrPs7Tb99GoUaG0SH">
+        <h3 data-page-node-id="DU7Z2zF1nZIP4GNTurGtFV">路径</h3>
+        <div class="layer-actions" data-page-node-id="o1hToeEQz4eZThzCv52ZoQ">
+          <button id="selToPath" data-page-node-id="KFgXHP6WMC5BKtw1NCdsFX">选区→路径</button>
+          <button id="pathToSel" data-page-node-id="YBxdxUMYOqtSbQDO9CzvMV">路径→选区</button>
         </div>
-        <div class="layer-actions">
-          <button id="strokePath">描边</button>
-          <button id="fillPath">填充</button>
-          <button id="delPath">删除</button>
+        <div class="layer-actions" data-page-node-id="uny7BUdITZXKSiB5ia9iKv">
+          <button id="strokePath" data-page-node-id="cMT6zINXNB9ze5TJBfAFDC">描边</button>
+          <button id="fillPath" data-page-node-id="vHlQbE01YVzpw8CQ2pr7qV">填充</button>
+          <button id="delPath" data-page-node-id="Si8yzWw59CaoNXiYHxwi2S">删除</button>
         </div>
-        <div class="hint">选「路径」工具点击选中路径，拖动锚点编辑；双击路径切换闭合。描边/填充会把路径烤进当前图层。</div>
-        <div id="pathsList"></div>
+        <div class="hint" data-page-node-id="CVbX07peuAJ1TgvsTbtsso">选「路径」工具点击选中路径，拖动锚点编辑；双击路径切换闭合。描边/填充会把路径烤进当前图层。</div>
+        <div id="pathsList" data-page-node-id="Vt0dQJcaxSGQruTWuaWCtT"></div>
       </div>
 
-      <div class="panel">
-        <h3>历史</h3>
-        <div id="historyList"></div>
-        <div class="hint">点击任意步骤可跳转到该状态。</div>
+      <div class="panel" data-page-node-id="TYiqK5RCElqBpKiDBnSCc0">
+        <h3 data-page-node-id="25oFrbTcql6sSBaNWwVj9r">历史</h3>
+        <div id="historyList" data-page-node-id="AFdgfgSxSlFo4gAWcqz4EW"></div>
+        <div class="hint" data-page-node-id="EC8AuEkRZvt5g7TV4EDPTz">点击任意步骤可跳转到该状态。</div>
       </div>
     </aside>
   </div>
 
-  <footer class="statusbar">
-    <span id="status">就绪</span>
-    <span id="docInfo">画布 800 × 600</span>
-    <div class="zoom">
-      <button id="zoomOut" class="zoom-step" title="缩小 (-)">−</button>
-      <select id="zoomSelect" title="缩放比例">
-        <option value="fit">适应屏幕</option>
-        <option value="0.25">25%</option>
-        <option value="0.5">50%</option>
-        <option value="0.75">75%</option>
-        <option value="1">100%</option>
-        <option value="1.25">125%</option>
-        <option value="1.5">150%</option>
-        <option value="2">200%</option>
-        <option value="3">300%</option>
-        <option value="4">400%</option>
-        <option value="6">600%</option>
-        <option value="8">800%</option>
+  <footer class="statusbar" data-page-node-id="RJv10xCEoFBt5ZDu3SSyPK">
+    <span id="status" data-page-node-id="cc8Amnxjcq2w8Js2ojsjUM">就绪</span>
+    <span id="docInfo" data-page-node-id="5PzXHBufMQMplF7VAcQFI0">画布 800 × 600</span>
+    <div class="zoom" data-page-node-id="fYZEZHkeQAGXse2iF7CNEJ">
+      <button id="zoomOut" class="zoom-step" title="缩小 (-)" data-page-node-id="E90u9H877jNOsf5lITc2Hz">−</button>
+      <select id="zoomSelect" title="缩放比例" data-page-node-id="FThQta7Vq77fh3WkCjJzM7">
+        <option value="fit" data-page-node-id="uGJz58SXBjjZfdcKaj6Vup">适应屏幕</option>
+        <option value="0.25" data-page-node-id="LFDBGGRwHABgzHJUcV1xrp">25%</option>
+        <option value="0.5" data-page-node-id="6VAAfYEReCm4aqSajVYBhr">50%</option>
+        <option value="0.75" data-page-node-id="plffIW10B5XIQadBG6FjJg">75%</option>
+        <option value="1" data-page-node-id="p0pOEyca9iV08pLyXdm9QT">100%</option>
+        <option value="1.25" data-page-node-id="vrZYPvFY2o37kJhWVaiLL0">125%</option>
+        <option value="1.5" data-page-node-id="E4d7fKF4jZjSkOJYrKZMCF">150%</option>
+        <option value="2" data-page-node-id="apePz8uxeRUyQDduJwCOWn">200%</option>
+        <option value="3" data-page-node-id="Bnx5AIXEqtumCJYtAS3qjJ">300%</option>
+        <option value="4" data-page-node-id="SMIyvuaaOPiBSwGWPMEFbF">400%</option>
+        <option value="6" data-page-node-id="SvhJxTMEhmBfti5CdJEWWy">600%</option>
+        <option value="8" data-page-node-id="27ykdOOZflTBMej1HH9F9V">800%</option>
       </select>
-      <button id="zoomIn" class="zoom-step" title="放大 (+)">+</button>
-      <button id="zoomFit" title="适应屏幕 (Ctrl+0)">适应屏幕</button>
+      <button id="zoomIn" class="zoom-step" title="放大 (+)" data-page-node-id="YFfDN7zr5KFfkDPf9aRLSC">+</button>
+      <button id="zoomFit" title="适应屏幕 (Ctrl+0)" data-page-node-id="bwGXyTWGXw4lqz3edng81x">适应屏幕</button>
     </div>
-    <span id="toolInfo" style="margin-left:auto;"></span>
+    <span id="toolInfo" style="margin-left:auto;" data-page-node-id="JHJOwlBpDBqmCAjKPMPdux"></span>
   </footer>
 </div>
 
-<input type="file" id="fileImage" accept="image/*" />
-<input type="file" id="fileProject" accept=".json,application/json" />
-<div class="toast" id="toast"></div>
+<input type="file" id="fileImage" accept="image/*" data-page-node-id="98WOYNd3mxLFBYBnSmifyo" />
+<input type="file" id="fileProject" accept=".json,application/json" data-page-node-id="J0NyFxc2cwWnlXwIWbfiRW" />
+<div class="toast" id="toast" data-page-node-id="oIZCu7PowOUbXeijgFU67g"></div>
 
 <!-- 批量处理模态框 -->
-<div class="modal-mask hidden" id="batchMask">
-  <div class="modal">
-    <div class="modal-head">
-      <h2>⚡ 批量处理图片</h2>
-      <button class="x" id="batchClose" title="关闭">✕</button>
+<div class="modal-mask hidden" id="batchMask" data-page-node-id="lEdvHtDVZgViS6nRLWz1Gj">
+  <div class="modal" data-page-node-id="9ZmXYQ7CVyyLUb3se60vXB">
+    <div class="modal-head" data-page-node-id="ACH4SDIHInQuYjFQCo6KS4">
+      <h2 data-page-node-id="sMbMqn22JuCPOyQ4pb4qVt">⚡ 批量处理图片</h2>
+      <button class="x" id="batchClose" title="关闭" data-page-node-id="lWRt18uLeOxBDDNy15T6Sz">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="drop" id="batchDrop">
-        <div style="font-size:30px;margin-bottom:6px;">🖼️</div>
+    <div class="modal-body" data-page-node-id="2ONDRg6No3rtrhf0mNmwof">
+      <div class="drop" id="batchDrop" data-page-node-id="nNTWg9j07FghA3Cg0Iovb6">
+        <div style="font-size:30px;margin-bottom:6px;" data-page-node-id="tPPWMtYRLKEHgpqIkVEfeZ">🖼️</div>
         点击此处，或将图片拖拽到这里批量导入（支持多选）
-        <div class="hint">可一次选择多张图片；支持浏览器可解码的格式（JPG / PNG / WebP / GIF 首帧等）</div>
+        <div class="hint" data-page-node-id="8MWskAD8nBOdfe3BM8zjor">可一次选择多张图片；支持浏览器可解码的格式（JPG / PNG / WebP / GIF 首帧等）</div>
       </div>
-      <input type="file" id="batchFiles" accept="image/*" multiple />
-      <div class="batch-grid" id="batchGrid"></div>
-      <div class="opt-row">
-        <label>缩放比例</label>
-        <select id="batchRatio">
-          <option value="0.25">25%</option>
-          <option value="0.5" selected>50%</option>
-          <option value="0.75">75%</option>
-          <option value="1">100%（原尺寸）</option>
-          <option value="custom">自定义…</option>
+      <input type="file" id="batchFiles" accept="image/*" multiple data-page-node-id="um4ZciNHN951wAsd5bxrYS" />
+      <div class="batch-grid" id="batchGrid" data-page-node-id="To9yPgVX7DfCE1qNOE2QPI"></div>
+      <div class="opt-row" data-page-node-id="lNDfHnr5MXAhlSrSp4ai9Z">
+        <label data-page-node-id="I4GbETEDbuMccGgQqKlEME">缩放比例</label>
+        <select id="batchRatio" data-page-node-id="ZDrq1ejlPV6xIc4v9JmxGM">
+          <option value="0.25" data-page-node-id="qIyOc4ldwu6ohQkunjTcyP">25%</option>
+          <option value="0.5" selected data-page-node-id="BJtF5Kla9Ja54oHg5za3aG">50%</option>
+          <option value="0.75" data-page-node-id="5qdHIRm1TAXOyWgpxblK05">75%</option>
+          <option value="1" data-page-node-id="GOy7OxoodensDcbIDLZglh">100%（原尺寸）</option>
+          <option value="custom" data-page-node-id="AmyXuqcWbDlyegqz5UlBb3">自定义…</option>
         </select>
-        <input type="number" id="batchRatioCustom" min="1" max="1000" value="40" style="width:72px;display:none;" /> <span style="font-size:13px;color:var(--muted);">%</span>
+        <input type="number" id="batchRatioCustom" min="1" max="1000" value="40" style="width:72px;display:none;" data-page-node-id="YqrKSKW6PC11GfW6aQdTqv" /> <span style="font-size:13px;color:var(--muted);" data-page-node-id="joDqKwqlmfCRpfhHthQIPg">%</span>
       </div>
-      <div class="opt-row">
-        <label>输出格式</label>
-        <select id="batchFormat">
-          <option value="jpg">JPG</option>
-          <option value="png">PNG</option>
-          <option value="webp" selected>WebP</option>
+      <div class="opt-row" data-page-node-id="VIrSPcRJyRLIfpAKBEhdsg">
+        <label data-page-node-id="bxi4byjb1OXxEvXBq308Sh">输出格式</label>
+        <select id="batchFormat" data-page-node-id="rRECOrgbfq5GlYEScAnTUX">
+          <option value="jpg" data-page-node-id="DAnoEeW0NCO7GkRIXrxANC">JPG</option>
+          <option value="png" data-page-node-id="DQaaZOBTgY1ou2KC2YRuQR">PNG</option>
+          <option value="webp" selected data-page-node-id="stbvEbYp249jAUCA3bQLsA">WebP</option>
         </select>
-        <label style="min-width:auto;margin-left:8px;">质量</label>
-        <input type="range" id="batchQuality" min="10" max="100" value="92" style="width:160px;" />
-        <span id="batchQualityVal" style="font-size:12px;width:34px;text-align:right;color:var(--text);">92</span>
+        <label style="min-width:auto;margin-left:8px;" data-page-node-id="FTsi7p0Dc100b2e9smJIay">质量</label>
+        <input type="range" id="batchQuality" min="10" max="100" value="92" style="width:160px;" data-page-node-id="oxaIBlNJPM7O67RTa2lyD0" />
+        <span id="batchQualityVal" style="font-size:12px;width:34px;text-align:right;color:var(--text);" data-page-node-id="DpqsJ9L0CIBrSHh1vNsx68">92</span>
       </div>
-      <div class="opt-row" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">
-        <label>操作</label>
-        <select id="batchOp">
-          <option value="convert" selected>缩放 / 转换格式</option>
-          <option value="watermark">去除水印</option>
-          <option value="addwm">添加水印</option>
+      <div class="opt-row" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px;" data-page-node-id="n5bQofTat67dmEOb2w2pdA">
+        <label data-page-node-id="OycmjNPJyeb49S7cMjg5Un">操作</label>
+        <select id="batchOp" data-page-node-id="AE94CwfW576ADdkk5EWcf4">
+          <option value="convert" selected data-page-node-id="oVwF2dEHCP5Q1FEo3DjFWe">缩放 / 转换格式</option>
+          <option value="watermark" data-page-node-id="e3jkpD0DT5BEyP9w92oeTl">去除水印</option>
+          <option value="addwm" data-page-node-id="wTPeRS6wfRDkCztfMR7Hmo">添加水印</option>
         </select>
       </div>
-      <div id="wmPanel" style="display:none;">
-        <div class="opt-row">
-          <label>水印位置</label>
-          <select id="wmPos">
-            <option value="br" selected>右下角</option>
-            <option value="bl">左下角</option>
-            <option value="tr">右上角</option>
-            <option value="tl">左上角</option>
-            <option value="center">居中</option>
-            <option value="custom">自定义区域</option>
+      <div id="wmPanel" style="display:none;" data-page-node-id="vWY48CdXLn05uHnw8kMAtf">
+        <div class="opt-row" data-page-node-id="H8NYm3v7OlmOEjaFODJ4qs">
+          <label data-page-node-id="0LNd8SMXAz9wI0ANnejxJx">水印位置</label>
+          <select id="wmPos" data-page-node-id="TjiY0Z5BksCurrDUyy3ANS">
+            <option value="br" selected data-page-node-id="xv7Ip9pfZ5xHyzBj6Jti3T">右下角</option>
+            <option value="bl" data-page-node-id="K95aAUSx4njakx8t0jwa42">左下角</option>
+            <option value="tr" data-page-node-id="CZ959tT3QBfGJXh0KQkIPQ">右上角</option>
+            <option value="tl" data-page-node-id="jpaPnpV8FUfn9C790GD9sN">左上角</option>
+            <option value="center" data-page-node-id="35RP4dGvz3GtaAA3a3TyyC">居中</option>
+            <option value="custom" data-page-node-id="UlYXF9yQBn3AP4jb5tK6yO">自定义区域</option>
           </select>
         </div>
-        <div class="opt-row" id="wmSizeRow">
-          <label>区域大小</label>
-          <input type="number" id="wmWpct" min="1" max="100" value="30" style="width:60px;" /> <span style="font-size:13px;color:var(--muted);">% 宽</span>
-          <input type="number" id="wmHpct" min="1" max="100" value="20" style="width:60px;margin-left:8px;" /> <span style="font-size:13px;color:var(--muted);">% 高</span>
+        <div class="opt-row" id="wmSizeRow" data-page-node-id="7jdphbFEKVXCgbfP4DbojG">
+          <label data-page-node-id="Nh8G1EYQFScvYNcL6DbERm">区域大小</label>
+          <input type="number" id="wmWpct" min="1" max="100" value="30" style="width:60px;" data-page-node-id="utWR0tvNoFTcHAzS3KiJfo" /> <span style="font-size:13px;color:var(--muted);" data-page-node-id="xxjSLdf3C0LoSD81UiRVBa">% 宽</span>
+          <input type="number" id="wmHpct" min="1" max="100" value="20" style="width:60px;margin-left:8px;" data-page-node-id="Czxg7dSLXUHQ0DHnFhG2vz" /> <span style="font-size:13px;color:var(--muted);" data-page-node-id="rKxteoZjmSAcujBGdAZywD">% 高</span>
         </div>
-        <div class="opt-row" id="wmCustomRow" style="display:none;">
-          <label>左上角</label>
-          <span style="font-size:12px;color:var(--muted);">X <input type="number" id="wmXpct" min="0" max="100" value="0" style="width:54px;" />% &nbsp; Y <input type="number" id="wmYpct" min="0" max="100" value="0" style="width:54px;" />%</span>
+        <div class="opt-row" id="wmCustomRow" style="display:none;" data-page-node-id="EmO5GQ7bcSu2ahG2ZFAlYt">
+          <label data-page-node-id="LTnPVZq9gmgWeMFZ9ENDrL">左上角</label>
+          <span style="font-size:12px;color:var(--muted);" data-page-node-id="oyG2mHBOjU0KxDIyf2mfdI">X <input type="number" id="wmXpct" min="0" max="100" value="0" style="width:54px;" data-page-node-id="3tn1g8b6lDvWI72SjBJUhv" />% &nbsp; Y <input type="number" id="wmYpct" min="0" max="100" value="0" style="width:54px;" data-page-node-id="LXFaxRPuVDmrPrFWyhPit5" />%</span>
         </div>
-        <div class="opt-row">
-          <label>边缘柔化</label>
-          <input type="range" id="wmFeather" min="0" max="60" value="14" style="width:160px;" />
-          <span id="wmFeatherVal" style="font-size:12px;width:34px;text-align:right;color:var(--text);">14</span>
+        <div class="opt-row" data-page-node-id="3yY2eYaRYuGOxLYiIN9xAJ">
+          <label data-page-node-id="18Q9JYPG5bSZWSENqKRtyZ">边缘柔化</label>
+          <input type="range" id="wmFeather" min="0" max="60" value="14" style="width:160px;" data-page-node-id="dwLCS7y6s8KuBND4frbSZ2" />
+          <span id="wmFeatherVal" style="font-size:12px;width:34px;text-align:right;color:var(--text);" data-page-node-id="X0Jr7wtuPLYvfYEI2Jnuar">14</span>
         </div>
-        <div class="opt-row">
-          <label>填充范围</label>
-          <input type="range" id="wmRange" min="4" max="40" value="18" style="width:160px;" />
-          <span id="wmRangeVal" style="font-size:12px;width:34px;text-align:right;color:var(--text);">18</span>
+        <div class="opt-row" data-page-node-id="Kwhd2b6nBqtBS2bfgUujNc">
+          <label data-page-node-id="Xf1WuKerAGzLJVDo20aTvS">填充范围</label>
+          <input type="range" id="wmRange" min="4" max="40" value="18" style="width:160px;" data-page-node-id="6FEBG1lXix53nDTmRAwAnv" />
+          <span id="wmRangeVal" style="font-size:12px;width:34px;text-align:right;color:var(--text);" data-page-node-id="PTHPk7xL1582Tl2hp8VmCy">18</span>
         </div>
-        <div class="hint">将为每张图在相对位置生成去水印区域并自动内容识别填充（扩散 + 纹理采样）。适合固定角标类水印；区域过大或纹理极复杂时效果有限，可多试几次或缩小区域。</div>
+        <div class="hint" data-page-node-id="sh6mxg8azG01YtPyrofIHy">将为每张图在相对位置生成去水印区域并自动内容识别填充（扩散 + 纹理采样）。适合固定角标类水印；区域过大或纹理极复杂时效果有限，可多试几次或缩小区域。</div>
       </div>
-      <div id="awmPanel" style="display:none;">
-        <div class="opt-row">
-          <label>水印类型</label>
-          <select id="awmType">
-            <option value="text" selected>文字水印</option>
-            <option value="logo">图片 Logo</option>
+      <div id="awmPanel" style="display:none;" data-page-node-id="B3y5dEXQL6riEotWReherE">
+        <div class="opt-row" data-page-node-id="b6fhElPYskTFzWA1Wg46Yd">
+          <label data-page-node-id="LQvHZH7C9sbRDxZ2b6nL7z">水印类型</label>
+          <select id="awmType" data-page-node-id="OvGhPCLqb03R72QPj3ql0h">
+            <option value="text" selected data-page-node-id="lSeV2fHcmS8ldYPrqA97R3">文字水印</option>
+            <option value="logo" data-page-node-id="e4FUUPA6bvmBbCtUZQjvA7">图片 Logo</option>
           </select>
         </div>
-        <div id="awmTextRows">
-          <div class="opt-row">
-            <label>水印文字</label>
-            <input type="text" id="awmText" value="© My Photos" style="flex:1;min-width:130px;" />
+        <div id="awmTextRows" data-page-node-id="8QkeVDbFzvYemIiF1VXpz8">
+          <div class="opt-row" data-page-node-id="JjvpTDNkDD6yOxAZjwzahu">
+            <label data-page-node-id="gOZIt50ZsYnn6iPHrwiVxG">水印文字</label>
+            <input type="text" id="awmText" value="© My Photos" style="flex:1;min-width:130px;" data-page-node-id="YlDDv99u2xb3JIpEiHqvdx" />
           </div>
-          <div class="opt-row">
-            <label>字号</label>
-            <input type="range" id="awmSize" min="2" max="30" value="6" style="width:150px;" />
-            <span id="awmSizeVal" style="font-size:12px;width:52px;text-align:right;color:var(--text);">6% 短边</span>
-            <input type="color" id="awmColor" value="#ffffff" title="文字颜色" style="width:34px;height:24px;padding:0;border:1px solid var(--line);border-radius:4px;background:none;margin-left:8px;cursor:pointer;" />
+          <div class="opt-row" data-page-node-id="R7FkiZix1hCOoSSyx67hvr">
+            <label data-page-node-id="bPN6Zo0XfWA8zTUPjdJRBp">字号</label>
+            <input type="range" id="awmSize" min="2" max="30" value="6" style="width:150px;" data-page-node-id="DUY0pNpEBn7DfSsW13DRFr" />
+            <span id="awmSizeVal" style="font-size:12px;width:52px;text-align:right;color:var(--text);" data-page-node-id="r0nW1n0auBAEMABKBxuRyJ">6% 短边</span>
+            <input type="color" id="awmColor" value="#ffffff" title="文字颜色" style="width:34px;height:24px;padding:0;border:1px solid var(--line);border-radius:4px;background:none;margin-left:8px;cursor:pointer;" data-page-node-id="Rg0ukwrrA3uZkHYhIbMQQc" />
           </div>
-          <div class="opt-row">
-            <label style="min-width:auto;margin-right:6px;">描边</label>
-            <input type="checkbox" id="awmStroke" checked />
-            <span style="font-size:13px;color:var(--muted);">半透明深色描边（浅色背景上保持可读）</span>
-          </div>
-        </div>
-        <div id="awmLogoRows" style="display:none;">
-          <div class="opt-row">
-            <label>Logo 图片</label>
-            <input type="file" id="awmLogo" accept="image/*" style="flex:1;min-width:130px;font-size:12px;" />
-          </div>
-          <div class="opt-row" id="awmLogoNameRow" style="display:none;">
-            <label style="min-width:auto;"></label>
-            <span id="awmLogoName" style="font-size:12px;color:var(--coral);"></span>
-          </div>
-          <div class="opt-row">
-            <label>Logo 宽度</label>
-            <input type="range" id="awmLogoW" min="5" max="80" value="20" style="width:150px;" />
-            <span id="awmLogoWVal" style="font-size:12px;width:44px;text-align:right;color:var(--text);">20% 宽</span>
+          <div class="opt-row" data-page-node-id="7VXfD4xFIL2Iz0aTP1nJzt">
+            <label style="min-width:auto;margin-right:6px;" data-page-node-id="Y4TNnDjvKFyNreP4oKrTq2">描边</label>
+            <input type="checkbox" id="awmStroke" checked data-page-node-id="wF7JVqdHbEHOiPKapdwBOr" />
+            <span style="font-size:13px;color:var(--muted);" data-page-node-id="YGR8SMITWHhBIG9GDxGjzA">半透明深色描边（浅色背景上保持可读）</span>
           </div>
         </div>
-        <div class="opt-row">
-          <label>不透明度</label>
-          <input type="range" id="awmOpacity" min="5" max="100" value="40" style="width:150px;" />
-          <span id="awmOpacityVal" style="font-size:12px;width:38px;text-align:right;color:var(--text);">40%</span>
+        <div id="awmLogoRows" style="display:none;" data-page-node-id="rKZr2KXjGQcZcNPLGOBvXj">
+          <div class="opt-row" data-page-node-id="U23oVkjRMgGKUvLoyr1PPT">
+            <label data-page-node-id="ldo0itDPEJNekrbnLyGhNn">Logo 图片</label>
+            <input type="file" id="awmLogo" accept="image/*" style="flex:1;min-width:130px;font-size:12px;" data-page-node-id="S2uEb2f74OA0cNZv8MDDkS" />
+          </div>
+          <div class="opt-row" id="awmLogoNameRow" style="display:none;" data-page-node-id="qJ9L6Arz7URa8sj79m1IW1">
+            <label style="min-width:auto;" data-page-node-id="u2D4g5oo4BuGt6W1l47EI9"></label>
+            <span id="awmLogoName" style="font-size:12px;color:var(--coral);" data-page-node-id="Hd3zonJAAGvkyq2aDo2DOo"></span>
+          </div>
+          <div class="opt-row" data-page-node-id="GuDpl4FMEJTit9oxyHST6a">
+            <label data-page-node-id="kCEn1FQDQ751rLbNnz03Qf">Logo 宽度</label>
+            <input type="range" id="awmLogoW" min="5" max="80" value="20" style="width:150px;" data-page-node-id="PHAuFEKtaH7gtpTSj81qQR" />
+            <span id="awmLogoWVal" style="font-size:12px;width:44px;text-align:right;color:var(--text);" data-page-node-id="6tnRgBiu91nYKifY5K3mG4">20% 宽</span>
+          </div>
         </div>
-        <div class="opt-row">
-          <label>旋转</label>
-          <input type="range" id="awmRotate" min="-90" max="90" value="-30" style="width:150px;" />
-          <span id="awmRotateVal" style="font-size:12px;width:40px;text-align:right;color:var(--text);">-30°</span>
+        <div class="opt-row" data-page-node-id="4KfmFQYjwIWI7akKty5tsv">
+          <label data-page-node-id="R0gp3t4sBOzor1ZvoRwr9v">不透明度</label>
+          <input type="range" id="awmOpacity" min="5" max="100" value="40" style="width:150px;" data-page-node-id="AN7FEDrzbcB6CGL1uqQTBN" />
+          <span id="awmOpacityVal" style="font-size:12px;width:38px;text-align:right;color:var(--text);" data-page-node-id="OcoQ1YCzITYfpWKKzdJOCu">40%</span>
         </div>
-        <div class="opt-row">
-          <label>位置</label>
-          <select id="awmPos">
-            <option value="br" selected>右下角</option>
-            <option value="bl">左下角</option>
-            <option value="tr">右上角</option>
-            <option value="tl">左上角</option>
-            <option value="center">居中</option>
-            <option value="tile">平铺全图（防盗图）</option>
+        <div class="opt-row" data-page-node-id="j1g5HD6OcHW4EahbncRL1o">
+          <label data-page-node-id="DJPiFc1B2fUoV1HjkIXyhI">旋转</label>
+          <input type="range" id="awmRotate" min="-90" max="90" value="-30" style="width:150px;" data-page-node-id="yIsd1CnQrVMI7I0eU0CEs6" />
+          <span id="awmRotateVal" style="font-size:12px;width:40px;text-align:right;color:var(--text);" data-page-node-id="0BCMsQzDoLq0ii496j4oHO">-30°</span>
+        </div>
+        <div class="opt-row" data-page-node-id="0kDYAwnY6qnHKHPFXjwfk2">
+          <label data-page-node-id="qtXs978zO9FRllTGFs6ZF6">位置</label>
+          <select id="awmPos" data-page-node-id="34gtUqFuGj9gXbijIfRAY6">
+            <option value="br" selected data-page-node-id="GV3vXtxHTs6zjYCFzGhSBc">右下角</option>
+            <option value="bl" data-page-node-id="n16PVAFWzlnB9ybMSPhUHf">左下角</option>
+            <option value="tr" data-page-node-id="CUYD0qT9JHcj3ICRCwFRRw">右上角</option>
+            <option value="tl" data-page-node-id="uz4CeSm8h34QXSduoB2wBo">左上角</option>
+            <option value="center" data-page-node-id="XaEqspw2dAzLfV8Reh4PDv">居中</option>
+            <option value="tile" data-page-node-id="jLrJeEQqjgshrQzs1opsmE">平铺全图（防盗图）</option>
           </select>
         </div>
-        <div class="opt-row" id="awmMarginRow">
-          <label>边距</label>
-          <input type="range" id="awmMargin" min="0" max="10" value="3" style="width:150px;" />
-          <span id="awmMarginVal" style="font-size:12px;width:52px;text-align:right;color:var(--text);">3% 短边</span>
+        <div class="opt-row" id="awmMarginRow" data-page-node-id="mvPpNwH69KmLrrNWyB4W84">
+          <label data-page-node-id="hzTIYn2RSDBa9egJ6brCxT">边距</label>
+          <input type="range" id="awmMargin" min="0" max="10" value="3" style="width:150px;" data-page-node-id="yFZFNNkFQN7Cix7SmBo78P" />
+          <span id="awmMarginVal" style="font-size:12px;width:52px;text-align:right;color:var(--text);" data-page-node-id="zGdc5gMAQJKxEugAUmzQQx">3% 短边</span>
         </div>
-        <div class="hint">为每张图叠加文字或 Logo 水印（在缩放后应用，所有图相对位置与大小一致）。选「平铺全图」可按设定角度斜向重复铺满，防止被盗图后单独裁掉角落水印。Logo 只需选择一次，全部图片共用。</div>
+        <div class="hint" data-page-node-id="C5TIrXNujI37T7icCn6QyQ">为每张图叠加文字或 Logo 水印（在缩放后应用，所有图相对位置与大小一致）。选「平铺全图」可按设定角度斜向重复铺满，防止被盗图后单独裁掉角落水印。Logo 只需选择一次，全部图片共用。</div>
       </div>
-      <div class="progress hidden" id="batchProgress"><div></div></div>
-      <div class="batch-stat" id="batchStat" style="margin-top:10px;"></div>
+      <div class="progress hidden" id="batchProgress" data-page-node-id="XEVDjuWMkfUzUqOI4b8ShN"><div data-page-node-id="EwUiJokn171HmkCDz3HbEa"></div></div>
+      <div class="batch-stat" id="batchStat" style="margin-top:10px;" data-page-node-id="MxpigPZfs8ILzaIEipI3A9"></div>
     </div>
-    <div class="modal-foot">
-      <span class="batch-stat" id="batchCount">共 0 张</span>
-      <div class="spacer"></div>
-      <button class="mbtn" id="batchClear">清空</button>
-      <button class="mbtn" id="batchCancel">取消</button>
-      <button class="mbtn primary" id="batchRun">开始处理并打包下载</button>
+    <div class="modal-foot" data-page-node-id="PxeAbv8jmw0ipY4uVGMnOf">
+      <span class="batch-stat" id="batchCount" data-page-node-id="IXJS5sG8WCeAhsMFpoXtJI">共 0 张</span>
+      <div class="spacer" data-page-node-id="fqeFJMy3ViBnPS0xegMHX1"></div>
+      <button class="mbtn" id="batchClear" data-page-node-id="aI78dEJCxvmiO3q07yIpF5">清空</button>
+      <button class="mbtn" id="batchCancel" data-page-node-id="z1EiSQxoGPhHfHJdPDD8V7">取消</button>
+      <button class="mbtn primary" id="batchRun" data-page-node-id="LFlRN6pB7l9HHHuLhUJUAb">开始处理并打包下载</button>
     </div>
   </div>
 </div>
