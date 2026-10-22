@@ -428,6 +428,7 @@
         <select id="batchOp">
           <option value="convert" selected>缩放 / 转换格式</option>
           <option value="watermark">去除水印</option>
+          <option value="addwm">添加水印</option>
         </select>
       </div>
       <div id="wmPanel" style="display:none;">
@@ -462,6 +463,74 @@
           <span id="wmRangeVal" style="font-size:12px;width:34px;text-align:right;color:var(--text);">18</span>
         </div>
         <div class="hint">将为每张图在相对位置生成去水印区域并自动内容识别填充（扩散 + 纹理采样）。适合固定角标类水印；区域过大或纹理极复杂时效果有限，可多试几次或缩小区域。</div>
+      </div>
+      <div id="awmPanel" style="display:none;">
+        <div class="opt-row">
+          <label>水印类型</label>
+          <select id="awmType">
+            <option value="text" selected>文字水印</option>
+            <option value="logo">图片 Logo</option>
+          </select>
+        </div>
+        <div id="awmTextRows">
+          <div class="opt-row">
+            <label>水印文字</label>
+            <input type="text" id="awmText" value="© My Photos" style="flex:1;min-width:130px;" />
+          </div>
+          <div class="opt-row">
+            <label>字号</label>
+            <input type="range" id="awmSize" min="2" max="30" value="6" style="width:150px;" />
+            <span id="awmSizeVal" style="font-size:12px;width:52px;text-align:right;color:var(--text);">6% 短边</span>
+            <input type="color" id="awmColor" value="#ffffff" title="文字颜色" style="width:34px;height:24px;padding:0;border:1px solid var(--line);border-radius:4px;background:none;margin-left:8px;cursor:pointer;" />
+          </div>
+          <div class="opt-row">
+            <label style="min-width:auto;margin-right:6px;">描边</label>
+            <input type="checkbox" id="awmStroke" checked />
+            <span style="font-size:13px;color:var(--muted);">半透明深色描边（浅色背景上保持可读）</span>
+          </div>
+        </div>
+        <div id="awmLogoRows" style="display:none;">
+          <div class="opt-row">
+            <label>Logo 图片</label>
+            <input type="file" id="awmLogo" accept="image/*" style="flex:1;min-width:130px;font-size:12px;" />
+          </div>
+          <div class="opt-row" id="awmLogoNameRow" style="display:none;">
+            <label style="min-width:auto;"></label>
+            <span id="awmLogoName" style="font-size:12px;color:var(--coral);"></span>
+          </div>
+          <div class="opt-row">
+            <label>Logo 宽度</label>
+            <input type="range" id="awmLogoW" min="5" max="80" value="20" style="width:150px;" />
+            <span id="awmLogoWVal" style="font-size:12px;width:44px;text-align:right;color:var(--text);">20% 宽</span>
+          </div>
+        </div>
+        <div class="opt-row">
+          <label>不透明度</label>
+          <input type="range" id="awmOpacity" min="5" max="100" value="40" style="width:150px;" />
+          <span id="awmOpacityVal" style="font-size:12px;width:38px;text-align:right;color:var(--text);">40%</span>
+        </div>
+        <div class="opt-row">
+          <label>旋转</label>
+          <input type="range" id="awmRotate" min="-90" max="90" value="-30" style="width:150px;" />
+          <span id="awmRotateVal" style="font-size:12px;width:40px;text-align:right;color:var(--text);">-30°</span>
+        </div>
+        <div class="opt-row">
+          <label>位置</label>
+          <select id="awmPos">
+            <option value="br" selected>右下角</option>
+            <option value="bl">左下角</option>
+            <option value="tr">右上角</option>
+            <option value="tl">左上角</option>
+            <option value="center">居中</option>
+            <option value="tile">平铺全图（防盗图）</option>
+          </select>
+        </div>
+        <div class="opt-row" id="awmMarginRow">
+          <label>边距</label>
+          <input type="range" id="awmMargin" min="0" max="10" value="3" style="width:150px;" />
+          <span id="awmMarginVal" style="font-size:12px;width:52px;text-align:right;color:var(--text);">3% 短边</span>
+        </div>
+        <div class="hint">为每张图叠加文字或 Logo 水印（在缩放后应用，所有图相对位置与大小一致）。选「平铺全图」可按设定角度斜向重复铺满，防止被盗图后单独裁掉角落水印。Logo 只需选择一次，全部图片共用。</div>
       </div>
       <div class="progress hidden" id="batchProgress"><div></div></div>
       <div class="batch-stat" id="batchStat" style="margin-top:10px;"></div>
@@ -837,10 +906,17 @@
     batchRatioCustom.oninput=renderBatch;
     batchFormat.onchange=()=>{ renderBatch(); };
     batchQuality.oninput=()=>{ batchQualityVal.textContent=batchQuality.value; };
-    batchOp.onchange=()=>{ const on=batchOp.value==='watermark'; wmPanel.style.display=on?'block':'none'; if(on){ wmCustomRow.style.display = wmPos.value==='custom'?'flex':'none'; } renderBatch(); };
+    batchOp.onchange=()=>{ const v=batchOp.value; wmPanel.style.display=v==='watermark'?'block':'none'; awmPanel.style.display=v==='addwm'?'block':'none'; if(v==='watermark'){ wmCustomRow.style.display = wmPos.value==='custom'?'flex':'none'; } renderBatch(); };
     wmPos.onchange=()=>{ wmCustomRow.style.display = wmPos.value==='custom'?'flex':'none'; };
     wmFeather.oninput=()=>{ wmFeatherVal.textContent=wmFeather.value; };
     wmRange.oninput=()=>{ wmRangeVal.textContent=wmRange.value; };
+    awmType.onchange=()=>{ awmTextRows.style.display=awmType.value==='text'?'block':'none'; awmLogoRows.style.display=awmType.value==='logo'?'block':'none'; };
+    awmLogoInput.onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const url=URL.createObjectURL(f); loadImg(url).then(im=>{ if(awmLogoURL) URL.revokeObjectURL(awmLogoURL); awmLogoURL=url; awmLogoImg=im; awmLogoName.textContent='已加载：'+f.name+'（'+im.naturalWidth+'×'+im.naturalHeight+'）'; awmLogoNameRow.style.display='flex'; toast('Logo 已加载'); }).catch(()=>{ URL.revokeObjectURL(url); toast('Logo 图片加载失败'); }); e.target.value=''; };
+    awmSize.oninput=()=>{ awmSizeVal.textContent=awmSize.value+'% 短边'; };
+    awmLogoW.oninput=()=>{ awmLogoWVal.textContent=awmLogoW.value+'% 宽'; };
+    awmOpacity.oninput=()=>{ awmOpacityVal.textContent=awmOpacity.value+'%'; };
+    awmRotate.oninput=()=>{ awmRotateVal.textContent=awmRotate.value+'°'; };
+    awmMargin.oninput=()=>{ awmMarginVal.textContent=awmMargin.value+'% 短边'; };
     ['dragenter','dragover'].forEach(ev=>batchDrop.addEventListener(ev,e=>{ e.preventDefault(); batchDrop.style.borderColor='var(--coral)'; }));
     ['dragleave','drop'].forEach(ev=>batchDrop.addEventListener(ev,e=>{ e.preventDefault(); batchDrop.style.borderColor=''; }));
     batchDrop.addEventListener('drop',e=>{ if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length) addBatchFiles(e.dataTransfer.files); });
@@ -943,6 +1019,28 @@
   const wmFeatherVal=document.getElementById('wmFeatherVal');
   const wmRange=document.getElementById('wmRange');
   const wmRangeVal=document.getElementById('wmRangeVal');
+  const awmPanel=document.getElementById('awmPanel');
+  const awmType=document.getElementById('awmType');
+  const awmTextRows=document.getElementById('awmTextRows');
+  const awmLogoRows=document.getElementById('awmLogoRows');
+  const awmText=document.getElementById('awmText');
+  const awmSize=document.getElementById('awmSize');
+  const awmSizeVal=document.getElementById('awmSizeVal');
+  const awmColor=document.getElementById('awmColor');
+  const awmStroke=document.getElementById('awmStroke');
+  const awmLogoInput=document.getElementById('awmLogo');
+  const awmLogoNameRow=document.getElementById('awmLogoNameRow');
+  const awmLogoName=document.getElementById('awmLogoName');
+  const awmLogoW=document.getElementById('awmLogoW');
+  const awmLogoWVal=document.getElementById('awmLogoWVal');
+  const awmOpacity=document.getElementById('awmOpacity');
+  const awmOpacityVal=document.getElementById('awmOpacityVal');
+  const awmRotate=document.getElementById('awmRotate');
+  const awmRotateVal=document.getElementById('awmRotateVal');
+  const awmPos=document.getElementById('awmPos');
+  const awmMargin=document.getElementById('awmMargin');
+  const awmMarginVal=document.getElementById('awmMarginVal');
+  let awmLogoImg=null, awmLogoURL='';
   let batchItems=[];
   let batchBusy=false;
 
@@ -959,10 +1057,11 @@
     batchGrid.innerHTML='';
     const ratio=getBatchRatio();
     const wmOn=batchOp.value==='watermark';
+    const awmOn=batchOp.value==='addwm';
     batchItems.forEach((it,idx)=>{
       const w=Math.max(1,Math.round(it.w*ratio)), h=Math.max(1,Math.round(it.h*ratio));
       const card=document.createElement('div'); card.className='batch-card';
-      const badge=wmOn?'<span class="badge-wm">去水印</span>':'';
+      const badge=wmOn?'<span class="badge-wm">去水印</span>':(awmOn?'<span class="badge-wm">加水印</span>':'');
       card.innerHTML='<button class="del" data-i="'+idx+'">✕</button>'+badge
         +'<img src="'+it.url+'" alt="">'
         +'<div class="meta">'+escapeHtml(it.name)+'<br>'+it.w+'×'+it.h+' → <b style="color:var(--coral)">'+w+'×'+h+'</b></div>';
@@ -988,11 +1087,13 @@
     if(!batchItems.length){ toast('请先添加图片'); return; }
     batchBusy=true;
     const ratio=getBatchRatio(), type=getBatchType(), ext=getBatchExt(), q=parseInt(batchQuality.value,10)/100;
-    const op=batchOp.value, cfg=(op==='watermark')?getWmConfig():null;
+    const op=batchOp.value, cfg=(op==='watermark')?getWmConfig():(op==='addwm')?getAwmConfig():null;
+    if(op==='addwm'&&cfg&&cfg.type==='logo'&&!awmLogoImg){ batchBusy=false; toast('请先选择 Logo 图片'); return; }
+    const opLabel=(op==='watermark')?'去水印':((op==='addwm')?'添加水印':'批量处理');
     const usedNames={}, zipFiles=[];
     batchProgress.classList.remove('hidden');
     const bar=batchProgress.firstElementChild; bar.style.width='0%';
-    setStatus((op==='watermark'?'去水印':'批量处理')+'中… 0/'+batchItems.length);
+    setStatus(opLabel+'中… 0/'+batchItems.length);
     try{
       for(let i=0;i<batchItems.length;i++){
         const it=batchItems[i];
@@ -1002,7 +1103,10 @@
         const cx=c.getContext('2d');
         if(type==='image/jpeg'){ cx.fillStyle='#ffffff'; cx.fillRect(0,0,w,h); } // JPG 无透明通道，填白底
         cx.drawImage(im,0,0,w,h);
-        if(cfg){ const rg=computeRegion(w,h,cfg); inpaintCanvas(c, rg.x, rg.y, rg.w, rg.h, cfg.feather, cfg.range); }
+        if(cfg){
+          if(op==='watermark'){ const rg=computeRegion(w,h,cfg); inpaintCanvas(c, rg.x, rg.y, rg.w, rg.h, cfg.feather, cfg.range); }
+          else { applyWatermark(cx,w,h,cfg); }
+        }
         const blob=await new Promise(res=>c.toBlob(res,type,q));
         if(!blob) throw new Error('当前浏览器不支持导出 '+ext.toUpperCase()+'，请换 PNG/JPG');
         const buf=new Uint8Array(await blob.arrayBuffer());
@@ -1011,19 +1115,84 @@
         usedNames[fname]=1;
         zipFiles.push({name:fname,data:buf});
         bar.style.width=Math.round((i+1)/batchItems.length*100)+'%';
-        setStatus((op==='watermark'?'去水印':'批量处理')+'中… '+(i+1)+'/'+batchItems.length);
+        setStatus(opLabel+'中… '+(i+1)+'/'+batchItems.length);
       }
       const zip=buildZip(zipFiles);
       downloadBlob(zip,'batch_'+stamp()+'.zip');
-      const doneMsg=(op==='watermark'?'去水印完成：':'批量处理完成：')+zipFiles.length+' 张';
+      const doneMsg=opLabel+'完成：'+zipFiles.length+' 张';
       toast(doneMsg+'，已打包下载');
       setStatus(doneMsg);
-      batchStat.textContent='已完成 '+zipFiles.length+' 张，ZIP 已下载（batch_'+stamp()+'.zip）。'+(cfg?'已按设定区域去除水印。':'');
+      batchStat.textContent='已完成 '+zipFiles.length+' 张，ZIP 已下载（batch_'+stamp()+'.zip）。'+(cfg?(op==='watermark'?'已按设定区域去除水印。':(op==='addwm'?'已叠加设定水印。':'')):'');
     }catch(err){ toast('处理出错：'+((err&&err.message)||err)); setStatus('批量处理失败'); }
     finally{ batchBusy=false; setTimeout(()=>batchProgress.classList.add('hidden'),600); }
   }
   function getBatchType(){ const f=batchFormat.value; return f==='jpg'?'image/jpeg':f==='png'?'image/png':'image/webp'; }
   function getBatchExt(){ return batchFormat.value; }
+
+  // ---------- 批量添加水印：文字 / Logo，四角/居中/平铺，支持旋转与描边 ----------
+  function getAwmConfig(){
+    return {
+      type: awmType.value,
+      text: awmText.value||'© watermark',
+      size: clamp(parseFloat(awmSize.value)||6,2,50)/100,      // 字号占图片短边百分比
+      color: awmColor.value||'#ffffff',
+      stroke: !!awmStroke.checked,
+      logo: awmLogoImg,
+      logoW: clamp(parseFloat(awmLogoW.value)||20,5,80)/100,   // Logo 宽占图片宽百分比
+      opacity: clamp(parseInt(awmOpacity.value,10)||40,5,100)/100,
+      rotate: clamp(parseInt(awmRotate.value,10)||0,-90,90)*Math.PI/180,
+      pos: awmPos.value,
+      margin: clamp(parseFloat(awmMargin.value)||0,0,20)/100   // 边距占短边百分比
+    };
+  }
+  function applyWatermark(cx,w,h,cfg){
+    const m=Math.round(Math.min(w,h)*cfg.margin);
+    cx.save();
+    cx.globalAlpha=cfg.opacity;
+    if(cfg.type==='text'){
+      const fs=Math.max(8,Math.round(Math.min(w,h)*cfg.size));
+      cx.font='bold '+fs+'px "PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif';
+      cx.textBaseline='middle';
+      const tw=cx.measureText(cfg.text).width, th=fs;
+      cx.fillStyle=cfg.color;
+      if(cfg.stroke){ cx.lineWidth=Math.max(1,fs*0.08); cx.strokeStyle='rgba(0,0,0,0.45)'; cx.lineJoin='round'; }
+      const drawOne=(x,y,align)=>{
+        cx.save(); cx.translate(x,y); cx.rotate(cfg.rotate);
+        cx.textAlign=align;
+        if(cfg.stroke) cx.strokeText(cfg.text,0,0);
+        cx.fillText(cfg.text,0,0);
+        cx.restore();
+      };
+      if(cfg.pos==='tile'){
+        // 平铺：以文字包围盒为单元斜向重复铺满，向四周外扩一圈保证旋转后覆盖到角落
+        const pad=Math.round(fs*1.1), stepX=tw+pad, stepY=th+pad*2;
+        for(let y=-stepY;y<h+stepY;y+=stepY) for(let x=-stepX;x<w+stepX;x+=stepX) drawOne(x,y,'center');
+      } else {
+        let x=w/2,y=h/2,align='center';
+        if(cfg.pos==='br'){ x=w-m; y=h-m; align='right'; }
+        else if(cfg.pos==='bl'){ x=m; y=h-m; align='left'; }
+        else if(cfg.pos==='tr'){ x=w-m; y=m; align='right'; }
+        else if(cfg.pos==='tl'){ x=m; y=m; align='left'; }
+        drawOne(x,y,align);
+      }
+    } else if(cfg.logo){
+      const lw=Math.max(8,Math.round(w*cfg.logoW));
+      const lh=Math.max(1,Math.round(lw*cfg.logo.naturalHeight/cfg.logo.naturalWidth));
+      const place=(px,py)=>{ cx.save(); cx.translate(px,py); cx.rotate(cfg.rotate); cx.drawImage(cfg.logo,-lw/2,-lh/2,lw,lh); cx.restore(); };
+      if(cfg.pos==='tile'){
+        const pad=Math.round(Math.min(w,h)*0.08)+m, stepX=lw+pad, stepY=lh+pad*1.6;
+        for(let y=-stepY;y<h+stepY;y+=stepY) for(let x=-stepX;x<w+stepX;x+=stepX) place(x,y);
+      } else {
+        let x=w/2,y=h/2;
+        if(cfg.pos==='br'){ x=w-m-lw/2; y=h-m-lh/2; }
+        else if(cfg.pos==='bl'){ x=m+lw/2; y=h-m-lh/2; }
+        else if(cfg.pos==='tr'){ x=w-m-lw/2; y=m+lh/2; }
+        else if(cfg.pos==='tl'){ x=m+lw/2; y=m+lh/2; }
+        place(x,y);
+      }
+    }
+    cx.restore();
+  }
 
   // ---------- 批量去水印：区域配置 + 内容识别填充（扩散 + 纹理采样） ----------
   function getWmConfig(){
